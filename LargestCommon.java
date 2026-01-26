@@ -35,3 +35,5 @@ public class LargestCommon {
         lc.largestCommonPrefix(arr1, arr2);
     }
 }
+
+// this is the leet code problem largest common prefix in two arrays
