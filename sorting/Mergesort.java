@@ -1,40 +1,44 @@
 class Solution {
     public int[] sortArray(int[] nums) {
-        mergeSort(nums, 0, nums.length - 1);
+        
+        divide(nums, 0, nums.length - 1);
         return nums;
     }
 
-    private void mergeSort(int[] arr, int left, int right) {
-        if (left < right) {
-            int mid = left + (right - left) / 2;
+    public void conquer(int[] nums, int si,int mid, int ei){
+        int merged[] = new int[ei-si+1];
+        int idx1 = si;
+        int idx2 = ei;
+        int x = 0;
 
-            mergeSort(arr, left, mid);
-            mergeSort(arr, mid + 1, right);
+        while(idx1<=mid && idx2<=ei){
+            if(idx1<=idx2){
+                merged[x++] = nums[idx1++];
+            }else{
+                merged[x++] = nums[idx2++];
+            }
+        }
+        while(idx1<=mid){
+            merged[x++] = nums[idx1++];
+        }
+        while(idx2<=ei){
+            merged[x++] = nums[idx2++];
+        }
 
-            merge(arr, left, mid, right);
+        for(int i=0; i<merged.length; i++){
+            nums[si+i] = merged[i];
         }
     }
 
-    private void merge(int[] arr, int left, int mid, int right) {
-        int n1 = mid - left + 1;
-        int n2 = right - mid;
-
-        int[] L = new int[n1];
-        int[] R = new int[n2];
-
-        for (int i = 0; i < n1; i++)
-            L[i] = arr[left + i];
-        for (int j = 0; j < n2; j++)
-            R[j] = arr[mid + 1 + j];
-
-        int i = 0, j = 0, k = left;
-
-        while (i < n1 && j < n2) {
-            if (L[i] <= R[j]) arr[k++] = L[i++];
-            else arr[k++] = R[j++];
+    public void divide(int[] nums, int si, int ei) {
+        
+        if(si>ei){
+            return;
         }
-
-        while (i < n1) arr[k++] = L[i++];
-        while (j < n2) arr[k++] = R[j++];
+        int mid = si + (ei - si) / 2;
+        divide(nums, si, mid);
+        divide(nums, mid + 1, ei);
+        conquer(nums, si, mid, ei);
     }
+   
 }
