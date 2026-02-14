@@ -1,6 +1,7 @@
 {
     "java.project.sourcePaths": [
         "LinkedList/linked-list",
-        "LinkedList"
+        "LinkedList",
+        "Recurssion"
     ]
 }
