@@ -20,11 +20,25 @@ public class Main {
         last.setNext(null);
         
         head = insertAtFront(head, 0);
-        printLinkedList(head);
+        // printLinkedList(head);
         // printLinkedList(head,thirty);
+        printLinkedList(head);
+        System.out.println();
+
+        head = deleteAtTheFirst(head);
+        printLinkedList(head);
+        System.out.println();
+
+        head = deleteAtTheFirst(head);
+        printLinkedList(head);
     }
     // public static void printLinkedList(Node head, Node StopNode){
-
+    public static Node deleteAtTheFirst(Node head){
+        if(head == null){
+            return null;
+        }
+        return head.getNext();
+    }
     public static Node insertAtFront(Node head, int data){
         Node newNode = new Node(data);
         newNode.setNext(null);
