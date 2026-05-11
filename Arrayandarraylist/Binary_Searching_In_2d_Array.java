@@ -1,4 +1,4 @@
-package dsa.Arrayandarraylist;
+
 
 import java.util.Scanner;
 

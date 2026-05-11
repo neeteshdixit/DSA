@@ -1,4 +1,3 @@
-package dsa.Arrayandarraylist;
 
 import java.util.Scanner;
 public class Largest {
