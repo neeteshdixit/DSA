@@ -1,28 +1,26 @@
 public class Selection {
-    public static void main(String[] args) {
 
-        int[] arr = {10,2,98,45,32,45,2,3,4};
-        int n = arr.length;
 
-        for(int i = 0; i < n; i++){
-            int highest = arr[0];
-            int indexOfHighestElement = 0;
+    static void selection(int arr[]){
+        for(int i = 0; i< arr.length; i++){
+            int min = i;
+            int temp =0;
 
-            for (int j = 0; j < n - i; j++){
-                if(arr[j] > highest){
-                    highest = arr[j];
-                    indexOfHighestElement = j;
+            for(int j = i+1; j<arr.length; j++){
+                if(arr[j]<arr[min]){
+                    min =j;
                 }
             }
-
-            int temp = arr[indexOfHighestElement];
-            arr[indexOfHighestElement] = arr[n - i - 1];
-            arr[n - i - 1] = temp;
+            temp = arr[i];
+            arr[i] = arr[min];
+            arr[min] = temp;
         }
-
-        // ✅ Print sorted array
-        for(int i = 0; i < n; i++){
-            System.out.print(arr[i] + " ");
+    }
+    public static void main(String[] args) {
+        int arr[] ={2,5,1,3,4,6,7,43,3,4,243};
+        selection(arr);
+        for(int i=0;i<arr.length;i++){
+            System.out.print(arr[i]+" ");
         }
     }
 }

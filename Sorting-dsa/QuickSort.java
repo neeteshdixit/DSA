@@ -1,45 +1,52 @@
 public class QuickSort {
 
-    public int partition(int[] arr, int left, int key) {
-        int pivot = arr[key];   // pivot value
-        int i = left - 1;
+    public static void partition(int arr[], int low, int high){
 
-        for (int j = left; j < key; j++) {
-            if (arr[j] < pivot) {
+        int pivot = arr[low + (high-low)/2];
+
+        int i = low;
+        int j = high;
+
+        while(i <= j){
+
+            while(arr[i] < pivot){
                 i++;
+            }
 
-                // swap arr[i] and arr[j]
+            while(arr[j] > pivot){
+                j--;
+            }
+
+            if(i <= j){
+
                 int temp = arr[i];
                 arr[i] = arr[j];
                 arr[j] = temp;
+
+                i++;
+                j--;
             }
         }
 
-        // pivot ko correct position pe rakhna
-        int temp = arr[i + 1];
-        arr[i + 1] = arr[key];
-        arr[key] = temp;
+        // left side
+        if(low < j){
+            partition(arr, low, j);
+        }
 
-        return i + 1;   // pivot index return
-    }
-
-    public void quicksort(int[] arr, int left, int key) {
-        if (left < key) {
-            int pi = partition(arr, left, key);
-
-            quicksort(arr, left, pi - 1);
-            quicksort(arr, pi + 1, key);
+        // right side
+        if(i < high){
+            partition(arr, i, high);
         }
     }
 
     public static void main(String[] args) {
-        int[] arr = {1,344222,244,1,2,412,3133,1212};
 
-        QuickSort qs = new QuickSort();
-        qs.quicksort(arr, 0, arr.length - 1);
+        int arr[] = {12,34,2,321,334,4};
 
-        for (int num : arr) {
-            System.out.print(num + " ");
+        partition(arr,0,arr.length-1);
+
+        for(int i=0; i<arr.length; i++){
+            System.out.print(arr[i]+" ");
         }
     }
 }
