@@ -94,7 +94,7 @@ int right = arr.length-1;
 
 while(left < right){
 
-    // compare
+    compare
 
     left++;
     right--;
