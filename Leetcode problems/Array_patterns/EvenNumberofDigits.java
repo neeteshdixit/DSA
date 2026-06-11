@@ -331,7 +331,7 @@ for(int right=0;
 right<arr.length;
 right++){
 
-    // expand window
+    expand window
 
     while(condition invalid){
 
