@@ -1,32 +1,80 @@
-Bilkul. Linked List me baar-baar yehi patterns repeat hote hain. Pehle inke templates yaad kar lo, phir questions bahut easy lagne lagenge.
-
 /*
 ===============================================================================
-LINKED LIST COMPLETE PATTERN CHEATSHEET
+                    LINKED LIST COMPLETE PATTERN CHEATSHEET
 ===============================================================================
-*/
-1. Traversal Pattern
-Kab Use Hota Hai?
-Count Nodes
-Print List
-Find Max
-Find Sum
-Search Element
-Template
+
+Linked List Recognition:
+
+Question me agar words aaye:
+
+✓ Reverse
+✓ Middle
+✓ Cycle
+✓ Merge
+✓ Palindrome
+✓ Intersection
+✓ Remove Node
+✓ Nth Node From End
+
+=> Linked List Pattern
+
+===============================================================================
+1. TRAVERSAL PATTERN
+===============================================================================
+
+KAB USE HOTA HAI?
+
+✓ Count Nodes
+✓ Print List
+✓ Find Max
+✓ Find Min
+✓ Find Sum
+✓ Search Element
+
+RECOGNITION:
+
+Question me bola ho:
+
+"Traverse the list"
+"Print all nodes"
+"Count nodes"
+"Find maximum element"
+
+TEMPLATE:
+
 ListNode curr = head;
 
 while(curr != null){
 
-    System.out.print(curr.val);
+    // process current node
 
     curr = curr.next;
 }
-2. Length Count Pattern
-Kab Use Hota Hai?
-Length
-Nth Node
-Middle (Brute Force)
-Template
+
+TIME  : O(n)
+SPACE : O(1)
+
+===============================================================================
+2. LENGTH COUNT PATTERN
+===============================================================================
+
+KAB USE HOTA HAI?
+
+✓ Length of Linked List
+✓ Nth Node
+✓ Middle Node (Brute Force)
+✓ Split List
+
+RECOGNITION:
+
+Question me bola ho:
+
+"Length"
+"Size"
+"Count nodes"
+
+TEMPLATE:
+
 int count = 0;
 
 ListNode curr = head;
@@ -37,13 +85,51 @@ while(curr != null){
 
     curr = curr.next;
 }
-3. Fast Slow Pointer Pattern ⭐
-Kab Use Hota Hai?
-Middle Node
-Cycle Detection
-Palindrome
-Happy Number
-Template
+
+TIME  : O(n)
+SPACE : O(1)
+
+===============================================================================
+3. FAST SLOW POINTER PATTERN ⭐⭐⭐
+===============================================================================
+
+KAB USE HOTA HAI?
+
+✓ Middle Node
+✓ Cycle Detection
+✓ Palindrome Linked List
+✓ Happy Number
+✓ Find Cycle Start
+✓ Nth Node From End
+
+RECOGNITION:
+
+Question me words aaye:
+
+✓ Middle
+✓ Cycle
+✓ Loop
+✓ Nth From End
+✓ Palindrome
+
+=> Fast Slow Pointer
+
+VISUAL:
+
+Slow = 1 step
+
+1 -> 2 -> 3 -> 4 -> 5
+
+Fast = 2 step
+
+1 --> 3 --> 5
+
+Fast end tak pahunch gaya
+
+Slow middle me hoga
+
+TEMPLATE:
+
 ListNode slow = head;
 
 ListNode fast = head;
@@ -58,19 +144,51 @@ while(
     fast = fast.next.next;
 }
 
-After loop:
+return slow;
 
-slow
+TIME  : O(n)
+SPACE : O(1)
 
-middle par hoga.
+===============================================================================
+4. REVERSE LINKED LIST PATTERN ⭐⭐⭐
+===============================================================================
 
-4. Reverse Linked List Pattern ⭐⭐⭐
-Kab Use Hota Hai?
-Reverse List
-Palindrome List
-Reverse Between
-Reorder List
-Template
+KAB USE HOTA HAI?
+
+✓ Reverse Linked List
+✓ Palindrome Linked List
+✓ Reverse Between
+✓ Reorder List
+✓ Reverse K Group
+
+RECOGNITION:
+
+Question me words aaye:
+
+✓ Reverse
+✓ Reverse Between
+✓ Reorder
+
+=> Reverse Pattern
+
+MEMORY TRICK:
+
+Save Next
+
+↓
+
+Reverse Link
+
+↓
+
+Move Prev
+
+↓
+
+Move Curr
+
+TEMPLATE:
+
 ListNode prev = null;
 
 ListNode curr = head;
@@ -88,20 +206,42 @@ while(curr != null){
 }
 
 return prev;
-Memory Trick
-Save Next
 
-Reverse Link
+TIME  : O(n)
+SPACE : O(1)
 
-Move Prev
+===============================================================================
+5. CYCLE DETECTION (FLOYD ALGORITHM)
+===============================================================================
 
-Move Curr
-5. Cycle Detection Pattern (Floyd)
-Kab Use Hota Hai?
-Linked List Cycle
-Happy Number
-Duplicate Number
-Template
+KAB USE HOTA HAI?
+
+✓ Linked List Cycle
+✓ Happy Number
+✓ Duplicate Number
+
+RECOGNITION:
+
+Question me words aaye:
+
+✓ Cycle
+✓ Loop
+✓ Circular
+
+=> Floyd Cycle Detection
+
+TRICK:
+
+Cycle hai
+
+=> Fast Slow ko pakad lega
+
+Cycle nahi hai
+
+=> Fast null ho jayega
+
+TEMPLATE:
+
 ListNode slow = head;
 
 ListNode fast = head;
@@ -122,9 +262,36 @@ while(
 }
 
 return false;
-6. Find Cycle Start
-LeetCode 142
-Template
+
+TIME  : O(n)
+SPACE : O(1)
+
+===============================================================================
+6. FIND CYCLE START
+===============================================================================
+
+LEETCODE:
+
+LC 142
+
+KAB USE HOTA HAI?
+
+✓ Find starting node of cycle
+
+TRICK:
+
+Meeting Point
+
++
+
+Head
+
+=
+
+Cycle Start
+
+TEMPLATE:
+
 slow = head;
 
 while(slow != fast){
@@ -135,12 +302,32 @@ while(slow != fast){
 }
 
 return slow;
-7. Merge Two Sorted Lists ⭐
-Kab Use Hota Hai?
-Merge Lists
-Merge K Lists
-Sorting
-Template
+
+TIME  : O(n)
+SPACE : O(1)
+
+===============================================================================
+7. MERGE TWO SORTED LISTS ⭐⭐⭐
+===============================================================================
+
+KAB USE HOTA HAI?
+
+✓ Merge Lists
+✓ Merge K Lists
+✓ Merge Sort
+✓ Sorting Problems
+
+RECOGNITION:
+
+Question me words aaye:
+
+✓ Merge
+✓ Sorted Lists
+
+=> Merge Pattern
+
+TEMPLATE:
+
 ListNode dummy =
         new ListNode(-1);
 
@@ -174,25 +361,70 @@ if(l2 != null)
     tail.next = l2;
 
 return dummy.next;
-8. Dummy Node Pattern ⭐⭐⭐
-Kab Use Hota Hai?
-Remove Node
-Merge
-Partition
-Swap Pairs
-Template
+
+TIME  : O(n+m)
+SPACE : O(1)
+
+===============================================================================
+8. DUMMY NODE PATTERN ⭐⭐⭐
+===============================================================================
+
+KAB USE HOTA HAI?
+
+✓ Remove Node
+✓ Merge Lists
+✓ Partition List
+✓ Swap Pairs
+✓ Delete Head
+
+RECOGNITION:
+
+Question me:
+
+Head change ho sakta hai
+
+=> Dummy Node
+
+TRICK:
+
+Dummy Node
+
+=
+
+Edge Case Killer
+
+TEMPLATE:
+
 ListNode dummy =
         new ListNode(-1);
 
 dummy.next = head;
 
-Return:
-
 return dummy.next;
-9. Remove Nth Node From End
-Pattern
-Fast Slow
-Template
+
+TIME  : O(1)
+SPACE : O(1)
+
+===============================================================================
+9. REMOVE NTH NODE FROM END
+===============================================================================
+
+PATTERN:
+
+Fast Slow Pointer
+
+KAB USE HOTA HAI?
+
+✓ Nth Node From End
+
+TRICK:
+
+Fast ko n+1 step aage bhejo
+
+Distance maintain karo
+
+TEMPLATE:
+
 ListNode dummy =
         new ListNode(0);
 
@@ -218,10 +450,38 @@ slow.next =
 slow.next.next;
 
 return dummy.next;
-10. Find Intersection
-Pattern
+
+TIME  : O(n)
+SPACE : O(1)
+
+===============================================================================
+10. INTERSECTION OF TWO LISTS
+===============================================================================
+
+PATTERN:
+
 Two Pointer
-Template
+
+KAB USE HOTA HAI?
+
+✓ Intersection Node
+
+RECOGNITION:
+
+Question me:
+
+Two Linked Lists
+
+Common Node
+
+Intersection
+
+TRICK:
+
+Dono equal distance travel karte hain
+
+TEMPLATE:
+
 ListNode a = headA;
 
 ListNode b = headB;
@@ -240,16 +500,170 @@ while(a != b){
 }
 
 return a;
-11. Palindrome Linked List ⭐
-Pattern
+
+TIME  : O(n+m)
+SPACE : O(1)
+
+===============================================================================
+11. PALINDROME LINKED LIST ⭐⭐⭐
+===============================================================================
+
+PATTERN:
+
 Middle
+
++
 
 Reverse
 
++
+
 Compare
-Steps
+
+KAB USE HOTA HAI?
+
+✓ Check Palindrome
+
+TRICK:
+
+Palindrome
+
+=
+
 Find Middle
+
++
 
 Reverse Second Half
 
++
+
 Compare Both Halves
+
+STEPS:
+
+1. Find Middle
+
+2. Reverse Second Half
+
+3. Compare Both Halves
+
+PSEUDO:
+
+ListNode middle = middleNode(head);
+
+ListNode secondHalf =
+reverse(middle);
+
+compare(firstHalf, secondHalf);
+
+TIME  : O(n)
+SPACE : O(1)
+
+===============================================================================
+LINKED LIST INTERVIEW RECOGNITION SHEET
+===============================================================================
+
+Middle
+=
+Fast Slow Pointer
+
+-------------------------------------------------------------------------------
+
+Cycle
+=
+Fast Slow Pointer
+
+-------------------------------------------------------------------------------
+
+Reverse
+=
+Prev Curr Next
+
+-------------------------------------------------------------------------------
+
+Merge
+=
+Dummy Node + Tail
+
+-------------------------------------------------------------------------------
+
+Remove Node
+=
+Dummy Node
+
+-------------------------------------------------------------------------------
+
+Nth From End
+=
+Fast Slow Pointer
+
+-------------------------------------------------------------------------------
+
+Palindrome
+=
+Middle + Reverse + Compare
+
+-------------------------------------------------------------------------------
+
+Intersection
+=
+Two Pointer
+
+===============================================================================
+GOLDEN RULE
+===============================================================================
+
+Middle?
+Cycle?
+Nth From End?
+
+=> Fast Slow Pointer
+
+-------------------------------------------------------------------------------
+
+Reverse?
+
+=> Prev Curr Next
+
+-------------------------------------------------------------------------------
+
+Merge?
+Delete?
+
+=> Dummy Node
+
+-------------------------------------------------------------------------------
+
+Palindrome?
+
+=> Middle + Reverse
+
+-------------------------------------------------------------------------------
+
+Intersection?
+
+=> Two Pointer
+
+===============================================================================
+MOST IMPORTANT LEETCODE QUESTIONS
+===============================================================================
+
+LC 876  -> Middle of Linked List
+
+LC 206  -> Reverse Linked List
+
+LC 141  -> Linked List Cycle
+
+LC 142  -> Linked List Cycle II
+
+LC 21   -> Merge Two Sorted Lists
+
+LC 19   -> Remove Nth Node From End
+
+LC 160  -> Intersection of Two Lists
+
+LC 234  -> Palindrome Linked List
+
+===============================================================================
+*/
