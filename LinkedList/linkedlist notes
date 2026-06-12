@@ -1,0 +1,255 @@
+Bilkul. Linked List me baar-baar yehi patterns repeat hote hain. Pehle inke templates yaad kar lo, phir questions bahut easy lagne lagenge.
+
+/*
+===============================================================================
+LINKED LIST COMPLETE PATTERN CHEATSHEET
+===============================================================================
+*/
+1. Traversal Pattern
+Kab Use Hota Hai?
+Count Nodes
+Print List
+Find Max
+Find Sum
+Search Element
+Template
+ListNode curr = head;
+
+while(curr != null){
+
+    System.out.print(curr.val);
+
+    curr = curr.next;
+}
+2. Length Count Pattern
+Kab Use Hota Hai?
+Length
+Nth Node
+Middle (Brute Force)
+Template
+int count = 0;
+
+ListNode curr = head;
+
+while(curr != null){
+
+    count++;
+
+    curr = curr.next;
+}
+3. Fast Slow Pointer Pattern ⭐
+Kab Use Hota Hai?
+Middle Node
+Cycle Detection
+Palindrome
+Happy Number
+Template
+ListNode slow = head;
+
+ListNode fast = head;
+
+while(
+    fast != null &&
+    fast.next != null
+){
+
+    slow = slow.next;
+
+    fast = fast.next.next;
+}
+
+After loop:
+
+slow
+
+middle par hoga.
+
+4. Reverse Linked List Pattern ⭐⭐⭐
+Kab Use Hota Hai?
+Reverse List
+Palindrome List
+Reverse Between
+Reorder List
+Template
+ListNode prev = null;
+
+ListNode curr = head;
+
+while(curr != null){
+
+    ListNode next =
+            curr.next;
+
+    curr.next = prev;
+
+    prev = curr;
+
+    curr = next;
+}
+
+return prev;
+Memory Trick
+Save Next
+
+Reverse Link
+
+Move Prev
+
+Move Curr
+5. Cycle Detection Pattern (Floyd)
+Kab Use Hota Hai?
+Linked List Cycle
+Happy Number
+Duplicate Number
+Template
+ListNode slow = head;
+
+ListNode fast = head;
+
+while(
+    fast != null &&
+    fast.next != null
+){
+
+    slow = slow.next;
+
+    fast = fast.next.next;
+
+    if(slow == fast){
+
+        return true;
+    }
+}
+
+return false;
+6. Find Cycle Start
+LeetCode 142
+Template
+slow = head;
+
+while(slow != fast){
+
+    slow = slow.next;
+
+    fast = fast.next;
+}
+
+return slow;
+7. Merge Two Sorted Lists ⭐
+Kab Use Hota Hai?
+Merge Lists
+Merge K Lists
+Sorting
+Template
+ListNode dummy =
+        new ListNode(-1);
+
+ListNode tail = dummy;
+
+while(
+    l1 != null &&
+    l2 != null
+){
+
+    if(l1.val < l2.val){
+
+        tail.next = l1;
+
+        l1 = l1.next;
+    }
+    else{
+
+        tail.next = l2;
+
+        l2 = l2.next;
+    }
+
+    tail = tail.next;
+}
+
+if(l1 != null)
+    tail.next = l1;
+
+if(l2 != null)
+    tail.next = l2;
+
+return dummy.next;
+8. Dummy Node Pattern ⭐⭐⭐
+Kab Use Hota Hai?
+Remove Node
+Merge
+Partition
+Swap Pairs
+Template
+ListNode dummy =
+        new ListNode(-1);
+
+dummy.next = head;
+
+Return:
+
+return dummy.next;
+9. Remove Nth Node From End
+Pattern
+Fast Slow
+Template
+ListNode dummy =
+        new ListNode(0);
+
+dummy.next = head;
+
+ListNode slow = dummy;
+
+ListNode fast = dummy;
+
+for(int i=0;i<=n;i++){
+
+    fast = fast.next;
+}
+
+while(fast != null){
+
+    slow = slow.next;
+
+    fast = fast.next;
+}
+
+slow.next =
+slow.next.next;
+
+return dummy.next;
+10. Find Intersection
+Pattern
+Two Pointer
+Template
+ListNode a = headA;
+
+ListNode b = headB;
+
+while(a != b){
+
+    a =
+    (a == null)
+    ? headB
+    : a.next;
+
+    b =
+    (b == null)
+    ? headA
+    : b.next;
+}
+
+return a;
+11. Palindrome Linked List ⭐
+Pattern
+Middle
+
+Reverse
+
+Compare
+Steps
+Find Middle
+
+Reverse Second Half
+
+Compare Both Halves

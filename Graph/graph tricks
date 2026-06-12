@@ -1,5 +1,587 @@
 /*
 ===============================================================================
+GRAPH DSA COMPLETE CHEATSHEET
+===============================================================================
+
+GRAPH = Nodes + Edges
+
+Examples:
+
+Cities Connected
+Social Network
+Road Network
+Computer Network
+
+===============================================================================
+1. GRAPH REPRESENTATION
+===============================================================================
+
+Adjacency List
+
+ArrayList<Integer>[] graph =
+new ArrayList[n];
+
+for(int i=0;i<n;i++){
+
+    graph[i] =
+    new ArrayList<>();
+}
+
+Undirected Edge
+
+u ---- v
+
+graph[u].add(v);
+graph[v].add(u);
+
+Directed Edge
+
+u ----> v
+
+graph[u].add(v);
+
+===============================================================================
+TRICK
+===============================================================================
+
+Question gives:
+
+n = nodes
+
+edges = {
+ {0,1},
+ {0,2},
+ {1,3}
+}
+
+First Step Always:
+
+Build Graph
+
+===============================================================================
+2. DFS (DEPTH FIRST SEARCH)
+===============================================================================
+
+Meaning:
+
+Go Deep First
+
+0 -> 1 -> 3 -> Backtrack
+
+Uses:
+
+Connected Components
+Number of Islands
+Path Exists
+Cycle Detection
+Backtracking
+
+Template:
+
+void dfs(int node){
+
+    visited[node] = true;
+
+    for(int nbr : graph[node]){
+
+        if(!visited[nbr]){
+
+            dfs(nbr);
+        }
+    }
+}
+
+===============================================================================
+DFS RECOGNITION
+===============================================================================
+
+Question Words:
+
+Can Reach
+
+Path Exists
+
+Explore
+
+Connected Components
+
+Flood Fill
+
+Number of Islands
+
+Cycle Detection
+
+=> DFS
+
+===============================================================================
+3. BFS (BREADTH FIRST SEARCH)
+===============================================================================
+
+Meaning:
+
+Level By Level
+
+0
+
+1 2
+
+3
+
+Uses:
+
+Shortest Path
+Minimum Steps
+Nearest Node
+Rotting Oranges
+Word Ladder
+
+Template:
+
+Queue<Integer> q =
+new LinkedList<>();
+
+q.offer(source);
+
+visited[source] = true;
+
+while(!q.isEmpty()){
+
+    int node =
+    q.poll();
+
+    for(int nbr :
+        graph[node]){
+
+        if(!visited[nbr]){
+
+            visited[nbr] = true;
+
+            q.offer(nbr);
+        }
+    }
+}
+
+===============================================================================
+BFS RECOGNITION
+===============================================================================
+
+Question Words:
+
+Shortest Path
+
+Minimum Moves
+
+Minimum Steps
+
+Nearest Exit
+
+Nearest Node
+
+Level Order
+
+=> BFS
+
+===============================================================================
+4. PATH EXISTS
+===============================================================================
+
+Question:
+
+Can source reach destination?
+
+Return:
+
+boolean
+
+Approach:
+
+DFS(source)
+
+OR
+
+BFS(source)
+
+If destination found:
+
+return true
+
+Else:
+
+return false
+
+Recognition:
+
+Source
+Destination
+
+Can Reach?
+
+Valid Path?
+
+===============================================================================
+5. CONNECTED COMPONENTS
+===============================================================================
+
+Meaning:
+
+Kitne alag groups hain?
+
+Example:
+
+0 ---- 1
+
+2 ---- 3
+
+Components:
+
+{0,1}
+
+{2,3}
+
+Answer:
+
+2
+
+Template:
+
+int components = 0;
+
+for(int i=0;i<n;i++){
+
+    if(!visited[i]){
+
+        dfs(i);
+
+        components++;
+    }
+}
+
+===============================================================================
+RECOGNITION
+===============================================================================
+
+Number of Provinces
+
+Connected Components
+
+Friend Circles
+
+Network Groups
+
+Number of Islands
+
+=> Components Pattern
+
+===============================================================================
+6. NUMBER OF PROVINCES
+===============================================================================
+
+Return:
+
+int
+
+Logic:
+
+for every node
+
+if not visited
+
+DFS/BFS
+
+count++
+
+Template:
+
+int provinces = 0;
+
+for(int i=0;i<n;i++){
+
+    if(!visited[i]){
+
+        bfs(i);
+
+        provinces++;
+    }
+}
+
+===============================================================================
+TRICK
+===============================================================================
+
+Path Exists
+
+=> One DFS/BFS
+
+Provinces
+
+=> Many DFS/BFS Calls
+
+===============================================================================
+7. NUMBER OF ISLANDS
+===============================================================================
+
+Graph Hidden Inside Matrix
+
+1 = Land
+
+0 = Water
+
+Question:
+
+How many islands?
+
+Pattern:
+
+Connected Components
+
+Template:
+
+for every cell
+
+if(grid[i][j]=='1'){
+
+    dfs(i,j);
+
+    islands++;
+}
+
+===============================================================================
+RECOGNITION
+===============================================================================
+
+Matrix
+
+Groups
+
+Islands
+
+Regions
+
+Clusters
+
+=> DFS/BFS
+
+===============================================================================
+8. CYCLE DETECTION
+===============================================================================
+
+Question:
+
+Cycle Present?
+
+Undirected Graph
+
+DFS with Parent
+
+if(visited[nbr]
+   && nbr != parent)
+
+Cycle Found
+
+===============================================================================
+RECOGNITION
+===============================================================================
+
+Cycle
+
+Loop
+
+Round Trip
+
+Circular Dependency
+
+=> Cycle Detection
+
+===============================================================================
+9. TOPOLOGICAL SORT
+===============================================================================
+
+Only Directed Graph
+
+Question:
+
+Order of Tasks
+
+Course Schedule
+
+Dependency Resolution
+
+Pattern:
+
+Indegree
+
+Queue
+
+Kahn's Algorithm
+
+===============================================================================
+RECOGNITION
+===============================================================================
+
+Prerequisite
+
+Dependency
+
+Course Schedule
+
+Task Order
+
+Build Order
+
+=> Topological Sort
+
+===============================================================================
+10. UNION FIND (DSU)
+===============================================================================
+
+Use When:
+
+Dynamic Components
+
+Cycle Detection
+
+Redundant Connection
+
+Network Connectivity
+
+Functions:
+
+find()
+
+union()
+
+===============================================================================
+RECOGNITION
+===============================================================================
+
+Merge Groups
+
+Connected Components
+
+Dynamic Connectivity
+
+=> DSU
+
+===============================================================================
+11. SHORTEST PATH
+===============================================================================
+
+Unweighted Graph
+
+=> BFS
+
+Weighted Positive
+
+=> Dijkstra
+
+Negative Weight
+
+=> Bellman Ford
+
+===============================================================================
+RECOGNITION
+===============================================================================
+
+Shortest Path
+
+Minimum Distance
+
+Cheapest Route
+
+Fastest Route
+
+=> Shortest Path Algorithms
+
+===============================================================================
+INTERVIEW MASTER TRICK
+===============================================================================
+
+Question Dekho:
+
+1. Graph Build
+
+2. Traversal Chahiye?
+
+   DFS / BFS
+
+3. Shortest Path?
+
+   BFS
+
+4. Connected Components?
+
+   DFS/BFS
+
+5. Dependency?
+
+   Topological Sort
+
+6. Dynamic Connectivity?
+
+   DSU
+
+7. Weighted Path?
+
+   Dijkstra
+
+===============================================================================
+MOST IMPORTANT LEETCODE ORDER
+===============================================================================
+
+LC 1971 -> Path Exists
+
+LC 547  -> Number of Provinces
+
+LC 200  -> Number of Islands
+
+LC 695  -> Max Area of Island
+
+LC 994  -> Rotting Oranges
+
+LC 133  -> Clone Graph
+
+LC 207  -> Course Schedule
+
+LC 210  -> Course Schedule II
+
+LC 684  -> Redundant Connection
+
+LC 743  -> Network Delay Time
+
+===============================================================================
+GRAPH GOLDEN RULE
+===============================================================================
+
+Question me:
+
+Path?
+Explore?
+Group?
+Island?
+
+=> DFS/BFS
+
+Shortest?
+Minimum?
+
+=> BFS
+
+Dependency?
+
+=> Topological Sort
+
+Connectivity?
+
+=> DSU
+
+Weighted Shortest Path?
+
+=> Dijkstra
+
+===============================================================================
+*/
+/*
+===============================================================================
 GRAPH IMPLEMENTATION CHEATSHEET
 (ONLY IMPLEMENTATION TRICKS)
 ===============================================================================
