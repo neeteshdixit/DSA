@@ -1,0 +1,852 @@
+/*
+===============================================================================
+HASHMAP + HASHSET + HEAP + BST MASTER REVISION SHEET
+===============================================================================
+
+Ye sheet interview se pehle 15-20 minute me revise karne ke liye hai.
+
+===============================================================================
+HASHMAP
+===============================================================================
+
+KAB USE HOTA HAI?
+
+Count
+Frequency
+Occurrences
+Pair
+Lookup
+Exists
+
+Recognition Words:
+
+Count
+Frequency
+Occurrences
+Repeat
+
+=> HASHMAP
+
+===============================================================================
+PATTERN 1 : FREQUENCY COUNT
+===============================================================================
+
+Example:
+
+banana
+
+b -> 1
+a -> 3
+n -> 2
+
+Template:
+
+HashMap<Integer,Integer> map =
+new HashMap<>();
+
+for(int num : nums){
+
+    map.put(
+        num,
+        map.getOrDefault(
+            num,
+            0
+        ) + 1
+    );
+}
+
+TRICK
+
+Frequency
+
+=
+
+HashMap
++
+getOrDefault()
+
+===============================================================================
+PATTERN 2 : HASHMAP TRAVERSE
+===============================================================================
+
+Template:
+
+for(
+ Map.Entry<Integer,Integer>
+ entry
+ :
+ map.entrySet()
+){
+
+    int key =
+    entry.getKey();
+
+    int value =
+    entry.getValue();
+}
+
+TRICK
+
+entry.getKey()
+
+=
+
+Actual Element
+
+-----------------------------------
+
+entry.getValue()
+
+=
+
+Frequency
+
+===============================================================================
+PATTERN 3 : LOOKUP PATTERN
+===============================================================================
+
+Use:
+
+Two Sum
+
+Pair Problems
+
+Target Problems
+
+Template:
+
+HashMap<Integer,Integer> map =
+new HashMap<>();
+
+for(int i=0;
+    i<nums.length;
+    i++){
+
+    int need =
+    target-nums[i];
+
+    if(
+       map.containsKey(
+       need
+       )
+    ){
+
+        return;
+    }
+
+    map.put(
+        nums[i],
+        i
+    );
+}
+
+TRICK
+
+Need Find Karo
+
+containsKey()
+
+===============================================================================
+HASHSET
+===============================================================================
+
+KAB USE HOTA HAI?
+
+Duplicate
+
+Unique
+
+Distinct
+
+Recognition:
+
+Duplicate?
+
+=> HashSet
+
+===============================================================================
+PATTERN : DUPLICATE DETECTION
+===============================================================================
+
+HashSet<Integer> set =
+new HashSet<>();
+
+for(int num : nums){
+
+    if(set.contains(num)){
+
+        return true;
+    }
+
+    set.add(num);
+}
+
+return false;
+
+TRICK
+
+Duplicate
+
+=
+
+HashSet
+
+===============================================================================
+HEAP (PRIORITY QUEUE)
+===============================================================================
+
+Recognition:
+
+Top K
+
+Kth Largest
+
+Kth Smallest
+
+Most Frequent
+
+Highest Priority
+
+Closest
+
+===============================================================================
+MIN HEAP
+===============================================================================
+
+PriorityQueue<Integer> pq =
+new PriorityQueue<>();
+
+Operations:
+
+pq.offer(x);
+
+pq.poll();
+
+pq.peek();
+
+TRICK
+
+peek()
+
+=
+
+Smallest Element
+
+===============================================================================
+MAX HEAP
+===============================================================================
+
+PriorityQueue<Integer> pq =
+new PriorityQueue<>(
+(a,b)->b-a
+);
+
+TRICK
+
+peek()
+
+=
+
+Largest Element
+
+===============================================================================
+PATTERN : KTH LARGEST
+===============================================================================
+
+Recognition:
+
+Kth Largest
+
+Top K Largest
+
+Template:
+
+PriorityQueue<Integer> pq =
+new PriorityQueue<>();
+
+for(int num : nums){
+
+    pq.offer(num);
+
+    if(
+       pq.size()
+       > k
+    ){
+
+        pq.poll();
+    }
+}
+
+return pq.peek();
+
+TRICK
+
+Kth Largest
+
+=
+
+Min Heap Size K
+
+===============================================================================
+PATTERN : KTH SMALLEST
+===============================================================================
+
+PriorityQueue<Integer> pq =
+new PriorityQueue<>(
+(a,b)->b-a
+);
+
+for(int num : nums){
+
+    pq.offer(num);
+
+    if(
+       pq.size()
+       > k
+    ){
+
+        pq.poll();
+    }
+}
+
+return pq.peek();
+
+TRICK
+
+Kth Smallest
+
+=
+
+Max Heap Size K
+
+===============================================================================
+PATTERN : TOP K FREQUENT
+===============================================================================
+
+STEP 1
+
+Frequency Map
+
+HashMap<Integer,Integer> map =
+new HashMap<>();
+
+for(int num : nums){
+
+    map.put(
+        num,
+        map.getOrDefault(
+            num,
+            0
+        ) + 1
+    );
+}
+
+STEP 2
+
+Heap
+
+PriorityQueue<
+Map.Entry<Integer,Integer>
+> pq =
+new PriorityQueue<>(
+(a,b)->
+a.getValue()
+-
+b.getValue()
+);
+
+STEP 3
+
+Traverse Map
+
+for(
+ Map.Entry<Integer,Integer>
+ entry
+ :
+ map.entrySet()
+){
+
+    pq.offer(entry);
+
+    if(
+       pq.size()
+       > k
+    ){
+
+        pq.poll();
+    }
+}
+
+TRICK
+
+Frequency
+
+=> HashMap
+
+Top K
+
+=> Heap
+
+Top K Frequent
+
+=> HashMap + Heap
+
+===============================================================================
+CUSTOM HEAP
+===============================================================================
+
+Use:
+
+Coordinates
+
+Pairs
+
+Intervals
+
+Template:
+
+PriorityQueue<int[]> pq =
+new PriorityQueue<>(
+(a,b)->
+a[0]-b[0]
+);
+
+Add:
+
+pq.offer(
+new int[]{
+    x,y
+});
+
+===============================================================================
+BST (BINARY SEARCH TREE)
+===============================================================================
+
+BST RULE
+
+Left < Root < Right
+
+===============================================================================
+PATTERN : SEARCH BST
+===============================================================================
+
+Recognition:
+
+Search
+
+Exists
+
+Find Node
+
+Template:
+
+TreeNode curr = root;
+
+while(curr != null){
+
+    if(
+       curr.val == target
+    ){
+
+        return curr;
+    }
+
+    else if(
+       target <
+       curr.val
+    ){
+
+        curr =
+        curr.left;
+    }
+
+    else{
+
+        curr =
+        curr.right;
+    }
+}
+
+return null;
+
+TRICK
+
+Smaller?
+
+Go Left
+
+-----------------------------------
+
+Larger?
+
+Go Right
+
+===============================================================================
+PATTERN : INSERT BST
+===============================================================================
+
+if(root == null){
+
+    return new TreeNode(val);
+}
+
+if(val < root.val){
+
+    root.left =
+    insertIntoBST(
+        root.left,
+        val
+    );
+}
+
+else{
+
+    root.right =
+    insertIntoBST(
+        root.right,
+        val
+    );
+}
+
+return root;
+
+TRICK
+
+Search Jaisa
+
+Null Mila
+
+Insert Kar Do
+
+===============================================================================
+PATTERN : INORDER
+===============================================================================
+
+void inorder(
+ TreeNode root
+){
+
+    if(root == null){
+
+        return;
+    }
+
+    inorder(
+        root.left
+    );
+
+    System.out.println(
+        root.val
+    );
+
+    inorder(
+        root.right
+    );
+}
+
+TRICK
+
+BST
+
++
+
+Inorder
+
+=
+
+Sorted Order
+
+===============================================================================
+PATTERN : MINIMUM VALUE
+===============================================================================
+
+while(
+ root.left
+ != null
+){
+
+    root =
+    root.left;
+}
+
+return root.val;
+
+TRICK
+
+Left Most
+
+=
+
+Minimum
+
+===============================================================================
+PATTERN : MAXIMUM VALUE
+===============================================================================
+
+while(
+ root.right
+ != null
+){
+
+    root =
+    root.right;
+}
+
+return root.val;
+
+TRICK
+
+Right Most
+
+=
+
+Maximum
+
+===============================================================================
+PATTERN : VALID BST
+===============================================================================
+
+boolean dfs(
+ TreeNode root,
+ long min,
+ long max
+){
+
+    if(root == null){
+
+        return true;
+    }
+
+    if(
+       root.val <= min
+       ||
+       root.val >= max
+    ){
+
+        return false;
+    }
+
+    return
+    dfs(
+      root.left,
+      min,
+      root.val
+    )
+    &&
+    dfs(
+      root.right,
+      root.val,
+      max
+    );
+}
+
+TRICK
+
+Valid BST
+
+=
+
+Range Check
+
+(min,max)
+
+===============================================================================
+PATTERN : KTH SMALLEST BST
+===============================================================================
+
+Inorder
+
+=
+
+Sorted
+
+Template:
+
+void inorder(
+ TreeNode root
+){
+
+    if(root == null){
+
+        return;
+    }
+
+    inorder(root.left);
+
+    count++;
+
+    if(count == k){
+
+        answer =
+        root.val;
+    }
+
+    inorder(root.right);
+}
+
+TRICK
+
+Kth Smallest
+
+=
+
+Inorder
+
+===============================================================================
+PATTERN : LCA BST
+===============================================================================
+
+while(root != null){
+
+    if(
+       p.val <
+       root.val
+       &&
+       q.val <
+       root.val
+    ){
+
+        root =
+        root.left;
+    }
+
+    else if(
+       p.val >
+       root.val
+       &&
+       q.val >
+       root.val
+    ){
+
+        root =
+        root.right;
+    }
+
+    else{
+
+        return root;
+    }
+}
+
+TRICK
+
+Both Smaller
+
+=> Left
+
+-----------------------------------
+
+Both Larger
+
+=> Right
+
+-----------------------------------
+
+Split
+
+=> Current Node
+
+===============================================================================
+FINAL INTERVIEW RECOGNITION SHEET
+===============================================================================
+
+Count?
+Frequency?
+
+=> HashMap
+
+-----------------------------------
+
+Duplicate?
+
+=> HashSet
+
+-----------------------------------
+
+Pair?
+
+=> HashMap Lookup
+
+-----------------------------------
+
+Top K?
+
+=> Heap
+
+-----------------------------------
+
+Kth Largest?
+
+=> Min Heap Size K
+
+-----------------------------------
+
+Kth Smallest?
+
+=> Max Heap Size K
+
+-----------------------------------
+
+Most Frequent?
+
+=> HashMap + Heap
+
+-----------------------------------
+
+Search BST?
+
+=> Left / Right
+
+-----------------------------------
+
+Sorted BST?
+
+=> Inorder
+
+-----------------------------------
+
+Valid BST?
+
+=> Range Check
+
+-----------------------------------
+
+Kth Smallest BST?
+
+=> Inorder
+
+-----------------------------------
+
+LCA BST?
+
+=> BST Property
+
+===============================================================================
+GOLDEN RULE
+===============================================================================
+
+HashMap
+
+=
+
+Store Information
+
+-----------------------------------
+
+Heap
+
+=
+
+Maintain Best K Elements
+
+-----------------------------------
+
+BST
+
+=
+
+Fast Search Using
+Left < Root < Right
+
+===============================================================================
+*/
