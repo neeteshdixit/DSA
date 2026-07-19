@@ -1,0 +1,591 @@
+# 🌳 Tree Master Templates with "Process Node" & Pattern Recognition
+
+---
+
+# Pattern 1 : DFS (General Traversal)
+
+## Template
+
+```java
+void dfs(TreeNode root){
+
+    if(root == null){
+        return;
+    }
+
+    // Process Node
+
+    dfs(root.left);
+
+    dfs(root.right);
+}
+```
+
+### Process Node me kya aayega?
+
+Situation ke hisaab se:
+
+```java
+System.out.print(root.val);      // Print
+
+count++;                         // Count Nodes
+
+sum += root.val;                 // Sum
+
+list.add(root.val);              // Store Answer
+
+if(root.val == target)           // Search
+```
+
+### Kab Use Hoga?
+
+Question me likha ho:
+
+* Traverse Tree
+* Search Node
+* Count Nodes
+* Sum of Nodes
+* Print Tree
+* Find Target
+
+Recognition:
+
+```text
+General DFS
+
+↓
+
+No Height
+
+↓
+
+No Level Order
+
+↓
+
+Simple Traversal
+```
+
+---
+
+# Pattern 2 : Preorder
+
+## Root → Left → Right
+
+```java
+void preorder(TreeNode root){
+
+    if(root == null){
+        return;
+    }
+
+    // Process Root
+
+    preorder(root.left);
+
+    preorder(root.right);
+}
+```
+
+### Process Root
+
+```java
+copyNode(root);
+
+serialize(root);
+
+list.add(root.val);
+```
+
+### Pattern Recognition
+
+Question me dikhe:
+
+* Copy Tree
+* Clone Tree
+* Serialize Tree
+* Prefix Expression
+* Root pehle process karna hai
+
+Think:
+
+```text
+ROOT FIRST
+
+↓
+
+PREORDER
+```
+
+---
+
+# Pattern 3 : Inorder
+
+## Left → Root → Right
+
+```java
+void inorder(TreeNode root){
+
+    if(root == null){
+        return;
+    }
+
+    inorder(root.left);
+
+    // Process Root
+
+    inorder(root.right);
+}
+```
+
+### Process Root
+
+```java
+list.add(root.val);
+
+count++;
+
+if(count == k)
+    answer = root.val;
+```
+
+### Pattern Recognition
+
+Question me dikhe:
+
+* BST
+* Sorted Output
+* Kth Smallest
+* Validate BST
+* Inorder Successor
+
+Think:
+
+```text
+BST
+
+↓
+
+Sorted
+
+↓
+
+INORDER
+```
+
+---
+
+# Pattern 4 : Postorder
+
+## Left → Right → Root
+
+```java
+int solve(TreeNode root){
+
+    if(root == null){
+        return 0;
+    }
+
+    int left = solve(root.left);
+
+    int right = solve(root.right);
+
+    // Process Root
+
+    return 1 + Math.max(left,right);
+}
+```
+
+### Process Root
+
+```java
+height = 1 + Math.max(left,right);
+
+diameter =
+Math.max(diameter,left+right);
+
+balance =
+Math.abs(left-right);
+```
+
+### Pattern Recognition
+
+Question me dikhe:
+
+* Height
+* Maximum Depth
+* Diameter
+* Balanced Tree
+* Maximum Path Sum
+
+Apne aap se pucho:
+
+> **"Kya parent ka answer nikalne ke liye mujhe left aur right child ka answer chahiye?"**
+
+Agar **YES**
+
+↓
+
+```text
+POSTORDER
+```
+
+---
+
+# Pattern 5 : BFS
+
+```java
+Queue<TreeNode> queue = new LinkedList<>();
+
+queue.offer(root);
+
+while(!queue.isEmpty()){
+
+    TreeNode current = queue.poll();
+
+    // Process Node
+
+    if(current.left != null)
+        queue.offer(current.left);
+
+    if(current.right != null)
+        queue.offer(current.right);
+}
+```
+
+### Process Node
+
+```java
+System.out.print(current.val);
+
+list.add(current.val);
+
+sum += current.val;
+
+answer.add(current.val);
+```
+
+### Pattern Recognition
+
+Question me dikhe:
+
+* Level Order
+* Level by Level
+* Breadth First
+* Minimum Depth
+* Nearest Node
+
+Think:
+
+```text
+LEVEL
+
+↓
+
+QUEUE
+
+↓
+
+BFS
+```
+
+---
+
+# Pattern 6 : Level Order
+
+```java
+while(!queue.isEmpty()){
+
+    int size = queue.size();
+
+    List<Integer> level =
+        new ArrayList<>();
+
+    for(int i = 0; i < size; i++){
+
+        TreeNode current =
+            queue.poll();
+
+        level.add(current.val);
+
+        if(current.left != null)
+            queue.offer(current.left);
+
+        if(current.right != null)
+            queue.offer(current.right);
+    }
+
+    answer.add(level);
+}
+```
+
+### Process Node
+
+```java
+level.add(current.val);
+
+sum += current.val;
+
+max = Math.max(max,current.val);
+```
+
+### Pattern Recognition
+
+Question me dikhe:
+
+* Zigzag
+* Average of Levels
+* Right View
+* Left View
+* Width of Tree
+
+Think:
+
+```text
+One Level
+
+↓
+
+queue.size()
+
+↓
+
+BFS
+```
+
+---
+
+# Pattern 7 : Height
+
+```java
+int height(TreeNode root){
+
+    if(root == null)
+        return 0;
+
+    int left = height(root.left);
+
+    int right = height(root.right);
+
+    return 1 + Math.max(left,right);
+}
+```
+
+### Process
+
+```java
+Math.max(left,right)
+```
+
+### Recognition
+
+Question me:
+
+* Height
+* Maximum Depth
+* Longest Root to Leaf
+
+↓
+
+```text
+POSTORDER
+```
+
+---
+
+# Pattern 8 : Diameter
+
+```java
+diameter =
+Math.max(diameter,
+left+right);
+```
+
+### Recognition
+
+Question me:
+
+* Longest Path
+* Diameter
+
+↓
+
+```text
+POSTORDER
+
++
+
+HEIGHT
+```
+
+---
+
+# Pattern 9 : Balanced Tree
+
+```java
+if(Math.abs(left-right)>1)
+    return -1;
+```
+
+### Recognition
+
+Question me:
+
+* Balanced
+* Height Difference
+
+↓
+
+```text
+POSTORDER
+```
+
+---
+
+# Pattern 10 : Path Sum
+
+```java
+target -= root.val;
+```
+
+### Process
+
+Har node visit karte hi
+
+Current node ko target se minus karo.
+
+### Recognition
+
+Question me:
+
+* Root to Leaf
+* Sum
+* Path
+
+↓
+
+```text
+DFS
+```
+
+---
+
+# 🎯 Master Pattern Recognition
+
+```text
+Question
+
+↓
+
+Need Root First?
+
+↓
+
+PREORDER
+
+----------------------------------
+
+Need Sorted Output?
+
+↓
+
+INORDER
+
+----------------------------------
+
+Need Left & Right Answer First?
+
+↓
+
+POSTORDER
+
+----------------------------------
+
+Need Level by Level?
+
+↓
+
+QUEUE
+
+↓
+
+BFS
+
+----------------------------------
+
+Need Height?
+
+↓
+
+POSTORDER
+
+----------------------------------
+
+Need Diameter?
+
+↓
+
+POSTORDER
+
+----------------------------------
+
+Need Balanced Tree?
+
+↓
+
+POSTORDER
+
+----------------------------------
+
+Need Path?
+
+↓
+
+DFS
+
+----------------------------------
+
+Need BST Search?
+
+↓
+
+Compare
+
+↓
+
+Left / Right
+
+----------------------------------
+
+Need Kth Smallest?
+
+↓
+
+INORDER
+
+----------------------------------
+
+Need Views?
+
+↓
+
+LEVEL ORDER
+
+↓
+
+QUEUE
+
+----------------------------------
+```
+
+# Golden Interview Rule
+
+Har Tree question me code likhne se pehle ye 5 questions pucho:
+
+1. **Kya Root ko sabse pehle process karna hai?** → Preorder
+2. **Kya BST ka sorted order chahiye?** → Inorder
+3. **Kya Parent ka answer Children ke answer par depend karta hai?** → Postorder
+4. **Kya Level by Level traversal chahiye?** → BFS (Queue)
+5. **Kya BST ki property (`Left < Root < Right`) use ho sakti hai?** → BST Search/Insert/Delete
+
+Agar ye 5 questions ki habit ban gayi, to interview me pattern identify karna bahut easy ho jayega.

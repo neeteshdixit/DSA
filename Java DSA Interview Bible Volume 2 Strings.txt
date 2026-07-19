@@ -1,0 +1,2542 @@
+Java DSA Interview Bible
+Volume 2
+Strings: Complete Placement Handbook
+
+Compiled Manuscript Draft
+
+===============================================================================
+# Chapter 1: Introduction to Strings
+===============================================================================
+
+## Introduction
+
+String ek ordered sequence of characters hota hai. Java me String immutable hoti
+hai, matlab once created uska content directly change nahi hota.
+
+Hinglish idea:
+String ko letters ki train samjho. Har coach ek character hai, aur order change
+hota hai to meaning bhi change ho jata hai.
+
+## Pattern Recognition
+
+String use karo jab problem me ye clues aaye:
+- word, text, sentence, line
+- palindrome, anagram, reverse
+- prefix, suffix, substring
+- compare, search, replace
+- formatting, trimming, parsing
+
+## Trigger Words
+
+- `reverse` -> two pointers or StringBuilder
+- `count` -> frequency array or HashMap
+- `search` -> pattern matching or sliding window
+- `prefix` -> startsWith or trie
+- `palindrome` -> left-right scan
+- `anagram` -> frequency compare
+
+## Brute Force
+
+Har step me string `+` se join karna.
+
+```java
+String ans = "";
+for (int i = 0; i < s.length(); i++) {
+    ans = ans + s.charAt(i);
+}
+```
+
+Time: O(n^2), Space: O(n)
+
+Why rejected:
+Har concat naya object banata hai, isliye repeated copying hoti hai.
+
+## Observation
+
+Jab output grow hota hai, `StringBuilder` better choice hoti hai.
+
+## Core Intuition
+
+String = fixed order ka character array jaisa structure.
+Direct modification ke liye `char[]` ya `StringBuilder` socho.
+
+## Visualization
+
+```text
+Index:  0  1  2  3  4
+Value:  r  a  c  e  c
+```
+
+## Dry Run
+
+`racecar`:
+- left = r, right = r -> match
+- left = a, right = a -> match
+- left = c, right = c -> match
+- middle pe stop
+
+## Java Templates
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        String s = "interview";
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < s.length(); i++) {
+            sb.append(s.charAt(i));
+        }
+
+        System.out.println(sb.toString());
+    }
+}
+```
+
+## Complexity Analysis
+
+- charAt access: O(1)
+- traversal: O(n)
+- concat in loop: O(n^2)
+- StringBuilder append: amortized O(1)
+
+## Common Mistakes
+
+- `==` se String compare karna
+- repeated `+` in loop
+- case handling ignore karna
+- spaces and punctuation forget karna
+
+## Interview Follow-up Questions
+
+- String immutable kyu hai?
+- `StringBuilder` aur `StringBuffer` me difference kya hai?
+- `equals()` aur `==` me difference kya hai?
+
+## Easy Problems
+
+- print characters
+- reverse string
+- count vowels
+- check palindrome
+
+## Medium Problems
+
+- anagram check
+- first unique character
+- longest substring without repeat
+
+## Hard Problems
+
+- minimum window substring
+- KMP search
+- edit distance
+
+## Similar Questions
+
+- array traversal
+- frequency count
+- two pointers
+- sliding window
+
+## Pattern Flowchart
+
+```text
+String question
+    |
+    +-- build output? -> StringBuilder
+    +-- compare ends? -> two pointers
+    +-- count chars? -> freq array / HashMap
+    +-- search pattern? -> sliding window / KMP / trie
+```
+
+## Memory Tricks
+
+- immutable
+- ordered
+- length fixed for same object
+- use builder for mutation
+
+## One Page Revision Sheet
+
+String = characters ka ordered, immutable sequence. Interview me pehle clue
+pakdo: compare, count, search, build, or search-in-text.
+
+===============================================================================
+# Chapter 2: Pattern Recognition Framework
+===============================================================================
+
+## Introduction
+
+String problems me sabse badi skill code likhna nahi, pattern pehchanna hai.
+Jo student clue read kar leta hai, woh sahi approach 30 seconds me nikal leta hai.
+
+Hinglish:
+Pehle problem ka shape dekho, phir technique choose karo.
+
+## Pattern Recognition
+
+Socho:
+- kya text ke andar search karna hai?
+- kya repeated characters count karne hain?
+- kya contiguous substring chahiye?
+- kya left-right movement enough hai?
+- kya dictionary/prefix based problem hai?
+
+## Trigger Words
+
+- `substring` -> sliding window or brute force search
+- `prefix` -> trie or startsWith
+- `duplicate` -> frequency or hashmap
+- `longest` -> window or DP
+- `minimum` -> window with shrink
+- `all combinations` -> backtracking
+
+## Brute Force
+
+Sab substrings try karo.
+
+```java
+for (int i = 0; i < s.length(); i++) {
+    for (int j = i; j < s.length(); j++) {
+        String part = s.substring(i, j + 1);
+    }
+}
+```
+
+Time: O(n^3) if substring copy cost bhi consider karo.
+
+## Observation
+
+Most string questions me repeated work hota hai. Us repeated work ko reduce
+karna hi optimization hai.
+
+## Core Intuition
+
+Interview ka rule:
+- continuous segment -> sliding window
+- end points matter -> two pointers
+- prefix word search -> trie
+- pattern match in text -> KMP
+- answer build karna ho -> StringBuilder
+
+## Visualization
+
+```text
+text:    a b c d e f g
+window:    [   L   R ]
+```
+
+## Dry Run
+
+`abcabcbb` me longest unique substring:
+- window expand
+- duplicate aaye to left move
+- current answer keep update
+
+## Java Templates
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        String s = "abcabcbb";
+
+        // 1. identify clue
+        // 2. map clue to pattern
+        // 3. pick window / pointer / trie / DP
+        // 4. implement with invariant
+    }
+}
+```
+
+## Complexity Analysis
+
+- brute force: usually O(n^2) or O(n^3)
+- optimized window: O(n)
+- trie search: O(length of word)
+
+## Common Mistakes
+
+- pattern choose karne se pehle code jump karna
+- contiguous aur non-contiguous ko confuse karna
+- constraint ignore karna
+- simple problem ko over-engineer karna
+
+## Interview Follow-up Questions
+
+- two pointers kab use hote hain?
+- sliding window kab fail hoti hai?
+- trie hashmap se better kab hota hai?
+
+## Easy Problems
+
+- reverse string
+- count words
+- check prefix
+- compare strings
+
+## Medium Problems
+
+- longest unique substring
+- valid anagram
+- group anagrams
+
+## Hard Problems
+
+- minimum window substring
+- wildcard matching
+- word break
+
+## Similar Questions
+
+- array pattern recognition
+- matrix pattern recognition
+- hashmap clue detection
+
+## Pattern Flowchart
+
+```text
+String clue -> count? -> freq map
+             -> build? -> builder
+             -> contiguous? -> sliding window
+             -> prefix search? -> trie
+             -> repeated match? -> KMP
+```
+
+## Memory Tricks
+
+- count -> freq
+- contiguous -> window
+- ends -> two pointers
+- dictionary -> trie
+
+## One Page Revision Sheet
+
+Clue first, technique second. String interviews reward pattern recognition more
+than random syntax memorization.
+
+===============================================================================
+# Chapter 3: String Fundamentals and Java Memory Model
+===============================================================================
+
+## Introduction
+
+Java me String immutable hoti hai, aur ye behavior interview me baar-baar aata
+hai. String pool, heap object, equals, hashCode, aur builder ka relation samajhna
+important hai.
+
+Hinglish:
+String ko safe text block samjho, jise direct edit nahi kar sakte.
+
+## Pattern Recognition
+
+Ye chapter tab use karo jab problem me:
+- `==` vs `equals()`
+- repeated concatenation
+- object creation
+- memory efficiency
+- mutation required ho
+
+## Trigger Words
+
+- `modify` -> StringBuilder
+- `thread-safe` -> StringBuffer
+- `compare` -> equals
+- `same reference` -> `==`
+- `reuse text` -> string pool
+
+## Brute Force
+
+Har change ke liye nayi String create karna.
+
+```java
+String s = "a";
+s = s + "b";
+s = s + "c";
+```
+
+Time: inefficient for loops.
+
+## Observation
+
+Immutable String security aur sharing ke liye useful hai. Jahan edit chahiye,
+wahan builder ya char array better hai.
+
+## Core Intuition
+
+Two strings same text ke saath bhi different objects ho sakte hain.
+
+```text
+"java"  --> pool reference
+new String("java") --> new heap object
+```
+
+## Visualization
+
+```text
+String pool:   "java"  "code"
+Heap:          new String("java")
+```
+
+## Dry Run
+
+```java
+String a = "cat";
+String b = "cat";
+String c = new String("cat");
+```
+
+- `a == b` -> true
+- `a == c` -> false
+- `a.equals(c)` -> true
+
+## Java Templates
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("inter");
+        sb.append("view");
+        String s = sb.toString();
+        System.out.println(s);
+    }
+}
+```
+
+## Complexity Analysis
+
+- `equals()` -> O(n)
+- `==` -> O(1)
+- concat in loop -> O(n^2)
+- builder append -> amortized O(1)
+
+## Common Mistakes
+
+- `==` se content compare karna
+- immutability ko ignore karna
+- `StringBuffer` ko always necessary samajhna
+- builder ko `toString()` ke bina print karna
+
+## Interview Follow-up Questions
+
+- String pool kya hai?
+- immutable objects ka fayda kya hai?
+- `StringBuilder` thread-safe kyu nahi hota?
+
+## Easy Problems
+
+- compare two strings
+- concatenate strings
+- uppercase/lowercase convert
+
+## Medium Problems
+
+- repeated concatenation fix
+- reverse string with builder
+- format a sentence
+
+## Hard Problems
+
+- very large text processing
+- streaming style text build
+
+## Similar Questions
+
+- object identity
+- deep vs shallow compare
+- mutable vs immutable data
+
+## Pattern Flowchart
+
+```text
+Need change text?
+    -> yes -> StringBuilder
+Need compare content?
+    -> yes -> equals()
+Need compare reference?
+    -> yes -> ==
+```
+
+## Memory Tricks
+
+- String = immutable
+- Builder = mutable
+- Buffer = mutable + synchronized
+- equals = content
+- == = reference
+
+## One Page Revision Sheet
+
+Text compare karna ho to `equals()`. Text build karna ho to `StringBuilder`.
+Mutability ka question aate hi immutability, pool, and references yaad karo.
+
+===============================================================================
+# Chapter 4: Character Traversal and Frequency Counting
+===============================================================================
+
+## Introduction
+
+Bahut saare string problems ka base hai character traversal. Pehle har char dekh
+lo, phir frequency ya position se answer nikaalo.
+
+Hinglish:
+Letters ko ek-ek karke scan karo, jaise attendance le rahe ho.
+
+## Pattern Recognition
+
+Use this when question me:
+- count vowels / consonants
+- first non-repeating character
+- repeated character
+- frequency based comparison
+- duplicates in text
+
+## Trigger Words
+
+- `count`
+- `frequency`
+- `occurrence`
+- `duplicate`
+- `unique`
+- `first repeated`
+
+## Brute Force
+
+Har character ke liye poore string me scan.
+
+```java
+for (int i = 0; i < s.length(); i++) {
+    int count = 0;
+    for (int j = 0; j < s.length(); j++) {
+        if (s.charAt(i) == s.charAt(j)) {
+            count++;
+        }
+    }
+}
+```
+
+Time: O(n^2)
+
+## Observation
+
+One pass me frequency store karo, second pass me answer nikaalo.
+
+## Core Intuition
+
+Frequency array ya HashMap ek register ki tarah kaam karta hai.
+
+## Visualization
+
+```text
+banana
+b -> 1
+a -> 3
+n -> 2
+```
+
+## Dry Run
+
+`banana`:
+- b -> 1
+- a -> 1
+- n -> 1
+- a -> 2
+- n -> 2
+- a -> 3
+
+## Java Templates
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        String s = "banana";
+        int[] freq = new int[26];
+
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            if (ch >= 'a' && ch <= 'z') {
+                freq[ch - 'a']++;
+            }
+        }
+
+        System.out.println(freq['a' - 'a']);
+    }
+}
+```
+
+## Complexity Analysis
+
+- traversal: O(n)
+- frequency array: O(1) extra for English letters
+- HashMap: O(k) space for distinct chars
+
+## Common Mistakes
+
+- uppercase ignore karna
+- spaces and symbols count karna bhool jana
+- second pass skip karna
+- `char[]` vs `String` indexing confuse karna
+
+## Interview Follow-up Questions
+
+- first unique char kaise nikaaloge?
+- vowel count case-insensitive kaise karoge?
+- unicode text handle kaise karoge?
+
+## Easy Problems
+
+- count characters
+- count vowels
+- find duplicates
+
+## Medium Problems
+
+- first non-repeating char
+- common characters in two strings
+- isomorphic style frequency check
+
+## Hard Problems
+
+- frequency based window problems
+- very large alphabet handling
+
+## Similar Questions
+
+- hashmap counting
+- array frequency
+- sorting by frequency
+
+## Pattern Flowchart
+
+```text
+Count keyword?
+    -> yes -> freq array / HashMap
+Unique keyword?
+    -> yes -> one pass count + second pass check
+Duplicate keyword?
+    -> yes -> seen set or freq map
+```
+
+## Memory Tricks
+
+- count first, decide later
+- lowercase -> 26
+- general text -> map
+
+## One Page Revision Sheet
+
+Count problems me direct brute force avoid karo. Frequency register banao, phir
+answer derive karo.
+
+===============================================================================
+# Chapter 5: Palindrome Pattern
+===============================================================================
+
+## Introduction
+
+Palindrome ka matlab hai aisa text jo left se right aur right se left same lage.
+Interview me ye pattern two pointers ka classic use hai.
+
+Hinglish:
+Palindrome ko mirror image samjho.
+
+## Pattern Recognition
+
+Use when question says:
+- palindrome
+- reverse equal
+- symmetric
+- valid after removing symbols
+- near palindrome
+
+## Trigger Words
+
+- `mirror`
+- `reverse`
+- `same from both ends`
+- `center`
+- `symmetry`
+
+## Brute Force
+
+Reverse banao aur compare karo.
+
+```java
+String rev = new StringBuilder(s).reverse().toString();
+boolean ok = s.equals(rev);
+```
+
+Time: O(n), Space: O(n)
+
+## Observation
+
+Two pointers se extra space bach sakta hai. Agar ignore rules hain to helper
+checks use karo.
+
+## Core Intuition
+
+Left aur right ko ek saath move karo. Jahan mismatch mile, wahan answer false.
+
+## Visualization
+
+```text
+left ->  r  a  c  e  c  a  r  <- right
+```
+
+## Dry Run
+
+`level`:
+- l vs l match
+- e vs e match
+- v middle pe stop
+
+## Java Templates
+
+```java
+public class Main {
+    static boolean isPalindrome(String s) {
+        int l = 0, r = s.length() - 1;
+        while (l < r) {
+            if (s.charAt(l) != s.charAt(r)) return false;
+            l++;
+            r--;
+        }
+        return true;
+    }
+}
+```
+
+## Complexity Analysis
+
+- two pointers: O(n)
+- reverse compare: O(n)
+- extra space: O(1) for pointers
+
+## Common Mistakes
+
+- case conversion skip karna
+- spaces/punctuation handle na karna
+- middle character ko mismatch maanna
+
+## Interview Follow-up Questions
+
+- valid palindrome with non-alphanumeric chars?
+- one deletion allowed ho to?
+- longest palindromic substring ka idea?
+
+## Easy Problems
+
+- check palindrome
+- reverse string
+- palindrome number like text check
+
+## Medium Problems
+
+- valid palindrome with cleanup
+- near palindrome
+- longest palindromic prefix
+
+## Hard Problems
+
+- longest palindromic substring
+- palindrome pairs
+
+## Similar Questions
+
+- two pointer scan
+- symmetry problems
+- reverse and compare
+
+## Pattern Flowchart
+
+```text
+Palindrome clue
+    -> clean text? -> normalize first
+    -> ends compare? -> two pointers
+    -> build reverse? -> StringBuilder
+```
+
+## Memory Tricks
+
+- left-right
+- mirror
+- center stop
+- one mismatch may matter in variant problems
+
+## One Page Revision Sheet
+
+Palindrome me left aur right equal hone chahiye. Problem variant dekh kar clean
+karna, then compare with pointers.
+
+===============================================================================
+# Chapter 6: Anagram and Permutation Pattern
+===============================================================================
+
+## Introduction
+
+Anagram me characters same hote hain, order different ho sakta hai. Permutation
+based thinking strings me bohot common hai.
+
+Hinglish:
+Same alphabets, different arrangement.
+
+## Pattern Recognition
+
+Use when question says:
+- anagram
+- permutation
+- rearrangement
+- same frequency
+- group similar words
+
+## Trigger Words
+
+- `same letters`
+- `different order`
+- `rearrange`
+- `group`
+- `permute`
+
+## Brute Force
+
+Dono strings sort karo aur compare karo.
+
+```java
+char[] a = s1.toCharArray();
+char[] b = s2.toCharArray();
+Arrays.sort(a);
+Arrays.sort(b);
+boolean ok = Arrays.equals(a, b);
+```
+
+Time: O(n log n)
+
+## Observation
+
+Frequency compare se O(n) me kaam ho jata hai.
+
+## Core Intuition
+
+Anagram ka essence order nahi, count hai.
+
+## Visualization
+
+```text
+listen -> s i l e n t
+silent -> s i l e n t
+```
+
+## Dry Run
+
+`listen` and `silent`:
+- all letters same count
+- result true
+
+## Java Templates
+
+```java
+public class Main {
+    static boolean isAnagram(String a, String b) {
+        if (a.length() != b.length()) return false;
+        int[] freq = new int[26];
+
+        for (int i = 0; i < a.length(); i++) {
+            freq[a.charAt(i) - 'a']++;
+            freq[b.charAt(i) - 'a']--;
+        }
+
+        for (int x : freq) {
+            if (x != 0) return false;
+        }
+        return true;
+    }
+}
+```
+
+## Complexity Analysis
+
+- sort approach: O(n log n)
+- count approach: O(n)
+- space: O(1) for 26 letters
+
+## Common Mistakes
+
+- length check skip karna
+- uppercase/lowercase mismatch
+- unicode text me 26 array use kar dena
+
+## Interview Follow-up Questions
+
+- group anagrams kaise karoge?
+- anagram window kaise find karoge?
+- permutation in string ka idea?
+
+## Easy Problems
+
+- valid anagram
+- check permutation
+- common character count
+
+## Medium Problems
+
+- group anagrams
+- find all anagrams in text
+
+## Hard Problems
+
+- minimum swaps for anagram-like rearrangement
+- large alphabet grouping
+
+## Similar Questions
+
+- frequency counting
+- sorting by key
+- hashmap grouping
+
+## Pattern Flowchart
+
+```text
+Same letters?
+    -> yes -> count compare
+Group similar words?
+    -> yes -> sort key / freq key in HashMap
+Window me match chahiye?
+    -> yes -> sliding window + freq diff
+```
+
+## Memory Tricks
+
+- order not important
+- count important
+- length first
+
+## One Page Revision Sheet
+
+Anagram problems me order ignore hota hai. Count compare karo, sort ko backup
+solution rakho.
+
+===============================================================================
+# Chapter 7: Two Pointer Pattern on Strings
+===============================================================================
+
+## Introduction
+
+Two pointers strings me tab use hote hain jab left aur right se compare ya scan
+karna ho. Ye palindrome, reverse, cleanup, and in-place transform me kaam aata
+hai.
+
+Hinglish:
+Ek pointer start se, ek pointer end se.
+
+## Pattern Recognition
+
+Use when:
+- ends compare karne hain
+- in-place modify karna hai
+- filtered characters handle karne hain
+- opposite direction se scan useful hai
+
+## Trigger Words
+
+- `left`
+- `right`
+- `end points`
+- `pair`
+- `reverse`
+- `skip invalid`
+
+## Brute Force
+
+Har character ko new string me copy karo.
+
+## Observation
+
+Two pointers me extra array banane ki zarurat nahi padti.
+
+## Core Intuition
+
+Left pointer valid char dhoondhe, right pointer valid char dhoondhe, then
+process and move.
+
+## Visualization
+
+```text
+  l                 r
+  v                 v
+  [  a  b  c  d  e  ]
+```
+
+## Dry Run
+
+Reverse vowels:
+- left pe vowel mile to right vowel dhoondo
+- swap karo
+- move inward
+
+## Java Templates
+
+```java
+public class Main {
+    static String reverseVowels(String s) {
+        char[] arr = s.toCharArray();
+        int l = 0, r = arr.length - 1;
+
+        while (l < r) {
+            while (l < r && !isVowel(arr[l])) l++;
+            while (l < r && !isVowel(arr[r])) r--;
+            char temp = arr[l];
+            arr[l] = arr[r];
+            arr[r] = temp;
+            l++;
+            r--;
+        }
+        return new String(arr);
+    }
+
+    static boolean isVowel(char ch) {
+        return "aeiouAEIOU".indexOf(ch) >= 0;
+    }
+}
+```
+
+## Complexity Analysis
+
+- scanning: O(n)
+- in-place swap: O(1) extra
+
+## Common Mistakes
+
+- invalid chars skip karna bhool jana
+- pointers ko move na karna
+- same pointer pe swap karna
+
+## Interview Follow-up Questions
+
+- reverse words using pointers?
+- remove duplicates using slow-fast?
+- valid palindrome with cleanup?
+
+## Easy Problems
+
+- reverse string
+- reverse vowels
+- compare two strings
+
+## Medium Problems
+
+- remove duplicates in sorted string
+- backspace string compare
+- compress string
+
+## Hard Problems
+
+- in-place string transformation
+- custom cleanup with multiple conditions
+
+## Similar Questions
+
+- array two pointers
+- linked list slow-fast
+- partitioning style scans
+
+## Pattern Flowchart
+
+```text
+Ends matter? -> two pointers
+Need cleanup + compare? -> two pointers + skip logic
+Need in-place transform? -> two pointers on char array
+```
+
+## Memory Tricks
+
+- left-right
+- skip invalid
+- swap only when both valid
+
+## One Page Revision Sheet
+
+Two pointers ka matlab hamesha ek hi nahi hota. Kabhi scan, kabhi swap, kabhi
+cleanup. Base invariant clear rakho.
+
+===============================================================================
+# Chapter 8: Sliding Window Pattern on Strings
+===============================================================================
+
+## Introduction
+
+Sliding window strings me sabse powerful pattern hai. Jahan contiguous substring
+aur optimization dono aate hain, window socho.
+
+Hinglish:
+Window ko expand karo, problem aaye to shrink karo.
+
+## Pattern Recognition
+
+Use when:
+- longest substring
+- minimum window
+- at most K distinct
+- no repeat
+- substring with condition
+
+## Trigger Words
+
+- `subarray` / `substring`
+- `contiguous`
+- `longest`
+- `minimum`
+- `at most K`
+- `without repeating`
+
+## Brute Force
+
+Har substring check karo.
+
+```java
+for (int i = 0; i < s.length(); i++) {
+    for (int j = i; j < s.length(); j++) {
+        String sub = s.substring(i, j + 1);
+    }
+}
+```
+
+Time: O(n^2) or worse depending on check
+
+## Observation
+
+Window me answer incremental banta hai. Har step pe same work repeat nahi karna.
+
+## Core Intuition
+
+Right pointer se window grow, left pointer se window repair.
+
+## Visualization
+
+```text
+string: a b c a b c b b
+window: [   l     r   ]
+```
+
+## Dry Run
+
+`abcabcbb`:
+- expand until duplicate
+- duplicate aaya to left move
+- best length update
+
+## Java Templates
+
+```java
+public class Main {
+    static int longestUniqueSubstring(String s) {
+        int[] freq = new int[128];
+        int l = 0, best = 0;
+
+        for (int r = 0; r < s.length(); r++) {
+            freq[s.charAt(r)]++;
+            while (freq[s.charAt(r)] > 1) {
+                freq[s.charAt(l)]--;
+                l++;
+            }
+            best = Math.max(best, r - l + 1);
+        }
+        return best;
+    }
+}
+```
+
+## Complexity Analysis
+
+- each pointer moves at most n times
+- time: O(n)
+- space: O(1) for fixed ASCII, O(k) for map
+
+## Common Mistakes
+
+- while ki jagah if use karna
+- left update ke time count miss karna
+- answer update late karna
+
+## Interview Follow-up Questions
+
+- min window substring ka shrink rule?
+- at most K distinct ka template?
+- exactly K kaise nikalo?
+
+## Easy Problems
+
+- longest unique substring
+- count substrings with a condition
+
+## Medium Problems
+
+- minimum window substring
+- longest substring with K distinct
+- character replacement
+
+## Hard Problems
+
+- minimum covering window
+- multiple constraints window
+
+## Similar Questions
+
+- prefix sum window
+- two pointer count
+- hashmap + window
+
+## Pattern Flowchart
+
+```text
+Contiguous substring?
+    -> yes -> sliding window
+Need longest / minimum?
+    -> yes -> expand + shrink
+Need frequency inside window?
+    -> yes -> map / array
+```
+
+## Memory Tricks
+
+- expand right
+- repair left
+- update answer after repair
+
+## One Page Revision Sheet
+
+Sliding window ka hero rule: right se grow, left se fix. Jab contiguous answer
+aur repeated checking ho, window best friend hai.
+
+===============================================================================
+# Chapter 9: Substring, Subsequence, Prefix, and Suffix
+===============================================================================
+
+## Introduction
+
+Substring aur subsequence me difference clear hona chahiye. Contiguous nahi to
+substring nahi, bas subsequence. Prefix aur suffix string logic ka base hai.
+
+Hinglish:
+Substring = chipka hua block. Subsequence = selected characters, gap allowed.
+
+## Pattern Recognition
+
+Use when:
+- prefix check
+- suffix check
+- common prefix
+- substring search
+- subsequence validation
+
+## Trigger Words
+
+- `starts with`
+- `ends with`
+- `common prefix`
+- `partial order`
+- `skip characters`
+
+## Brute Force
+
+Har prefix ya substring compare karo.
+
+## Observation
+
+Prefix/suffix problems me direct library methods kabhi enough hote hain, but
+core logic samajhna more important hai.
+
+## Core Intuition
+
+Prefix fixed start se banta hai.
+Suffix fixed end se banta hai.
+Subsequence me pointers selectively move karte hain.
+
+## Visualization
+
+```text
+string:  p r o g r a m
+prefix:  p r o
+suffix:                  a m
+subseq:   p   o     a
+```
+
+## Dry Run
+
+`ace` subsequence of `abcde`:
+- a found
+- c found
+- e found
+- success
+
+## Java Templates
+
+```java
+public class Main {
+    static boolean isPrefix(String s, String pref) {
+        if (pref.length() > s.length()) return false;
+        for (int i = 0; i < pref.length(); i++) {
+            if (s.charAt(i) != pref.charAt(i)) return false;
+        }
+        return true;
+    }
+}
+```
+
+## Complexity Analysis
+
+- prefix/suffix compare: O(k)
+- subsequence check: O(n)
+- naive substring search: O(n * m)
+
+## Common Mistakes
+
+- substring aur subsequence ko same samajhna
+- length compare skip karna
+- prefix ke liye full scan kar dena
+
+## Interview Follow-up Questions
+
+- longest common prefix kaise nikaaloge?
+- subsequence validation pointer se kaise hoga?
+- substring search ka brute force kya hai?
+
+## Easy Problems
+
+- startsWith
+- endsWith
+- check subsequence
+
+## Medium Problems
+
+- longest common prefix
+- repeated substring pattern
+
+## Hard Problems
+
+- distinct subsequence count
+- repeated pattern detection
+
+## Similar Questions
+
+- array subarray vs subsequence
+- string compare
+- prefix tree
+
+## Pattern Flowchart
+
+```text
+Starts / ends? -> prefix / suffix compare
+Skip allowed?   -> subsequence
+Contiguous?     -> substring
+```
+
+## Memory Tricks
+
+- prefix = front
+- suffix = back
+- substring = continuous
+- subsequence = not necessarily continuous
+
+## One Page Revision Sheet
+
+Ye chapter confusion clear karta hai. Interview me sabse pehle pucho:
+contiguous hai ya not?
+
+===============================================================================
+# Chapter 10: StringBuilder, Compression, and Mutation
+===============================================================================
+
+## Introduction
+
+Jab string build, compress, insert, delete, reverse ya mutate karni ho, tab
+StringBuilder ka use hota hai. Plain String se ye kaafi fast hota hai.
+
+Hinglish:
+Jo kaam baar-baar change kare, uske liye mutable tool chahiye.
+
+## Pattern Recognition
+
+Use when:
+- output construct karna hai
+- repeated append hai
+- compression chahiye
+- reverse words / reverse chunks
+- insert/delete operations hain
+
+## Trigger Words
+
+- `build`
+- `append`
+- `compress`
+- `replace`
+- `delete`
+- `reverse`
+
+## Brute Force
+
+Har append pe naya string banana.
+
+## Observation
+
+Builder me edit cheap hoti hai. Final output ke liye `toString()` use karo.
+
+## Core Intuition
+
+StringBuilder = mutable buffer.
+
+## Visualization
+
+```text
+builder: [ i ][ n ][ t ][ e ][ r ]
+```
+
+## Dry Run
+
+`aaabbc` compression:
+- a count 3
+- b count 2
+- c count 1
+
+## Java Templates
+
+```java
+public class Main {
+    static String compress(String s) {
+        StringBuilder sb = new StringBuilder();
+        int count = 1;
+
+        for (int i = 1; i <= s.length(); i++) {
+            if (i < s.length() && s.charAt(i) == s.charAt(i - 1)) {
+                count++;
+            } else {
+                sb.append(s.charAt(i - 1));
+                if (count > 1) sb.append(count);
+                count = 1;
+            }
+        }
+        return sb.toString();
+    }
+}
+```
+
+## Complexity Analysis
+
+- append: amortized O(1)
+- complete build: O(n)
+- extra space: O(n) for result
+
+## Common Mistakes
+
+- loop me `+=` use karna
+- `toString()` bhool jana
+- count reset miss karna
+
+## Interview Follow-up Questions
+
+- `StringBuilder` vs `StringBuffer`?
+- string compression me edge cases kya hain?
+- reverse words in-place kaise karoge?
+
+## Easy Problems
+
+- reverse string
+- build sentence
+- compress repeated chars
+
+## Medium Problems
+
+- run-length encoding
+- reverse words
+- remove extra spaces
+
+## Hard Problems
+
+- in-place compression
+- custom normalization pipeline
+
+## Similar Questions
+
+- mutable buffers
+- array compaction
+- two pointer cleanup
+
+## Pattern Flowchart
+
+```text
+Need output by pieces?
+    -> yes -> StringBuilder
+Need mutate in place?
+    -> yes -> char[] / builder
+Need compression?
+    -> yes -> builder + count
+```
+
+## Memory Tricks
+
+- build with builder
+- mutate with builder
+- finalize with `toString()`
+
+## One Page Revision Sheet
+
+Repeated append ka signal mile to StringBuilder. Compression me count reset aur
+final flush yaad rakho.
+
+===============================================================================
+# Chapter 11: Pattern Matching, LPS, Trie, and Word Problems
+===============================================================================
+
+## Introduction
+
+Text search aur dictionary style problems strings ka advanced core hain. Naive
+search se idea milta hai, but KMP aur Trie interview me strong signal dete hain.
+
+Hinglish:
+Pattern ko text me dhoondho, ya words ka tree banao.
+
+## Pattern Recognition
+
+Use when:
+- pattern match
+- substring search
+- prefix lookup
+- autocomplete
+- dictionary based word task
+
+## Trigger Words
+
+- `search pattern`
+- `first occurrence`
+- `prefix tree`
+- `dictionary`
+- `autocomplete`
+- `word break`
+
+## Brute Force
+
+Every start index pe pattern compare karo.
+
+```java
+for (int i = 0; i + m <= n; i++) {
+    int j = 0;
+    while (j < m && text.charAt(i + j) == pat.charAt(j)) j++;
+}
+```
+
+## Observation
+
+Mismatch ke baad previous matched prefix ka kuch part reuse ho sakta hai. KMP
+is reuse ko formalize karta hai.
+
+## Core Intuition
+
+LPS = longest prefix which is also suffix.
+
+```text
+pattern: a b a b a c
+prefix : a b a b a
+suffix :     a b a b a
+```
+
+## Visualization
+
+```text
+text:    a b a b a b c
+pattern:     a b a c
+```
+
+## Dry Run
+
+Mismatch aane pe pattern ko start se nahi, LPS based shifted position pe le jao.
+
+## Java Templates
+
+```java
+public class Main {
+    static int[] buildLPS(String p) {
+        int[] lps = new int[p.length()];
+        int len = 0, i = 1;
+        while (i < p.length()) {
+            if (p.charAt(i) == p.charAt(len)) {
+                lps[i++] = ++len;
+            } else if (len > 0) {
+                len = lps[len - 1];
+            } else {
+                lps[i++] = 0;
+            }
+        }
+        return lps;
+    }
+}
+```
+
+## Complexity Analysis
+
+- naive search: O(n * m)
+- KMP: O(n + m)
+- Trie insert/search: O(length of word)
+
+## Common Mistakes
+
+- LPS ko prefix only samajhna
+- mismatch pe restart from zero
+- trie me child array null check bhool jana
+
+## Interview Follow-up Questions
+
+- KMP ka intuition kya hai?
+- Trie ki space cost kya hoti hai?
+- word break me trie ka role kya hai?
+
+## Easy Problems
+
+- find pattern index
+- prefix search
+- word existence check
+
+## Medium Problems
+
+- implement trie
+- search multiple words
+- word break
+
+## Hard Problems
+
+- wildcard search
+- autocomplete system
+- repeated substring matching
+
+## Similar Questions
+
+- substring search
+- dictionary tree
+- prefix matching
+
+## Pattern Flowchart
+
+```text
+Search in text?
+    -> simple and small -> brute force
+    -> repeated and large -> KMP
+Prefix dictionary?
+    -> trie
+Word segmentation?
+    -> trie + DP
+```
+
+## Memory Tricks
+
+- LPS = reuse length
+- KMP = no backtracking in text
+- trie = prefix tree
+
+## One Page Revision Sheet
+
+Text search problems me first naive samjho, then reuse idea samjho. LPS aur
+Trie interview me strong patterns hain.
+
+===============================================================================
+# Chapter 12: Backtracking, DP, and Final Placement Revision
+===============================================================================
+
+## Introduction
+
+Strings ke kuch problems pure greedy ya window se solve nahi hote. Jab all
+arrangements, choices, ya optimal substructure aaye, backtracking aur DP socho.
+
+Hinglish:
+Kabhi choices explore karo, kabhi previous states pe answer build karo.
+
+## Pattern Recognition
+
+Use when:
+- permutations
+- subsequences
+- combinations
+- edit style optimization
+- longest common relation
+
+## Trigger Words
+
+- `all ways`
+- `generate`
+- `count ways`
+- `minimum edits`
+- `common subsequence`
+- `partition`
+
+## Brute Force
+
+Har possible choice try karo.
+
+## Observation
+
+Backtracking exploration ke liye hai, DP repeated states ke liye hai.
+
+## Core Intuition
+
+If same subproblem baar-baar aa raha hai, memoization ya table use karo.
+
+## Visualization
+
+```text
+choices tree:
+          ""
+       /      \
+     "a"      "b"
+    /   \      /   \
+  "ac" "ad"  "bc" "bd"
+```
+
+## Dry Run
+
+`abc` subsequences:
+- choose a
+- choose b
+- choose c
+- skip / include combinations
+
+## Java Templates
+
+```java
+public class Main {
+    static void dfs(int idx, StringBuilder path, String s) {
+        if (idx == s.length()) {
+            System.out.println(path.toString());
+            return;
+        }
+
+        path.append(s.charAt(idx));
+        dfs(idx + 1, path, s);
+        path.deleteCharAt(path.length() - 1);
+
+        dfs(idx + 1, path, s);
+    }
+}
+```
+
+## Complexity Analysis
+
+- backtracking: exponential in worst case
+- DP: usually O(n^2) for many string problems
+
+## Common Mistakes
+
+- state define nahi karna
+- memoization miss karna
+- base case unclear rakhna
+
+## Interview Follow-up Questions
+
+- LCS ka state kya hota hai?
+- edit distance me operations kya hain?
+- palindrome subsequence ka DP idea kya hai?
+
+## Easy Problems
+
+- generate subsequences
+- permutations of string
+- count palindromic chars
+
+## Medium Problems
+
+- word break
+- longest common prefix variants
+- longest common subsequence
+
+## Hard Problems
+
+- edit distance
+- wildcard matching
+- palindrome partitioning
+
+## Similar Questions
+
+- recursion tree
+- memoization
+- table DP
+
+## Pattern Flowchart
+
+```text
+All combinations? -> backtracking
+Repeated subproblem? -> DP
+String edit optimization? -> DP
+Generate all words? -> backtracking / trie
+```
+
+## Memory Tricks
+
+- explore first
+- optimize after
+- same state repeats -> DP
+
+## One Page Revision Sheet
+
+Backtracking = try all choices. DP = save repeated work. String interviews often
+mix both, so problem statement ko carefully read karo.
+
+===============================================================================
+# Chapter 13: Greedy String Problems
+===============================================================================
+
+## Introduction
+
+Greedy string questions me hum local best decision lete hain taaki final string
+lexicographically ya structurally best ho. Ye tab aata hai jab future ke clues
+current decision ko affect karte hain.
+
+Hinglish:
+Jo character abhi rakhna hai ya skip karna hai, uska answer future de sakta
+hai.
+
+## Pattern Recognition
+
+Use when the problem says:
+- smallest lexicographic string
+- remove duplicate letters
+- minimum deletions for order
+- best subsequence choose karna
+
+## Core Intuition
+
+Har step par dekhna hota hai ki current character ko rakhen ya tab tak pop karein
+jab tak future mein same character mil raha ho.
+
+## Brute Force
+
+Har possible subsequence try karna impossible ho jata hai. Greedy local choice
+se search space ko bahut reduce karta hai.
+
+## Optimal Approach
+
+Monotonic stack + future availability array common combo hai. Lexicographic
+minimum usually isi tarah banta hai.
+
+## Dry Run
+
+`bcabc`:
+- `b` push
+- `c` push
+- `a` aane par larger chars pop ho sakte hain if future me available hain
+- final smallest unique subsequence milta hai
+
+## Java Template
+
+```java
+public class GreedyString {
+    // Monotonic stack + last occurrence + used[] style template.
+}
+```
+
+## Complexity Analysis
+
+- Time: O(n)
+- Space: O(n)
+
+## Common Mistakes
+
+- future availability check na karna
+- greedy ko random guess samajhna
+- duplicate handling ignore karna
+
+## One Page Revision Sheet
+
+Greedy = local best + future awareness + clean stack logic.
+
+===============================================================================
+# Chapter 14: Dynamic Programming on Strings
+===============================================================================
+
+## Introduction
+
+String DP tab aata hai jab answer subproblems ke table se build hota hai. LCS,
+edit distance, distinct subsequences aur interleaving strings classic examples
+hain.
+
+## Pattern Recognition
+
+Use when the question says:
+- insert, delete, replace
+- common subsequence
+- minimum operations
+- number of ways
+
+## Core Intuition
+
+`dp[i][j]` usually prefix `i` and prefix `j` ke relation ko represent karta hai.
+Base cases aur transitions sabse important hote hain.
+
+## Brute Force
+
+Recursive solution without memoization same states ko baar-baar solve karega.
+
+## Optimal Approach
+
+2D table banao, transitions define karo, then space optimize karna possible hai.
+
+## Dry Run
+
+LCS me:
+- match -> diagonal + 1
+- mismatch -> top ya left ka max
+
+## Java Template
+
+```java
+public class StringDP {
+    public static int lcs(String a, String b) {
+        int[][] dp = new int[a.length() + 1][b.length() + 1];
+        for (int i = 1; i <= a.length(); i++) {
+            for (int j = 1; j <= b.length(); j++) {
+                if (a.charAt(i - 1) == b.charAt(j - 1)) dp[i][j] = dp[i - 1][j - 1] + 1;
+                else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+        return dp[a.length()][b.length()];
+    }
+}
+```
+
+## Complexity Analysis
+
+- Time: O(n*m)
+- Space: O(n*m), sometimes O(min(n, m))
+
+## Common Mistakes
+
+- index shift galat karna
+- base cases skip karna
+- state meaning unclear rakhna
+
+## One Page Revision Sheet
+
+String DP = relation table + transition logic + memoization mindset.
+
+===============================================================================
+# Chapter 15: Rolling Hash
+===============================================================================
+
+## Introduction
+
+Rolling hash substring compare ko fast banata hai. Ye duplicate substring,
+pattern verify, aur fast fingerprinting me useful hai.
+
+## Pattern Recognition
+
+Use when the problem says:
+- compare substrings repeatedly
+- detect duplicate substring
+- large text me quick check
+
+## Core Intuition
+
+Prefix hash aur power array se kisi bhi substring ka hash O(1) me nikal sakte
+ho.
+
+## Brute Force
+
+Har substring ko char-by-char compare karna slow ho jata hai.
+
+## Optimal Approach
+
+Base, mod, prefix hash aur power array maintain karke rolling update karo.
+
+## Dry Run
+
+Window slide hoti hai:
+- old char remove
+- new char add
+- updated hash compare
+
+## Java Template
+
+```java
+public class RollingHash {
+    // Prefix hash + power array based template.
+}
+```
+
+## Complexity Analysis
+
+- Preprocessing: O(n)
+- Query: O(1)
+- Space: O(n)
+
+## Common Mistakes
+
+- collision ignore karna
+- overflow aur negative mod handle na karna
+
+## One Page Revision Sheet
+
+Rolling hash = substring fingerprint fast compare.
+
+===============================================================================
+# Chapter 16: Suffix Array
+===============================================================================
+
+## Introduction
+
+Suffix array saare suffixes ko sorted order me store karta hai. Ye advanced
+substring search aur lexicographic query problems me kaam aata hai.
+
+## Pattern Recognition
+
+Use when the question says:
+- repeated substring
+- lexicographic order
+- many suffix queries
+
+## Core Intuition
+
+String ke suffixes ko sort karo. Fir binary search style query fast ho sakti hai.
+
+## Brute Force
+
+Har query ko full scan karna costly hota hai.
+
+## Optimal Approach
+
+Suffix array + LCP array query speed ko improve karte hain.
+
+## Dry Run
+
+`banana` ke suffixes sort karne par common prefixes clearly dikhte hain.
+
+## Java Template
+
+```java
+public class SuffixArrayIntro {
+    // Concept: suffixes + sort + LCP for fast queries.
+}
+```
+
+## Complexity Analysis
+
+- Build: implementation dependent
+- Query: often O(log n) with preprocessing
+
+## Common Mistakes
+
+- suffix aur substring confuse karna
+- advanced structure ko overuse karna
+
+## One Page Revision Sheet
+
+Suffix array = sorted suffix catalogue.
+
+===============================================================================
+# Chapter 17: Suffix Automaton
+===============================================================================
+
+## Introduction
+
+Suffix automaton compact state machine hoti hai jo string ke substrings ko
+efficiently represent karti hai.
+
+## Pattern Recognition
+
+Use when the question says:
+- many substring queries
+- count distinct substrings
+- longest repeated substring
+
+## Core Intuition
+
+States, transitions aur suffix links ka idea samajhna important hai. Ye suffix
+tree ka compact cousin samjho.
+
+## Brute Force
+
+Substring enumeration repeated work create karti hai.
+
+## Optimal Approach
+
+One char at a time add karo aur state reuse/split logic samjho.
+
+## Dry Run
+
+String ko incrementally build karte hue automaton states expand hote hain.
+
+## Java Template
+
+```java
+public class SuffixAutomatonIntro {
+    // Advanced topic: states, links, transitions.
+}
+```
+
+## Complexity Analysis
+
+- Build: O(n) expected
+- Space: O(n)
+
+## Common Mistakes
+
+- basic intuition skip karna
+- implementation ko rote learning banana
+
+## One Page Revision Sheet
+
+Suffix automaton = compact substring machine.
+
+===============================================================================
+# Chapter 18: Manacher Algorithm
+===============================================================================
+
+## Introduction
+
+Manacher longest palindromic substring ka linear-time solution hai. Ye center
+expansion ko optimize karta hai.
+
+## Pattern Recognition
+
+Use when the question says:
+- longest palindrome substring
+- palindrome count on large input
+
+## Core Intuition
+
+Har center ke around radius store hota hai aur previous knowledge reuse hoti hai.
+
+## Brute Force
+
+Center expansion O(n^2) ho sakta hai. Manacher isko O(n) me reduce karta hai.
+
+## Optimal Approach
+
+Transformed string use karo taaki odd/even centers same handling me aa jayein.
+
+## Dry Run
+
+`abba` me transformed form se palindrome radius easily track hota hai.
+
+## Java Template
+
+```java
+public class ManacherIntro {
+    // Radius-array based palindrome optimization.
+}
+```
+
+## Complexity Analysis
+
+- Time: O(n)
+- Space: O(n)
+
+## Common Mistakes
+
+- transformed string logic confuse karna
+- radius reuse ko wrong expand karna
+
+## One Page Revision Sheet
+
+Manacher = optimized palindrome radius computation.
+
+===============================================================================
+# Chapter 19: Aho-Corasick Algorithm
+===============================================================================
+
+## Introduction
+
+Aho-Corasick multiple patterns ko ek hi text me fast search karta hai. Ye trie
+aur failure links ka combo hai.
+
+## Pattern Recognition
+
+Use when the question says:
+- many pattern matches
+- keyword scanning
+- dictionary search in text
+
+## Core Intuition
+
+Patterns ko trie me store karo, then failure links se mismatch handle karo.
+
+## Brute Force
+
+Har pattern alag se search karna costly hota hai.
+
+## Optimal Approach
+
+Trie build + BFS failure links + single pass text scan.
+
+## Dry Run
+
+Patterns `he`, `she`, `hers` aur text `ushers` me multiple matches one pass me
+mil sakte hain.
+
+## Java Template
+
+```java
+public class AhoCorasickIntro {
+    // Trie + fail links + output list.
+}
+```
+
+## Complexity Analysis
+
+- Build: O(total pattern length)
+- Search: O(text length + matches)
+
+## Common Mistakes
+
+- failure links ignore karna
+- output propagation miss karna
+
+## One Page Revision Sheet
+
+Aho-Corasick = multi-pattern search engine.
+
+===============================================================================
+# Chapter 20: Advanced Pattern Matching
+===============================================================================
+
+## Introduction
+
+Is chapter me hum decide karte hain ki KMP, Z, Rabin-Karp, Trie, Manacher ya
+Aho-Corasick me se kaunsa tool use karna hai.
+
+## Pattern Recognition
+
+Use when the question says:
+- exact match
+- prefix match
+- multiple match
+- palindrome match
+- dictionary based match
+
+## Core Intuition
+
+Problem ka shape pehle pakdo, phir algorithm select karo. Wrong tool se code
+messy ho jata hai.
+
+## Optimal Approach
+
+- exact substring -> KMP / Z
+- hash compare -> Rabin-Karp
+- prefix words -> Trie
+- many patterns -> Aho-Corasick
+
+## Java Template
+
+```java
+public class PatternChoice {
+    public static String choose(boolean manyPatterns, boolean prefixQuery, boolean palindrome) {
+        if (manyPatterns) return "Aho-Corasick / Trie";
+        if (prefixQuery) return "Trie";
+        if (palindrome) return "Center Expand / Manacher";
+        return "KMP / Z / Rabin-Karp";
+    }
+}
+```
+
+## One Page Revision Sheet
+
+Pattern matching = clue -> tool -> implementation.
+
+===============================================================================
+# Chapter 21: Mixed Array + String Patterns
+===============================================================================
+
+## Introduction
+
+Bahut baar strings arrays ke saath aati hain, like group anagrams, frequency
+sort, and word lists.
+
+## Pattern Recognition
+
+Use when the question says:
+- array of strings
+- group by frequency
+- word order changes
+- anagram buckets
+
+## Core Intuition
+
+String ko key me convert karo aur array/list me group karo.
+
+## Optimal Approach
+
+Sorted key, frequency key, ya trie key bana ke grouping karo.
+
+## Java Template
+
+```java
+import java.util.*;
+
+public class GroupAnagramsIntro {
+    public static List<List<String>> group(String[] words) {
+        Map<String, List<String>> map = new HashMap<>();
+        for (String w : words) {
+            char[] arr = w.toCharArray();
+            Arrays.sort(arr);
+            String key = new String(arr);
+            map.computeIfAbsent(key, k -> new ArrayList<>()).add(w);
+        }
+        return new ArrayList<>(map.values());
+    }
+}
+```
+
+## One Page Revision Sheet
+
+Array + string combo = key generation + grouping.
+
+===============================================================================
+# Chapter 22: Top FAANG String Questions
+===============================================================================
+
+## Introduction
+
+FAANG interviews me string questions often pattern recognition aur clean
+implementation test karte hain.
+
+## Pattern Recognition
+
+Common themes:
+- longest unique substring
+- minimum window
+- palindrome substring
+- matching and parsing
+
+## Core Intuition
+
+Interviewers dekhna chahte hain ki aap brute force se bahar nikal sakte ho ya
+nahi.
+
+## One Page Revision Sheet
+
+FAANG = clarity, correctness, and pattern choice.
+
+===============================================================================
+# Chapter 23: Top Placement String Questions
+===============================================================================
+
+## Introduction
+
+Placement rounds me basic to medium string questions repeat hote rehte hain.
+
+## Pattern Recognition
+
+Common asks:
+- reverse string
+- count vowels
+- palindrome
+- anagram
+- first repeated character
+
+## Core Intuition
+
+Simple problems me implementation clean aur edge-case safe hona chahiye.
+
+## One Page Revision Sheet
+
+Placement = basics fast and correctly.
+
+===============================================================================
+# Chapter 24: Top 50 Infosys/TCS/Wipro/Cognizant String Questions
+===============================================================================
+
+## Introduction
+
+Ye companies aksar direct implementation, count, reverse, and simple matching
+type questions puchti hain.
+
+## Pattern Recognition
+
+Focus on:
+- frequency count
+- reverse and palindrome
+- duplicate removal
+- basic pattern match
+
+## Core Intuition
+
+Readable code aur edge-case handling sabse important hai.
+
+## One Page Revision Sheet
+
+Service-company rounds = basics, accuracy, and clean logic.
+
+===============================================================================
+# Chapter 25: Interview Cheat Sheet
+===============================================================================
+
+## Introduction
+
+Cheat sheet ka goal hai 30 seconds me decide karna ki kaunsa pattern use karna
+hai.
+
+## Quick Clue Map
+
+- `count` / `frequency` -> `int[26]` or `HashMap`
+- compare ends -> two pointers
+- contiguous substring -> sliding window
+- prefix lookup -> trie
+- pattern match -> KMP
+- output build -> `StringBuilder`
+- all arrangements -> backtracking
+- optimal edit / relation -> DP
+
+## One Page Revision Sheet
+
+Question -> shape -> pattern -> template -> code.
+
+===============================================================================
+# Chapter 26: Pattern Decision Tree
+===============================================================================
+
+## Introduction
+
+Decision tree confusion kam karta hai aur algorithm select karna easy banata
+hai.
+
+## Pattern Recognition
+
+- exact match? -> KMP / Z
+- repeated substring compare? -> Rolling hash
+- prefix dictionary? -> Trie
+- multiple keywords? -> Aho-Corasick
+- palindrome length? -> Center expand / Manacher
+
+## One Page Revision Sheet
+
+Decision tree = fast algorithm selection.
+
+===============================================================================
+# Chapter 27: Complete Java Templates
+===============================================================================
+
+## Introduction
+
+Templates practice se speed aati hai. String questions me repeated code blocks
+bahut kaam aate hain.
+
+## Java Templates
+
+```java
+public class StringTemplatePack {
+    public static void scan(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+        }
+    }
+
+    public static StringBuilder build() {
+        return new StringBuilder();
+    }
+}
+```
+
+## One Page Revision Sheet
+
+Templates = speed + fewer bugs.
+
+===============================================================================
+# Chapter 28: Complete Complexity Cheat Sheet
+===============================================================================
+
+## Introduction
+
+String patterns ki complexity yaad rakhna interview me confidence deta hai.
+
+## Cheat Sheet
+
+- Traversal: O(n)
+- Two pointers: O(n)
+- HashMap: O(n)
+- Sliding window: O(n)
+- KMP: O(n + m)
+- Trie insert/search: O(L)
+- DP on strings: O(n*m)
+- Manacher: O(n)
+
+## One Page Revision Sheet
+
+Complexity samajhna = pattern samajhna.
+
+===============================================================================
+# Chapter 29: Interview Mistakes
+===============================================================================
+
+## Introduction
+
+String questions me chhoti mistakes bahut common hoti hain.
+
+## Common Mistakes
+
+- `==` vs `equals()`
+- `StringBuilder` ki jagah repeated `+`
+- off-by-one substring errors
+- empty string aur null handling ignore karna
+- case sensitivity miss karna
+
+## Core Intuition
+
+Most bugs logic me nahi, assumptions me hote hain.
+
+## One Page Revision Sheet
+
+Bug-free string coding = careful indices + correct API use.
+
+===============================================================================
+# Chapter 30: Complete String Revision in One Day
+===============================================================================
+
+## Introduction
+
+Revision day ka goal hai patterns ko ek mental map me lock karna.
+
+## Revision Plan
+
+- Morning: traversal, two pointers, hashmap
+- Afternoon: sliding window, palindrome, expand center
+- Evening: KMP, Trie, DP, rolling hash
+- Night: decision tree and mistakes
+
+## Core Intuition
+
+Bas formulas yaad nahi, pattern trigger words yaad rakho.
+
+## One Page Revision Sheet
+
+One day revision = clue recognition + template recall + calm execution.
+
+=============================================================================== 
+# Final Placement Revision Sheet
+===============================================================================
+
+## Quick Clue Map
+
+- count / frequency -> int[26] or HashMap
+- compare ends -> two pointers
+- contiguous substring -> sliding window
+- prefix lookup -> trie
+- pattern match -> KMP
+- output build -> StringBuilder
+- all arrangements -> backtracking
+- optimal edit / relation -> DP
+
+## Most Repeated Mistakes
+
+- `==` and `equals()` confuse karna
+- repeated `+` in loop
+- substring and subsequence mix karna
+- window shrink logic miss karna
+- LPS ko random table samajhna
+
+## Last Minute Revision Flow
+
+1. Problem ko type karo.
+2. Clue words underline karo.
+3. Small brute force bolo.
+4. Repeated work identify karo.
+5. Best pattern choose karo.
+6. Dry run karo.
+
+## Final Mindset
+
+String questions me syntax se pehle thinking important hai. Agar aap pattern
+dekhna seekh gaye, to half interview already jeet liya.

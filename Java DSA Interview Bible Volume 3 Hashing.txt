@@ -1,0 +1,3365 @@
+Java DSA Interview Bible
+Volume 3
+Hashing: Complete Placement Handbook
+
+Compiled Manuscript Draft
+
+===============================================================================
+# Chapter 1: Complete Introduction to Hashing
+===============================================================================
+
+## Introduction
+
+Hashing is a technique that converts a key into a compact numeric value so the
+data can be stored and found quickly. In Java, hashing is the core idea behind
+HashMap, HashSet, LinkedHashMap, and many fast lookup interview solutions.
+
+Hinglish idea:
+Hashing ka simple meaning hai: value ko ek short address me convert karo aur
+phir wahi address use karke data jaldi dhoondo.
+
+Hashing is not the same as sorting. Sorting arranges data in order. Hashing
+creates a shortcut for storage and lookup.
+
+## Why Hashing Exists
+
+Without hashing, finding a value in an unsorted collection usually needs a
+linear scan, which is O(n).
+
+Hashing exists to reduce repeated searching work:
+- insert quickly
+- search quickly
+- delete quickly
+- count quickly
+- group related values quickly
+
+This is why hashing is used when the problem repeatedly asks:
+- do we already have this value?
+- how many times did this appear?
+- where was this value last seen?
+- can this pair be formed?
+
+## Real-World Applications
+
+Hashing is everywhere:
+- contact lists
+- caching
+- dictionary lookup
+- database indexing
+- compiler symbol tables
+- password verification
+- deduplication systems
+- URL shorteners
+- session tracking
+- log aggregation
+- memoization
+- routing tables
+
+In interviews, hashing is usually the hidden tool behind frequency counting,
+pair lookup, uniqueness checking, and prefix-sum optimization.
+
+## Hash Table
+
+A hash table is a structure that stores data in an array of buckets.
+
+Each key is processed by a hash function, and the resulting hash determines the
+bucket where the entry should go.
+
+Basic idea:
+key -> hash function -> bucket index -> store/search entry
+
+Important properties:
+- fast average lookup
+- fast average insertion
+- fast average deletion
+- supports collisions
+
+## Hash Function
+
+A hash function converts input data into an integer hash.
+
+Good hash functions should be:
+- deterministic: same input gives same output
+- fast: should not be expensive
+- well distributed: keys should spread across buckets
+- stable: result should not change unexpectedly
+- collision-resistant enough for the use case
+
+In Java, `hashCode()` is the standard hash function method for objects.
+
+Important note:
+Same hash does not guarantee same object. It only means the objects may land in
+the same bucket.
+
+## Buckets
+
+A bucket is one slot in the hash table array.
+
+Multiple keys can land in the same bucket because collisions are possible.
+Depending on the implementation, a bucket may hold:
+- a linked list of entries
+- a balanced tree of entries
+- an empty slot
+
+Visualization:
+
+```text
+Table:
+index 0 -> (empty)
+index 1 -> (key A)
+index 2 -> (key B -> key C -> key D)
+index 3 -> (empty)
+```
+
+## Collision Handling
+
+Collision means two different keys end up in the same bucket.
+
+Two classic strategies:
+- separate chaining
+- open addressing
+
+Java HashMap mainly uses separate chaining. In modern Java, a heavily collided
+bucket can convert from linked list to tree structure.
+
+## Chaining
+
+In chaining, each bucket stores a chain of entries.
+
+If two keys map to the same bucket:
+- first key goes into the bucket
+- second key is linked after it
+- search scans that chain and compares keys using `equals()`
+
+This is the simplest collision strategy and the one most relevant for Java
+HashMap interviews.
+
+## Open Addressing (Concept)
+
+Open addressing is another collision strategy where all entries stay inside the
+array itself.
+
+Common probing methods:
+- linear probing
+- quadratic probing
+- double hashing
+
+Concept only:
+- if a bucket is occupied, move to another bucket
+- keep probing until an empty slot is found
+
+Java HashMap does not use open addressing, but interviewers may still ask the
+concept for theory questions.
+
+## Load Factor
+
+Load factor is:
+
+```text
+load factor = size / capacity
+```
+
+In Java HashMap, default load factor is `0.75`.
+
+Interpretation:
+- low load factor -> fewer collisions, more memory
+- high load factor -> less memory, more collisions
+
+The load factor decides when rehashing should happen.
+
+## Capacity
+
+Capacity means the number of buckets in the table.
+
+Java HashMap typically uses a power-of-two capacity, such as:
+- 16
+- 32
+- 64
+
+Why power of two matters:
+- index calculation becomes very fast
+- `hash & (n - 1)` works efficiently
+
+## Initial Capacity
+
+Initial capacity is the bucket count created at the beginning.
+
+Default initial capacity in HashMap is `16`.
+
+If you already know the approximate number of elements, choose a larger initial
+capacity to reduce resizing.
+
+Example:
+
+```java
+Map<Integer, Integer> map = new HashMap<>(1000);
+```
+
+## Rehashing
+
+Rehashing happens when the table becomes too full.
+
+In Java HashMap:
+- if `size > threshold`
+- the capacity increases
+- all entries are redistributed into a new table
+
+Threshold is generally:
+
+```text
+threshold = capacity * loadFactor
+```
+
+Rehashing is expensive because every existing entry must be moved, but it does
+not happen on every insert.
+
+## Time Complexity
+
+Average-case complexity:
+- insert: O(1)
+- search: O(1)
+- delete: O(1)
+
+Worst-case complexity:
+- O(n) if many collisions happen in a chain
+
+Modern Java improves worst-case behavior by treeifying long collision chains in
+HashMap, which can reduce some operations to O(log n) inside that bucket.
+
+## Space Complexity
+
+Hashing uses extra space to store:
+- bucket array
+- nodes/entries
+- collision structures
+
+So the space complexity is generally O(n), with some overhead for buckets and
+links.
+
+## Important Takeaways
+
+- Hashing is a speed-up technique for lookup and grouping.
+- A hash table is an array of buckets.
+- Collisions are normal, not an error.
+- Java HashMap uses chaining, not open addressing.
+- `hashCode()` is the key method that powers object hashing.
+
+===============================================================================
+# Chapter 2: `equals()` and `hashCode()`
+===============================================================================
+
+## Introduction
+
+For Java objects, `equals()` and `hashCode()` decide whether two objects should
+be treated as the same logical key.
+
+This is one of the most important interview topics in hashing because HashMap
+and HashSet depend on it.
+
+## Why `hashCode()` Is Important
+
+When you put a key into HashMap:
+1. Java calls `hashCode()`
+2. It finds the bucket
+3. It compares candidate keys using `equals()`
+
+If `hashCode()` is wrong or inconsistent, HashMap may place the object in the
+wrong bucket, and later retrieval can fail even if `equals()` returns true.
+
+## Contract Between `equals()` and `hashCode()`
+
+Rules:
+- if two objects are equal by `equals()`, their `hashCode()` must be equal
+- if two objects have the same `hashCode()`, they may still be unequal
+- if you override `equals()`, you should override `hashCode()` too
+
+Short version:
+equal objects must have equal hash codes, but equal hash codes do not mean equal
+objects.
+
+## Why This Matters in HashMap
+
+HashMap first chooses a bucket using the hash code.
+
+If two different objects have:
+- same logical identity
+- same `hashCode()`
+- same `equals()`
+
+then HashMap will treat them as the same key and update the value instead of
+creating a duplicate entry.
+
+## Example of a Custom Key
+
+```java
+import java.util.Objects;
+
+class Student {
+    int rollNo;
+    String name;
+
+    Student(int rollNo, String name) {
+        this.rollNo = rollNo;
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Student student = (Student) o;
+        return rollNo == student.rollNo && Objects.equals(name, student.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rollNo, name);
+    }
+}
+```
+
+## `==` vs `equals()`
+
+- `==` checks reference identity for objects
+- `equals()` checks logical equality if overridden properly
+
+Example:
+- two different `String` objects may have same content
+- `==` may be false
+- `equals()` may be true
+
+## Common Problem With Mutable Keys
+
+If a field used in `hashCode()` changes after insertion, the object may become
+hard to find in the map.
+
+Example:
+- insert a key with age = 20
+- later change age to 21
+- the hash may change
+- retrieval may fail
+
+Rule:
+never mutate fields that participate in hashing while the object is used as a
+key.
+
+## Modern Java Note
+
+Java records automatically generate correct `equals()` and `hashCode()` based on
+record components. That makes them very convenient as map keys.
+
+## Interview Angles
+
+Interviewers may ask:
+- Why must `equals()` and `hashCode()` be overridden together?
+- What happens if only one is overridden?
+- Can two unequal objects have same hash code?
+- Why are mutable keys dangerous?
+
+===============================================================================
+# Chapter 3: Java HashMap Internal Architecture
+===============================================================================
+
+## Introduction
+
+HashMap is Java's most common key-value hash table implementation.
+
+It stores entries as key-value pairs and provides fast average access.
+
+## Internal Architecture
+
+Internally, HashMap keeps:
+- an array of buckets
+- nodes inside each bucket
+- metadata such as size, capacity, load factor, and threshold
+
+Each node usually stores:
+- hash
+- key
+- value
+- next reference
+
+Visualization:
+
+```text
+table[0] -> null
+table[1] -> Node(k1,v1)
+table[2] -> Node(k2,v2) -> Node(k3,v3)
+table[3] -> null
+```
+
+## How Bucket Index Is Found
+
+HashMap does not use `hash % capacity` directly in the hot path.
+It usually uses a bitwise trick:
+
+```text
+index = (capacity - 1) & hash
+```
+
+This works because capacity is a power of two.
+
+Before indexing, Java also spreads the hash bits so upper bits influence lower
+bits more evenly.
+
+## Put Operation
+
+Simplified put flow:
+1. compute hash for key
+2. find bucket index
+3. if bucket is empty, insert node
+4. if bucket is not empty, scan chain/tree
+5. if same key exists, replace value
+6. otherwise append new node
+7. if size crosses threshold, resize
+
+## Get Operation
+
+Simplified get flow:
+1. compute hash for key
+2. find bucket index
+3. if bucket empty, return null
+4. compare candidate keys with `equals()`
+5. return stored value if match found
+
+This is why `hashCode()` and `equals()` both matter.
+
+## Remove Operation
+
+Remove also:
+- computes bucket index
+- finds the key
+- removes the node from chain/tree
+
+## Null Key and Null Values
+
+HashMap allows:
+- one null key
+- many null values
+
+The null key usually goes to bucket 0.
+
+## Resizing and Rehashing
+
+When the number of entries exceeds threshold:
+- table size doubles
+- entries are redistributed
+- existing bucket structure is rebuilt
+
+This is why large maps may become slower during resize, but the cost is spread
+across many inserts.
+
+## Treeification in Java 8+
+
+If one bucket becomes too crowded, Java can convert that bucket from linked list
+to a red-black tree.
+
+Typical idea:
+- if chain length becomes large enough
+- and table capacity is large enough
+- treeify the bucket
+
+This improves heavy-collision performance.
+
+## Why Capacity Is Usually a Power of Two
+
+Power-of-two capacity makes index calculation cheap:
+
+```text
+index = hash & (capacity - 1)
+```
+
+This is faster than full modulo in practice.
+
+## Useful HashMap Facts
+
+- not thread-safe
+- iteration order is not guaranteed
+- one null key allowed
+- null values allowed
+- average O(1) operations
+- can store duplicate values but not duplicate keys
+
+## Common Mistakes
+
+- assuming insertion order is preserved
+- using mutable objects as keys
+- overriding `equals()` but forgetting `hashCode()`
+- expecting `containsValue()` to be O(1)
+- forgetting that order is arbitrary
+
+===============================================================================
+# Chapter 4: Java HashSet Internal Architecture
+===============================================================================
+
+## Introduction
+
+HashSet stores unique elements only. It is built on top of HashMap.
+
+In interviews, HashSet is the go-to structure for:
+- duplicate detection
+- membership checks
+- uniqueness problems
+
+## Internal Architecture
+
+HashSet is basically a wrapper around HashMap.
+
+Each element is stored as a key in the backing HashMap, and the value is a dummy
+object.
+
+Implementation idea:
+
+```text
+HashSet element -> backing HashMap key
+value -> constant PRESENT object
+```
+
+## Operations
+
+- `add(x)` -> backing map puts key `x`
+- `contains(x)` -> backing map checks key presence
+- `remove(x)` -> backing map removes key
+
+## Duplicate Handling
+
+If you add the same value again:
+- HashSet ignores it
+- size does not increase
+
+That is why HashSet is perfect for "seen before?" problems.
+
+## Null Handling
+
+HashSet allows one null element because its backing HashMap allows one null key.
+
+## Complexity
+
+Average:
+- add: O(1)
+- contains: O(1)
+- remove: O(1)
+
+Worst-case:
+- O(n) with heavy collisions
+
+## Common Mistakes
+
+- using HashSet when frequencies are required
+- assuming HashSet preserves order
+- forgetting that only uniqueness is stored, not count
+
+===============================================================================
+# Chapter 5: Hash Collections and Differences
+===============================================================================
+
+## Introduction
+
+Java has several map/set structures that look similar but solve different needs.
+
+For interviews, you should know when to use each one.
+
+## Comparison Matrix
+
+```text
+Structure          Order           Nulls            Thread-safe   Sorted?   Main Use
+HashMap            No guaranteed   1 null key, yes  No            No        Fast key-value lookup
+HashSet            No guaranteed    1 null element   No            No        Unique membership
+LinkedHashMap      Insertion/access 1 null key, yes  No            No        Ordered map, LRU
+LinkedHashSet      Insertion        1 null element   No            No        Ordered unique set
+TreeMap            Sorted by key    No null key      No            Yes       Sorted key-value
+Hashtable          No guaranteed    No nulls         Yes           No        Legacy synchronized map
+ConcurrentHashMap  No guaranteed    No nulls         Yes           No        High-concurrency map
+```
+
+## LinkedHashMap
+
+LinkedHashMap maintains insertion order by default.
+
+It can also maintain access order, which makes it useful for LRU cache style
+problems.
+
+Internally it combines:
+- hash table for fast lookup
+- doubly linked list for order maintenance
+
+Interview uses:
+- preserve order
+- predictable iteration
+- cache eviction problems
+
+## TreeMap
+
+TreeMap stores keys in sorted order.
+
+It is based on a red-black tree, so operations are O(log n) instead of average
+O(1).
+
+Use TreeMap when:
+- sorted keys are required
+- floor/ceiling queries are needed
+- range queries matter
+
+TreeMap does not allow a null key in normal usage because ordering must be
+defined.
+
+## Hashtable
+
+Hashtable is a legacy synchronized map.
+
+Important facts:
+- older API
+- synchronized methods
+- slower than HashMap in single-threaded use
+- does not allow null key or null value
+
+In modern code, Hashtable is mostly replaced by HashMap, LinkedHashMap, or
+ConcurrentHashMap depending on the use case.
+
+## ConcurrentHashMap
+
+ConcurrentHashMap is a thread-safe map for concurrent access.
+
+Basic overview:
+- supports safe concurrent reads and writes
+- does not allow null keys or null values
+- better throughput than coarse synchronized maps
+- iterators are weakly consistent rather than fail-fast
+
+Interview level takeaway:
+use ConcurrentHashMap when multiple threads will access the map heavily.
+
+## HashMap vs HashSet
+
+- HashMap stores key-value pairs
+- HashSet stores only unique keys/elements
+- HashSet is backed by HashMap
+- HashMap can store duplicate values, HashSet cannot
+- HashMap is for lookup plus associated data
+- HashSet is for membership only
+
+## HashMap vs TreeMap
+
+- HashMap is unordered
+- TreeMap is sorted by key
+- HashMap average operations are O(1)
+- TreeMap operations are O(log n)
+- HashMap allows one null key
+- TreeMap generally does not allow null key
+
+## HashMap vs Hashtable
+
+- HashMap is not synchronized
+- Hashtable is synchronized
+- HashMap allows null key and null values
+- Hashtable allows neither
+- HashMap is faster in single-threaded scenarios
+- Hashtable is legacy
+
+## When to Use What
+
+- need fast lookup and no order -> HashMap
+- need uniqueness only -> HashSet
+- need insertion order -> LinkedHashMap or LinkedHashSet
+- need sorted keys -> TreeMap
+- need multi-thread safety -> ConcurrentHashMap
+- need legacy synchronized map -> Hashtable, but usually avoid it
+
+## Advanced Extra Notes
+
+A few other map types are occasionally mentioned in interviews:
+- `WeakHashMap` for keys that can be garbage-collected
+- `IdentityHashMap` for reference equality using `==`
+- `EnumMap` for enum keys
+
+These are less common than the main hash collections, but good to know.
+
+## Useful HashMap and HashSet Methods
+
+HashMap methods you should know:
+- `put(key, value)` -> insert or update
+- `get(key)` -> fetch value
+- `getOrDefault(key, defaultValue)` -> safe fetch
+- `containsKey(key)` -> membership check
+- `putIfAbsent(key, value)` -> preserve existing value
+- `remove(key)` -> delete entry
+- `replace(key, value)` -> update only if key exists
+- `computeIfAbsent(key, fn)` -> build groups lazily
+- `merge(key, value, fn)` -> very useful for counts and sums
+- `keySet()`, `values()`, `entrySet()` -> iterate through the map
+
+HashSet methods you should know:
+- `add(value)` -> insert
+- `contains(value)` -> check existence
+- `remove(value)` -> delete
+- `size()` -> number of unique values
+
+## Extra Internal Details
+
+Some exact HashMap details that are good to remember:
+- Java spreads hash bits with a mix step like `h ^ (h >>> 16)`
+- bucket index is computed with `(capacity - 1) & hash`
+- resize usually doubles the capacity
+- long collision chains may treeify
+- treeification commonly happens around bucket size `8`
+- treeification usually requires table capacity of at least `64`
+- tree bins can later untreeify when the bucket becomes small again, often
+  around size `6`
+
+These are implementation details, but they are useful in advanced interviews.
+
+===============================================================================
+# Chapter 6: Interview Pattern Master Index
+===============================================================================
+
+## Introduction
+
+Most hashing interview questions are not random. They belong to a small set of
+repeatable patterns.
+
+If you can spot the clue words early, the solution becomes much easier.
+
+## Pattern Recognition
+
+Use hashing when the problem says:
+- count how many times something appears
+- check whether something was seen before
+- find a pair with a target relation
+- track prefix sums
+- group strings by a signature
+- find the first unique item
+- find longest consecutive streak
+- handle sliding window frequency
+
+## Trigger Words
+
+- `count`, `frequency`, `occurrence`, `most common`
+- `duplicate`, `repeat`, `seen`, `unique`
+- `pair`, `target`, `sum`, `complement`
+- `prefix`, `subarray`, `continuous`, `range`
+- `anagram`, `rearrange`, `signature`
+- `consecutive`, `streak`
+- `window`, `substring`, `distinct`
+
+## Brute Force
+
+The brute-force approach usually means:
+- nested loops
+- repeated scanning
+- sorting and rescanning
+- checking every pair or every subarray
+
+## Better Approach
+
+Ask whether the problem can be turned into:
+- frequency tracking
+- membership tracking
+- prefix state tracking
+- key-to-value mapping
+
+## Optimal Approach
+
+The optimal hashing approach usually uses:
+- `HashMap` for count, lookup, or mapping
+- `HashSet` for uniqueness and seen-state
+- `LinkedHashMap` for ordered hash access
+
+## Observation
+
+If the same information is being recomputed again and again, store it once in a
+hash structure and reuse it.
+
+## Core Intuition
+
+Hashing is a memory-for-speed trade.
+
+We spend extra space to avoid repeating work.
+
+## Visualization
+
+```text
+Clue words -> pattern choice
+count      -> HashMap frequency
+seen       -> HashSet
+pair       -> HashMap complement
+prefix     -> prefix sum + HashMap
+anagram    -> frequency signature
+window     -> sliding window + HashMap
+```
+
+## Dry Run
+
+Before coding:
+- identify the state you want to remember
+- choose key and value
+- decide when to update the map/set
+- decide whether first seen or last seen matters
+
+## Interview Questions
+
+- Why does this question look like hashing?
+- What will you store in the map?
+- Why not brute force?
+- What is the collision risk?
+
+## Similar Problems
+
+- all counting problems
+- all pair lookup problems
+- all seen-before problems
+- all prefix sum problems
+
+===============================================================================
+# Chapter 7: Frequency and Counting Patterns
+===============================================================================
+
+## 7.1 Frequency Count Pattern
+
+### Pattern Recognition
+
+Use this when the question asks:
+- how many times each value appears
+- which value appears most
+- which value appears least
+- how many distinct items exist
+- top K frequent items
+
+### Trigger Words
+
+- `frequency`
+- `count`
+- `occurrence`
+- `most frequent`
+- `least frequent`
+- `distinct`
+
+### Brute Force
+
+For every element, scan the whole array again to count it.
+
+That becomes O(n^2).
+
+### Better Approach
+
+If values are small and bounded, a fixed array can be used.
+Otherwise use a `HashMap`.
+
+### Optimal Approach
+
+Store counts in one pass and update them as the values are seen.
+
+### Observation
+
+The same key is repeated many times. We only need to remember the latest count.
+
+### Core Intuition
+
+A frequency map is like a notebook:
+key = item
+value = how many times it appeared
+
+### Dry Run
+
+Array: `2, 5, 2, 7, 5, 2`
+
+- see 2 -> count 1
+- see 5 -> count 1
+- see 2 -> count 2
+- see 7 -> count 1
+- see 5 -> count 2
+- see 2 -> count 3
+
+### Visualization
+
+```text
+2 -> 3
+5 -> 2
+7 -> 1
+```
+
+### Java Code
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class FrequencyCount {
+    public static Map<Integer, Integer> countFrequency(int[] arr) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int x : arr) {
+            freq.put(x, freq.getOrDefault(x, 0) + 1);
+        }
+        return freq;
+    }
+}
+```
+
+### Reusable Template
+
+```java
+Map<T, Integer> freq = new HashMap<>();
+for (T item : items) {
+    freq.put(item, freq.getOrDefault(item, 0) + 1);
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- empty array
+- one element only
+- negative values
+- very large value range
+- duplicate values everywhere
+
+### Common Mistakes
+
+- using a nested loop for counting
+- forgetting `getOrDefault`
+- using array count when the range is huge
+- mixing frequency with presence
+
+### Interview Questions
+
+- count frequencies of numbers
+- find the most frequent element
+- find number of distinct values
+- top K frequent elements
+
+### Similar Problems
+
+- mode of an array
+- sort by frequency
+- majority element
+- duplicates in array
+
+## 7.2 Character Frequency Pattern
+
+### Pattern Recognition
+
+Use this when the input is a string and the question talks about letters,
+characters, or symbols.
+
+### Trigger Words
+
+- `character`
+- `letter`
+- `anagram`
+- `palindrome`
+- `unique character`
+- `repetition`
+
+### Brute Force
+
+Count each character by scanning the whole string again and again.
+
+### Better Approach
+
+If the alphabet is fixed, use `int[]`.
+If the characters are general, use `HashMap<Character, Integer>`.
+
+### Optimal Approach
+
+Count characters in one pass and then use the counts for the required check.
+
+### Observation
+
+Character problems are usually frequency problems in disguise.
+
+### Core Intuition
+
+Each character is a key, and its occurrence count is the value.
+
+### Dry Run
+
+String: `aabccc`
+
+- a -> 1
+- a -> 2
+- b -> 1
+- c -> 1
+- c -> 2
+- c -> 3
+
+### Visualization
+
+```text
+a -> 2
+b -> 1
+c -> 3
+```
+
+### Java Code
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class CharacterFrequency {
+    public static Map<Character, Integer> countChars(String s) {
+        Map<Character, Integer> freq = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            freq.put(ch, freq.getOrDefault(ch, 0) + 1);
+        }
+        return freq;
+    }
+}
+```
+
+### Reusable Template
+
+```java
+int[] freq = new int[26];
+for (char ch : s.toCharArray()) {
+    freq[ch - 'a']++;
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(1) for fixed alphabet, otherwise O(n)
+
+### Edge Cases
+
+- uppercase and lowercase mix
+- spaces
+- punctuation
+- unicode characters
+- empty string
+
+### Common Mistakes
+
+- forgetting case normalization
+- assuming only lowercase letters
+- using the wrong key type
+
+### Interview Questions
+
+- valid anagram
+- first unique character
+- sort characters by frequency
+- find common characters
+
+### Similar Problems
+
+- palindrome check by frequency
+- ransom note
+- isomorphic-style character mapping
+
+## 7.3 Word Frequency Pattern
+
+### Pattern Recognition
+
+Use this when the input is a sentence, document, or list of words.
+
+### Trigger Words
+
+- `word`
+- `sentence`
+- `document`
+- `token`
+- `most common word`
+- `top frequent words`
+
+### Brute Force
+
+Compare every word against every other word and count matches repeatedly.
+
+### Better Approach
+
+Split the text into tokens and store counts in a map.
+
+### Optimal Approach
+
+Normalize each word and count it in a single pass.
+
+### Observation
+
+The real key is usually the normalized word, not the raw word.
+
+### Core Intuition
+
+Think of a document as a bag of words.
+
+### Dry Run
+
+Sentence: `Java is fast and Java is popular`
+
+- Java -> 1
+- is -> 1
+- fast -> 1
+- and -> 1
+- Java -> 2
+- is -> 2
+- popular -> 1
+
+### Visualization
+
+```text
+java -> 2
+is   -> 2
+fast -> 1
+and  -> 1
+popular -> 1
+```
+
+### Java Code
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class WordFrequency {
+    public static Map<String, Integer> countWords(String text) {
+        Map<String, Integer> freq = new HashMap<>();
+        String[] words = text.toLowerCase().split("\\s+");
+
+        for (String word : words) {
+            word = word.replaceAll("[^a-z0-9]", "");
+            if (word.isEmpty()) continue;
+            freq.put(word, freq.getOrDefault(word, 0) + 1);
+        }
+        return freq;
+    }
+}
+```
+
+### Reusable Template
+
+```java
+Map<String, Integer> freq = new HashMap<>();
+for (String word : words) {
+    freq.put(word, freq.getOrDefault(word, 0) + 1);
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- punctuation
+- repeated spaces
+- uppercase/lowercase mix
+- empty text
+- single word input
+
+### Common Mistakes
+
+- forgetting normalization
+- counting punctuation as part of the word
+- using `split(" ")` instead of handling multiple spaces
+
+### Interview Questions
+
+- most frequent word
+- word pattern
+- top K frequent words
+- compare documents
+
+### Similar Problems
+
+- chatbot keyword tracking
+- search term frequency
+- token counting
+
+## 7.4 Counting Problems Pattern
+
+### Pattern Recognition
+
+Use this when the question asks for a number, not just a yes/no answer.
+
+### Trigger Words
+
+- `how many`
+- `count`
+- `number of`
+- `times`
+- `top K`
+- `more than`
+
+### Brute Force
+
+Recompute the answer for each position or each pair.
+
+### Better Approach
+
+Use a frequency map and then post-process the counts.
+
+### Optimal Approach
+
+Use hashing to avoid recounting.
+If the answer depends on frequencies, counts, or frequencies inside a window,
+HashMap is the main tool.
+
+### Observation
+
+Many counting problems are really frequency problems with one extra rule.
+
+### Core Intuition
+
+Count once, use many times.
+
+### Dry Run
+
+If the question is "how many distinct elements are present", store every
+element in a set or map and return the final size.
+
+### Visualization
+
+```text
+input -> build map/set -> process counts -> final answer
+```
+
+### Java Code
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class CountingProblems {
+    public static int countDistinct(int[] arr) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int x : arr) {
+            freq.put(x, freq.getOrDefault(x, 0) + 1);
+        }
+        return freq.size();
+    }
+}
+```
+
+### Reusable Template
+
+```java
+Map<T, Integer> freq = new HashMap<>();
+for (T x : data) {
+    freq.put(x, freq.getOrDefault(x, 0) + 1);
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- duplicates only
+- all values unique
+- empty input
+- large counts
+
+### Common Mistakes
+
+- using hash structures but forgetting the final post-processing step
+- not checking whether the count should include duplicates or distinct values
+
+### Interview Questions
+
+- count distinct elements
+- top K frequent elements
+- sort by frequency
+- mode of array/string
+
+### Similar Problems
+
+- majority element
+- count occurrences of a target
+- frequency histogram
+
+===============================================================================
+# Chapter 8: Duplicate Detection and HashSet Patterns
+===============================================================================
+
+## 8.1 Duplicate Detection Pattern
+
+### Pattern Recognition
+
+Use this when the question asks whether a value has already appeared.
+
+### Trigger Words
+
+- `duplicate`
+- `repeat`
+- `seen`
+- `already present`
+- `first repeated`
+
+### Brute Force
+
+Compare each element with every other element.
+
+### Better Approach
+
+Sort first, then check neighboring values.
+
+### Optimal Approach
+
+Use a HashSet to remember what has already been seen.
+
+### Observation
+
+If an item appears again, it is a duplicate.
+
+### Core Intuition
+
+HashSet is a memory of the past.
+
+### Dry Run
+
+Array: `1, 2, 3, 2`
+
+- add 1
+- add 2
+- add 3
+- 2 is already present -> duplicate found
+
+### Visualization
+
+```text
+seen = {1, 2, 3}
+next 2 -> duplicate
+```
+
+### Java Code
+
+```java
+import java.util.HashSet;
+import java.util.Set;
+
+public class DuplicateDetection {
+    public static boolean hasDuplicate(int[] arr) {
+        Set<Integer> seen = new HashSet<>();
+        for (int x : arr) {
+            if (seen.contains(x)) return true;
+            seen.add(x);
+        }
+        return false;
+    }
+}
+```
+
+### Reusable Template
+
+```java
+Set<T> seen = new HashSet<>();
+for (T x : data) {
+    if (!seen.add(x)) {
+        // duplicate logic
+    }
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- empty input
+- one element
+- all unique
+- all same
+
+### Common Mistakes
+
+- using HashMap when only presence is needed
+- not stopping early after finding the first duplicate
+- assuming sorted input
+
+### Interview Questions
+
+- contains duplicate
+- first repeated element
+- find duplicate in array
+- duplicate characters in string
+
+### Similar Problems
+
+- check if any pair repeats
+- remove duplicates
+- keep only unique values
+
+## 8.2 HashSet Based Problems
+
+### Pattern Recognition
+
+Use HashSet whenever the question is about membership, uniqueness, or
+eliminating repeated visits.
+
+### Trigger Words
+
+- `unique`
+- `distinct`
+- `contains`
+- `visited`
+- `present`
+
+### Brute Force
+
+Repeated scanning or nested loops to check whether something exists.
+
+### Better Approach
+
+Sort the data and scan once if order is not important.
+
+### Optimal Approach
+
+Use a HashSet for O(1) average membership checks.
+
+### Observation
+
+Set problems are often simpler than map problems because you only need to know
+whether something exists, not how many times it exists.
+
+### Core Intuition
+
+HashSet = yes/no memory.
+
+### Dry Run
+
+Insert 5, 1, 9 into a set.
+When 1 appears again, contains returns true immediately.
+
+### Visualization
+
+```text
+set = {5, 1, 9}
+query 1 -> found
+query 7 -> not found
+```
+
+### Java Code
+
+```java
+import java.util.HashSet;
+import java.util.Set;
+
+public class HashSetProblems {
+    public static int distinctCount(int[] arr) {
+        Set<Integer> set = new HashSet<>();
+        for (int x : arr) {
+            set.add(x);
+        }
+        return set.size();
+    }
+}
+```
+
+### Reusable Template
+
+```java
+Set<T> set = new HashSet<>();
+for (T x : data) {
+    set.add(x);
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- duplicates only
+- empty input
+- null values when allowed
+
+### Common Mistakes
+
+- trying to count with a set
+- forgetting that a set has no duplicates
+
+### Interview Questions
+
+- contains duplicate
+- distinct elements count
+- intersection of arrays
+- longest consecutive sequence
+
+### Similar Problems
+
+- remove duplicates from string/array
+- membership queries
+- cycle detection style visited-state problems
+
+===============================================================================
+# Chapter 9: Pair Sum, Two Sum, and Lookup Patterns
+===============================================================================
+
+## 9.1 Pair Sum Pattern
+
+### Pattern Recognition
+
+Use this when the question asks whether two numbers can make a target sum or
+difference.
+
+### Trigger Words
+
+- `pair`
+- `sum`
+- `target`
+- `complement`
+- `difference`
+
+### Brute Force
+
+Check every pair with nested loops.
+
+### Better Approach
+
+If the array can be sorted and original indices are not needed, two pointers can
+help.
+
+### Optimal Approach
+
+Use a HashMap or HashSet to remember what value would complete the target.
+
+### Observation
+
+For each number `x`, the needed partner is `target - x`.
+
+### Core Intuition
+
+Store what you need before searching for it again.
+
+### Dry Run
+
+Array: `[2, 7, 11, 15]`, target `9`
+
+- see 2 -> need 7 -> store 2
+- see 7 -> need 2 -> found
+
+### Visualization
+
+```text
+2 + 7 = 9
+need 7 after seeing 2
+```
+
+### Java Code
+
+```java
+import java.util.HashSet;
+import java.util.Set;
+
+public class PairSum {
+    public static boolean hasPairSum(int[] arr, int target) {
+        Set<Integer> seen = new HashSet<>();
+        for (int x : arr) {
+            if (seen.contains(target - x)) return true;
+            seen.add(x);
+        }
+        return false;
+    }
+}
+```
+
+### Reusable Template
+
+```java
+Set<Integer> seen = new HashSet<>();
+for (int x : arr) {
+    int need = target - x;
+    if (seen.contains(need)) return true;
+    seen.add(x);
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- duplicate numbers
+- negative numbers
+- zero target
+- no valid pair
+
+### Common Mistakes
+
+- using the same element twice
+- forgetting that order may matter for indices
+- not handling duplicates correctly
+
+### Interview Questions
+
+- pair sum exists?
+- count pairs with sum K
+- pair with given difference
+- zero-sum pair
+
+### Similar Problems
+
+- 3Sum helper lookup
+- subarray sum variants
+- complement search
+
+## 9.2 Two Sum Pattern
+
+### Pattern Recognition
+
+This is the same family as pair sum, but often the interviewer wants the index
+pairs rather than just a yes/no answer.
+
+### Trigger Words
+
+- `two sum`
+- `indices`
+- `return positions`
+- `complement`
+
+### Brute Force
+
+Try all index pairs and return the first match.
+
+### Better Approach
+
+Sort with original indices if reordering is allowed.
+
+### Optimal Approach
+
+Use a HashMap from value to index and solve in one pass.
+
+### Observation
+
+When we process the current number, if its complement was seen earlier, the pair
+is complete.
+
+### Core Intuition
+
+Store value -> index for the future match.
+
+### Dry Run
+
+Array: `[2, 7, 11, 15]`, target `9`
+
+- index 0, value 2 -> store `2 -> 0`
+- index 1, value 7 -> need 2, found at index 0
+
+### Visualization
+
+```text
+map:
+2 -> 0
+7 -> 1
+need 2 for 7
+```
+
+### Java Code
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class TwoSum {
+    public static int[] twoSum(int[] nums, int target) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            int need = target - nums[i];
+            if (map.containsKey(need)) {
+                return new int[] { map.get(need), i };
+            }
+            map.put(nums[i], i);
+        }
+        return new int[] { -1, -1 };
+    }
+}
+```
+
+### Reusable Template
+
+```java
+Map<Integer, Integer> indexMap = new HashMap<>();
+for (int i = 0; i < nums.length; i++) {
+    int need = target - nums[i];
+    if (indexMap.containsKey(need)) {
+        return new int[] { indexMap.get(need), i };
+    }
+    indexMap.put(nums[i], i);
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- duplicate values
+- same number cannot be reused unless allowed
+- multiple valid answers
+- no answer exists
+
+### Common Mistakes
+
+- adding the current element before checking the complement
+- returning values instead of indices when indices are requested
+- not handling duplicates carefully
+
+### Interview Questions
+
+- classic Two Sum
+- Two Sum II
+- two sum with sorted array
+- two sum with duplicates
+
+### Similar Problems
+
+- pair with target sum
+- count pairs in array
+- sum of two linked list values
+
+## 9.3 Lookup Problems Pattern
+
+### Pattern Recognition
+
+Use this when the question is not exactly "sum", but the real need is fast
+lookup of whether something exists or where it was seen before.
+
+### Trigger Words
+
+- `lookup`
+- `search`
+- `exists`
+- `seen before`
+- `last seen`
+- `complement`
+
+### Brute Force
+
+Scan the list every time you need a match.
+
+### Better Approach
+
+Store the values that may be needed later.
+
+### Optimal Approach
+
+Use a HashMap or HashSet depending on whether you need:
+- only presence -> HashSet
+- presence plus index/count -> HashMap
+
+### Observation
+
+The map is often a precomputed answer table.
+
+### Core Intuition
+
+Future queries become constant-time checks.
+
+### Dry Run
+
+For zero-sum pair:
+- current x
+- needed `-x`
+- if `-x` already exists, answer found
+
+### Visualization
+
+```text
+need -> seen
+current value -> check if need already exists
+```
+
+### Java Code
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class LookupPattern {
+    public static boolean seenBefore(int[] arr, int target) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int x : arr) {
+            if (map.containsKey(target - x)) return true;
+            map.put(x, 1);
+        }
+        return false;
+    }
+}
+```
+
+### Reusable Template
+
+```java
+Map<K, V> map = new HashMap<>();
+for (Item item : items) {
+    if (map.containsKey(item.key())) {
+        // answer or update
+    }
+    map.put(item.key(), item.value());
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- missing match
+- duplicate keys
+- negative values
+- self-match not allowed
+
+### Common Mistakes
+
+- using the wrong data structure
+- not checking if the answer should be first seen or last seen
+
+### Interview Questions
+
+- zero-sum pair
+- pair with given difference
+- complement exists
+- repeated value lookup
+
+### Similar Problems
+
+- two sum
+- duplicate detection
+- frequency queries
+
+===============================================================================
+# Chapter 10: Prefix Sum + HashMap
+===============================================================================
+
+## Introduction
+
+Prefix sum + HashMap is one of the most important advanced hashing patterns.
+
+It is used when the problem talks about subarrays, continuous segments, or
+counting subarrays with a given sum.
+
+## Pattern Recognition
+
+Use this pattern when the question says:
+- subarray sum
+- continuous segment
+- prefix
+- longest subarray
+- count subarrays
+- zero sum
+- sum equals K
+
+## Trigger Words
+
+- `subarray`
+- `continuous`
+- `prefix`
+- `sum`
+- `target`
+- `count`
+- `longest`
+
+## Brute Force
+
+Try every start and end index and compute the subarray sum again and again.
+
+That is O(n^2) or worse.
+
+## Better Approach
+
+Prefix sums reduce repeated summation.
+
+Instead of recomputing sums, store the running sum so far.
+
+## Optimal Approach
+
+Use a HashMap to remember:
+- how many times a prefix sum occurred
+- or the first index where a prefix sum occurred
+
+## Observation
+
+If:
+
+```text
+prefix[i] - prefix[j] = target
+```
+
+then the subarray from `j + 1` to `i` has sum `target`.
+
+## Core Intuition
+
+The current prefix sum can find a previous prefix sum that makes the target
+subarray.
+
+## Dry Run
+
+Array: `[1, 1, 1]`, target `2`
+
+- prefix = 1, need `-1` before index 0, not found
+- prefix = 2, need `0`, found once -> answer count increases
+- prefix = 3, need `1`, found once -> answer count increases
+
+## Visualization
+
+```text
+prefix sums:
+0, 1, 2, 3
+subarray sum = current prefix - previous prefix
+```
+
+## Java Code
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class PrefixSumHashMap {
+    public static int countSubarraysWithSumK(int[] arr, int k) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        freq.put(0, 1);
+
+        int prefix = 0;
+        int count = 0;
+
+        for (int x : arr) {
+            prefix += x;
+            count += freq.getOrDefault(prefix - k, 0);
+            freq.put(prefix, freq.getOrDefault(prefix, 0) + 1);
+        }
+        return count;
+    }
+}
+```
+
+## Reusable Template
+
+```java
+Map<Integer, Integer> freq = new HashMap<>();
+freq.put(0, 1);
+int prefix = 0;
+for (int x : arr) {
+    prefix += x;
+    answer += freq.getOrDefault(prefix - k, 0);
+    freq.put(prefix, freq.getOrDefault(prefix, 0) + 1);
+}
+```
+
+## Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+## Edge Cases
+
+- negative numbers
+- zero target
+- empty array
+- prefix sum overflow
+- multiple valid subarrays
+
+## Common Mistakes
+
+- forgetting to initialize `freq.put(0, 1)`
+- using sliding window when negatives are present
+- overwriting prefix counts incorrectly
+
+## Interview Questions
+
+- subarray sum equals K
+- count subarrays with sum K
+- longest subarray with sum K
+- zero-sum subarray
+
+## Similar Problems
+
+- binary subarrays with sum
+- continuous subarray sum
+- subarray sum divisible by K
+- longest zero-sum subarray
+
+===============================================================================
+# Chapter 11: Longest Consecutive Sequence
+===============================================================================
+
+## Introduction
+
+This is a classic HashSet problem.
+
+The input is usually unsorted, and the interviewer wants the longest chain of
+consecutive numbers.
+
+## Pattern Recognition
+
+Use this when the question says:
+- longest consecutive sequence
+- longest streak
+- consecutive numbers
+- uninterrupted chain
+
+## Trigger Words
+
+- `consecutive`
+- `streak`
+- `sequence`
+- `longest`
+- `next number`
+
+## Brute Force
+
+Try to extend a sequence from every element by searching repeatedly.
+
+That becomes O(n^2).
+
+Another brute-force option is sorting first, then scanning.
+
+## Better Approach
+
+Sort the array and scan once.
+
+That gives O(n log n) time and is easier than nested loops.
+
+## Optimal Approach
+
+Use a HashSet and start only from values that do not have a predecessor.
+
+If `x - 1` is not in the set, `x` may be the start of a sequence.
+
+## Observation
+
+You should only expand forward from the beginning of each chain.
+
+## Core Intuition
+
+HashSet tells us in O(1) average time whether the next consecutive number exists.
+
+## Dry Run
+
+Array: `[100, 4, 200, 1, 3, 2]`
+
+- 100 -> no 99, start chain length 1
+- 4 -> no 3? actually 3 exists, so skip as a start
+- 200 -> no 199, start chain length 1
+- 1 -> no 0, start chain
+- 2 and 3 extend 1 -> chain length 4
+
+Longest length = 4
+
+## Visualization
+
+```text
+set = {100, 4, 200, 1, 3, 2}
+start at 1 -> 2 -> 3 -> 4
+length = 4
+```
+
+## Java Code
+
+```java
+import java.util.HashSet;
+import java.util.Set;
+
+public class LongestConsecutiveSequence {
+    public static int longestConsecutive(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for (int x : nums) set.add(x);
+
+        int best = 0;
+        for (int x : set) {
+            if (!set.contains(x - 1)) {
+                int len = 1;
+                while (set.contains(x + len)) {
+                    len++;
+                }
+                best = Math.max(best, len);
+            }
+        }
+        return best;
+    }
+}
+```
+
+## Reusable Template
+
+```java
+Set<Integer> set = new HashSet<>();
+for (int x : arr) set.add(x);
+
+for (int x : set) {
+    if (!set.contains(x - 1)) {
+        int len = 1;
+        while (set.contains(x + len)) len++;
+        answer = Math.max(answer, len);
+    }
+}
+```
+
+## Complexity
+
+- Time: O(n) average
+- Space: O(n)
+
+## Edge Cases
+
+- empty array
+- all numbers same
+- negative values
+- already sorted input
+
+## Common Mistakes
+
+- starting expansion from every number
+- forgetting to skip duplicates
+- sorting when O(n) solution is expected
+
+## Interview Questions
+
+- longest consecutive sequence
+- longest streak in unsorted array
+- longest run of integers
+
+## Similar Problems
+
+- consecutive ones in binary array
+- increasing chain problems
+- sequence-start detection with HashSet
+
+===============================================================================
+# Chapter 12: Group Anagrams
+===============================================================================
+
+## Introduction
+
+Group Anagrams is a signature-based HashMap problem.
+
+All words with the same character multiset should go into the same bucket.
+
+## Pattern Recognition
+
+Use this when the question says:
+- anagram
+- group words
+- rearranged letters
+- same characters in different order
+
+## Trigger Words
+
+- `anagram`
+- `group`
+- `rearrange`
+- `same letters`
+- `signature`
+
+## Brute Force
+
+Compare every word with every other word after checking if they are anagrams.
+
+This is too slow for large input.
+
+## Better Approach
+
+Sort each word and use the sorted string as the grouping key.
+
+## Optimal Approach
+
+Use a frequency signature as the key when the alphabet is fixed and small.
+
+This avoids repeated sorting and can be faster for long strings.
+
+## Observation
+
+Anagrams have the same character count pattern.
+
+## Core Intuition
+
+Map the signature -> list of words.
+
+## Dry Run
+
+Input:
+`eat, tea, tan, ate, nat, bat`
+
+- eat -> key `aet`
+- tea -> key `aet`
+- tan -> key `ant`
+- ate -> key `aet`
+- nat -> key `ant`
+- bat -> key `abt`
+
+## Visualization
+
+```text
+aet -> [eat, tea, ate]
+ant -> [tan, nat]
+abt -> [bat]
+```
+
+## Java Code
+
+```java
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class GroupAnagrams {
+    public static List<List<String>> group(String[] words) {
+        Map<String, List<String>> map = new HashMap<>();
+
+        for (String word : words) {
+            char[] ch = word.toCharArray();
+            Arrays.sort(ch);
+            String key = new String(ch);
+            map.computeIfAbsent(key, k -> new ArrayList<>()).add(word);
+        }
+
+        return new ArrayList<>(map.values());
+    }
+}
+```
+
+## Reusable Template
+
+```java
+Map<String, List<String>> groups = new HashMap<>();
+for (String word : words) {
+    String key = buildSignature(word);
+    groups.computeIfAbsent(key, k -> new ArrayList<>()).add(word);
+}
+```
+
+## Complexity
+
+- Time: O(n * k log k) with sorting, where k is word length
+- Time: O(n * k) with frequency signature
+- Space: O(n * k)
+
+## Edge Cases
+
+- empty strings
+- duplicate words
+- uppercase/lowercase mix
+- non-alphabet characters
+
+## Common Mistakes
+
+- using the raw word as the key
+- not normalizing the signature
+- forgetting to reset frequency arrays when reusing them
+
+## Interview Questions
+
+- group anagrams
+- valid anagram
+- find all anagrams in a string
+- group shifted strings
+
+## Similar Problems
+
+- character frequency signature
+- pattern matching on letters
+- bucket by canonical form
+
+===============================================================================
+# Chapter 13: First Unique Character
+===============================================================================
+
+## Introduction
+
+This pattern asks for the first element or character that appears exactly once.
+
+The usual answer is a two-pass frequency solution.
+
+## Pattern Recognition
+
+Use this when the question says:
+- first unique character
+- first non-repeating character
+- first character with count 1
+
+## Trigger Words
+
+- `first`
+- `unique`
+- `non-repeating`
+- `appears once`
+- `count 1`
+
+## Brute Force
+
+For each character, scan the rest of the string to check whether it repeats.
+
+That is O(n^2).
+
+## Better Approach
+
+First count all frequencies, then scan again to find the earliest count-1 item.
+
+## Optimal Approach
+
+For strings, the two-pass frequency method is already optimal in practice.
+For streams, use a queue plus counts.
+
+## Observation
+
+You need global frequency information before you can know whether the first
+unique item really is unique.
+
+## Core Intuition
+
+Count first, then choose the earliest survivor.
+
+## Dry Run
+
+String: `leetcode`
+
+- count l=1, e=3, t=1, c=1, o=1, d=1
+- scan left to right
+- l has count 1 -> answer is `l`
+
+## Visualization
+
+```text
+freq: l1 e3 t1 c1 o1 d1
+scan: l -> unique
+```
+
+## Java Code
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class FirstUniqueCharacter {
+    public static int firstUniqueIndex(String s) {
+        Map<Character, Integer> freq = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            freq.put(ch, freq.getOrDefault(ch, 0) + 1);
+        }
+
+        for (int i = 0; i < s.length(); i++) {
+            if (freq.get(s.charAt(i)) == 1) return i;
+        }
+        return -1;
+    }
+}
+```
+
+## Reusable Template
+
+```java
+Map<Character, Integer> freq = new HashMap<>();
+for (char ch : s.toCharArray()) {
+    freq.put(ch, freq.getOrDefault(ch, 0) + 1);
+}
+for (int i = 0; i < s.length(); i++) {
+    if (freq.get(s.charAt(i)) == 1) return i;
+}
+```
+
+## Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+## Edge Cases
+
+- empty string
+- all characters repeated
+- one character only
+- case sensitivity
+
+## Common Mistakes
+
+- returning the first character instead of the first unique one
+- forgetting the second scan
+- mixing up first occurrence and first unique occurrence
+
+## Interview Questions
+
+- first unique character in string
+- first non-repeating number
+- first unique element in stream
+
+## Similar Problems
+
+- first repeated character
+- unique element detection
+- queue-based stream uniqueness
+
+===============================================================================
+# Chapter 14: Majority Element (HashMap Approach)
+===============================================================================
+
+## Introduction
+
+This pattern asks for the value that appears more than `n / 2` times.
+
+HashMap is the easiest way to solve it when the interviewer wants a counting
+approach.
+
+## Pattern Recognition
+
+Use this when the question says:
+- majority element
+- dominant element
+- appears more than half
+- frequent leader
+
+## Trigger Words
+
+- `majority`
+- `more than n/2`
+- `dominant`
+- `leader`
+- `appears more than half`
+
+## Brute Force
+
+Count every value from scratch and check whether it crosses the threshold.
+
+## Better Approach
+
+Use a HashMap and count each value in one pass.
+
+## Optimal Approach
+
+If the interview asks for O(1) space, Moore Voting is better.
+
+But if the question specifically wants a hashing solution, HashMap is the
+standard answer.
+
+## Observation
+
+The majority element is the one whose count exceeds the threshold.
+
+## Core Intuition
+
+Keep updating counts until one value crosses the required limit.
+
+## Dry Run
+
+Array: `[2, 2, 1, 1, 1, 2, 2]`
+
+- 2 -> count 1
+- 2 -> count 2
+- 1 -> count 1
+- 1 -> count 2
+- 1 -> count 3
+- 2 -> count 3
+- 2 -> count 4 -> majority found
+
+## Visualization
+
+```text
+2 -> 4
+1 -> 3
+threshold = 3 for n = 7
+```
+
+## Java Code
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class MajorityElementHashMap {
+    public static int majorityElement(int[] nums) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        int threshold = nums.length / 2;
+
+        for (int x : nums) {
+            int count = freq.getOrDefault(x, 0) + 1;
+            if (count > threshold) return x;
+            freq.put(x, count);
+        }
+        return -1;
+    }
+}
+```
+
+## Reusable Template
+
+```java
+Map<Integer, Integer> freq = new HashMap<>();
+int threshold = arr.length / 2;
+for (int x : arr) {
+    int count = freq.getOrDefault(x, 0) + 1;
+    if (count > threshold) return x;
+    freq.put(x, count);
+}
+```
+
+## Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+## Edge Cases
+
+- no majority element exists
+- all elements same
+- negative values
+- threshold boundary exactly equal to `n / 2`
+
+## Common Mistakes
+
+- using `>=` instead of `>`
+- forgetting to return a special value when no majority exists
+- confusing majority element with most frequent element
+
+## Interview Questions
+
+- majority element
+- majority element II
+- element appearing more than half
+- element appearing more than n/3
+
+## Similar Problems
+
+- mode of array
+- top frequent element
+- voting algorithm family
+
+===============================================================================
+# Chapter 15: Mapping and Index Mapping Patterns
+===============================================================================
+
+## Introduction
+
+This family uses HashMap to map a value to an index, position, or last seen
+location.
+
+It is a very common hidden pattern in string and array interviews.
+
+## Pattern Recognition
+
+Use this when the question needs:
+- first seen index
+- last seen index
+- position mapping
+- value to index lookup
+- character to index lookup
+
+## Trigger Words
+
+- `index`
+- `position`
+- `last seen`
+- `first seen`
+- `mapping`
+- `location`
+
+## Brute Force
+
+Scan the whole array/string every time you need the index of a value.
+
+## Better Approach
+
+Store the index the first time or last time the value appears.
+
+## Optimal Approach
+
+Use `HashMap<T, Integer>` for quick index lookup.
+
+Choose carefully:
+- `putIfAbsent` for first seen
+- plain `put` for last seen
+
+## Observation
+
+Many problems become easier if you remember where something appeared.
+
+## Core Intuition
+
+The map acts like a GPS:
+value -> position
+
+## Dry Run
+
+Array: `[1, 2, 3, 2, 1]`
+
+- 1 -> index 0
+- 2 -> index 1
+- 3 -> index 2
+- 2 -> already seen at index 1
+- 1 -> already seen at index 0
+
+## Visualization
+
+```text
+1 -> 0
+2 -> 1
+3 -> 2
+```
+
+## Java Code
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class IndexMapping {
+    public static Map<Integer, Integer> lastSeenIndex(int[] arr) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            map.put(arr[i], i);
+        }
+        return map;
+    }
+}
+```
+
+## Reusable Template
+
+```java
+Map<T, Integer> firstSeen = new HashMap<>();
+for (int i = 0; i < arr.length; i++) {
+    firstSeen.putIfAbsent(arr[i], i);
+}
+```
+
+## Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+## Edge Cases
+
+- duplicate values
+- first seen vs last seen confusion
+- empty input
+- one-based vs zero-based index questions
+
+## Common Mistakes
+
+- overwriting the first index when the problem needs earliest occurrence
+- using the wrong map update method
+
+## Interview Questions
+
+- first occurrence index
+- last occurrence index
+- minimum index difference
+- two sum indices
+
+## Similar Problems
+
+- longest substring without repeating characters
+- repeated character positions
+- duplicate detection with distance
+
+===============================================================================
+# Chapter 16: Sliding Window + HashMap
+===============================================================================
+
+## Introduction
+
+Sliding window + HashMap is used when the problem is about a contiguous
+substring or subarray and the state of the current window must be tracked.
+
+## Pattern Recognition
+
+Use this when the question mentions:
+- substring
+- subarray
+- window
+- at most K
+- exactly K
+- distinct elements
+- repeated characters
+
+## Trigger Words
+
+- `window`
+- `substring`
+- `subarray`
+- `distinct`
+- `unique`
+- `at most`
+- `at least`
+
+## Brute Force
+
+Check every possible window and recompute its properties.
+
+## Better Approach
+
+Use the sliding window to move left and right pointers while maintaining counts
+in a HashMap.
+
+## Optimal Approach
+
+Each element enters and leaves the window at most once.
+
+The HashMap keeps the current window state accurate in O(1) average updates.
+
+## Observation
+
+If the window becomes invalid, shrink it until it becomes valid again.
+
+## Core Intuition
+
+The map tells us what is inside the current window.
+
+## Dry Run
+
+String: `abcabcbb`
+
+- expand until repeated `a`, `b`, or `c`
+- shrink from the left when repetition appears
+- keep the best window length seen so far
+
+## Visualization
+
+```text
+left -> current window -> right
+map keeps counts of chars inside the window
+```
+
+## Java Code
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class SlidingWindowHashMap {
+    public static int longestUniqueSubstring(String s) {
+        Map<Character, Integer> freq = new HashMap<>();
+        int left = 0, best = 0;
+
+        for (int right = 0; right < s.length(); right++) {
+            char ch = s.charAt(right);
+            freq.put(ch, freq.getOrDefault(ch, 0) + 1);
+
+            while (freq.get(ch) > 1) {
+                char leftChar = s.charAt(left++);
+                freq.put(leftChar, freq.get(leftChar) - 1);
+                if (freq.get(leftChar) == 0) freq.remove(leftChar);
+            }
+
+            best = Math.max(best, right - left + 1);
+        }
+        return best;
+    }
+}
+```
+
+## Reusable Template
+
+```java
+Map<K, Integer> freq = new HashMap<>();
+int left = 0;
+for (int right = 0; right < n; right++) {
+    freq.put(arr[right], freq.getOrDefault(arr[right], 0) + 1);
+    while (windowInvalid(freq)) {
+        freq.put(arr[left], freq.get(arr[left]) - 1);
+        if (freq.get(arr[left]) == 0) freq.remove(arr[left]);
+        left++;
+    }
+    answer = Math.max(answer, right - left + 1);
+}
+```
+
+## Complexity
+
+- Time: O(n)
+- Space: O(k) or O(n) depending on the alphabet/window
+
+## Edge Cases
+
+- empty string
+- all characters unique
+- all characters same
+- window conditions with exact count
+
+## Common Mistakes
+
+- using `if` instead of `while` while shrinking
+- not decrementing counts correctly
+- forgetting to remove zero-count keys
+
+## Interview Questions
+
+- longest substring without repeating characters
+- longest substring with at most K distinct characters
+- minimum window substring
+- find all anagrams in a string
+- count distinct elements in every window
+
+## Similar Problems
+
+- subarrays with K distinct integers
+- character replacement window problems
+- frequency constraint problems
+
+===============================================================================
+# Chapter 17: Common Interview Problem Bank
+===============================================================================
+
+## Introduction
+
+This section is a quick revision bank of the most common hashing questions.
+
+The point is not to write full solutions again, but to remember the pattern each
+problem belongs to.
+
+## Frequency and Counting
+
+- Top K Frequent Elements -> frequency map + heap/bucket follow-up
+- Top K Frequent Words -> word frequency map
+- Sort Characters by Frequency -> frequency map + ordering
+- Sort Array by Increasing Frequency -> frequency map
+- Count Distinct Elements -> HashSet or HashMap
+- Most Frequent Character -> character frequency
+- Majority Element -> frequency map or Moore voting
+- Majority Element II -> frequency map with threshold `n / 3`
+
+## Duplicate and Set Problems
+
+- Contains Duplicate -> HashSet
+- Contains Duplicate II -> sliding window + HashSet
+- Find All Duplicates in an Array -> HashSet or marking approach
+- First Repeated Element -> HashSet
+- Intersection of Two Arrays -> set intersection
+- Intersection of Two Arrays II -> count map
+- Happy Number -> HashSet cycle detection
+
+## Pair and Lookup Problems
+
+- Two Sum -> HashMap
+- Two Sum II -> two pointers or hash if needed
+- Pair Sum -> HashSet / HashMap
+- Pair with Given Difference -> HashSet / HashMap
+- Count Pairs With Sum K -> frequency map
+- Zero Sum Pair -> HashMap of complements
+- 4Sum helper lookups -> Hashing inside nested loops
+
+## Prefix Sum Problems
+
+- Subarray Sum Equals K -> prefix sum + HashMap
+- Count Subarrays With Sum K -> prefix sum frequency map
+- Longest Subarray With Sum K -> prefix sum earliest index
+- Longest Zero Sum Subarray -> prefix sum + HashMap
+- Continuous Subarray Sum -> prefix sum reasoning
+- Subarray Sum Divisible by K -> prefix modulo map
+- Binary Subarrays With Sum -> prefix + count map
+
+## String and Anagram Problems
+
+- Valid Anagram -> character frequency
+- Group Anagrams -> signature map
+- Find All Anagrams in a String -> sliding window + frequency map
+- Ransom Note -> character counts
+- Word Pattern -> mapping words to pattern chars
+- Isomorphic Strings -> mapping both directions
+- First Unique Character -> frequency + scan
+- Common Characters -> frequency intersection
+
+## Sliding Window Problems
+
+- Longest Substring Without Repeating Characters -> sliding window + map
+- Longest Substring With At Most K Distinct Characters -> sliding window + map
+- Minimum Window Substring -> sliding window + frequency map
+- Count Distinct Elements in Every Window -> sliding window + map
+
+## Consecutive and Sequence Problems
+
+- Longest Consecutive Sequence -> HashSet
+- Range-style presence checks -> HashSet
+- Consecutive number streak -> HashSet start detection
+
+## Mapping and Index Problems
+
+- First Seen Index -> HashMap
+- Last Seen Index -> HashMap
+- Minimum Index Difference -> index map
+- Duplicate Within Distance K -> map or windowed set
+- Value to Position Map -> HashMap
+
+## Similar Problems
+
+- any question that says "remember", "seen", "count", "pair", "prefix",
+  "anagram", or "unique" usually hides hashing
+
+===============================================================================
+# Chapter 18: Revision Sheet
+===============================================================================
+
+## Core Definitions
+
+- Hashing = converting a key into a bucket address
+- Hash table = array of buckets
+- Hash function = key to integer transform
+- Bucket = slot in the table
+- Collision = two keys landing in the same bucket
+- Chaining = bucket stores a linked list or tree of entries
+
+## Default Java HashMap Facts
+
+- default initial capacity = 16
+- default load factor = 0.75
+- null key allowed = yes, one
+- null values allowed = yes
+- order guaranteed = no
+- thread-safe = no
+
+## Useful Formulas
+
+```text
+threshold = capacity * loadFactor
+index = (capacity - 1) & hash
+subarray sum = prefix[r] - prefix[l - 1]
+majority threshold = n / 2
+```
+
+## Time Complexity Quick View
+
+- HashMap average get/put/remove = O(1)
+- HashMap worst-case = O(n)
+- TreeMap get/put/remove = O(log n)
+- HashSet average contains/add/remove = O(1)
+- LinkedHashMap = same average as HashMap with order overhead
+- ConcurrentHashMap = good concurrent performance, no nulls
+
+## Pattern Memory
+
+- count -> HashMap
+- seen -> HashSet
+- complement -> HashMap
+- prefix -> HashMap
+- anagram -> signature map
+- window -> sliding window + HashMap
+- consecutive -> HashSet
+
+## What To Remember First
+
+1. What should the key be?
+2. What should the value be?
+3. Do I need count, index, or just existence?
+4. Is the data ordered or unordered?
+5. Are there negative numbers or duplicates?
+
+===============================================================================
+# Chapter 19: Cheat Sheet
+===============================================================================
+
+## Structure Choice
+
+- use HashMap when you need key -> value storage
+- use HashSet when you only need uniqueness or membership
+- use LinkedHashMap when order matters
+- use TreeMap when keys must be sorted
+- use Hashtable only for legacy synchronized code
+- use ConcurrentHashMap for concurrent access
+
+## Fast Clues
+
+- `count` -> frequency map
+- `duplicate` -> set
+- `pair sum` -> complement map
+- `subarray sum` -> prefix sum + map
+- `anagram` -> frequency signature
+- `unique` -> count map + scan
+- `consecutive` -> set
+- `window` -> sliding window + map
+
+## Common Pitfalls
+
+- forgetting `equals()` and `hashCode()` together
+- mutating keys after insertion
+- using HashSet when counts are needed
+- using HashMap when only presence is needed
+- forgetting prefix sum base case
+- overwriting earliest index when it must be preserved
+
+## When Hashing Fails
+
+Hashing is not the best choice when:
+- the key must stay sorted
+- range queries are the main requirement
+- you need exact ordering by key
+- the problem asks for floor/ceiling in sorted order
+
+In those cases, TreeMap or another structure may be better.
+
+===============================================================================
+# Chapter 20: Interview Tips
+===============================================================================
+
+## Before Coding
+
+- clarify whether you need count, index, or existence
+- ask whether order matters
+- check if duplicates are allowed
+- check if negative numbers can appear
+- check if the input size suggests pre-sizing a map
+
+## During Coding
+
+- write the map/set update in the right order
+- initialize prefix maps correctly
+- preserve the first index when needed
+- use `getOrDefault`, `putIfAbsent`, or `computeIfAbsent` properly
+
+## When Explaining
+
+- say why brute force is too slow
+- explain what state is stored in the hash structure
+- explain why the stored state avoids repeated work
+- mention the average and worst-case complexity
+
+## Java-Specific Tips
+
+- use `Objects.hash(...)` for custom keys
+- avoid mutable keys
+- remember that HashMap order is not guaranteed
+- remember that HashSet is backed by HashMap
+- remember that TreeMap is sorted, not hashed
+
+## Interview Communication
+
+- say the pattern name out loud
+- mention the trigger words that led you there
+- draw the map/set state clearly
+- explain edge cases before writing code
+
+===============================================================================
+# Chapter 21: Complete Java Template Section
+===============================================================================
+
+## 21.1 Basic Frequency Map Template
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class FrequencyTemplate {
+    public static <T> Map<T, Integer> buildFrequencyMap(T[] arr) {
+        Map<T, Integer> freq = new HashMap<>();
+        for (T x : arr) {
+            freq.put(x, freq.getOrDefault(x, 0) + 1);
+        }
+        return freq;
+    }
+}
+```
+
+## 21.2 Integer Array Frequency Template
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class IntFrequencyTemplate {
+    public static Map<Integer, Integer> buildFrequencyMap(int[] arr) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int x : arr) {
+            freq.put(x, freq.getOrDefault(x, 0) + 1);
+        }
+        return freq;
+    }
+}
+```
+
+## 21.3 Character Frequency Template
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class CharFrequencyTemplate {
+    public static Map<Character, Integer> countChars(String s) {
+        Map<Character, Integer> freq = new HashMap<>();
+        for (char ch : s.toCharArray()) {
+            freq.put(ch, freq.getOrDefault(ch, 0) + 1);
+        }
+        return freq;
+    }
+}
+```
+
+## 21.4 Word Frequency Template
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class WordFrequencyTemplate {
+    public static Map<String, Integer> countWords(String text) {
+        Map<String, Integer> freq = new HashMap<>();
+        String[] words = text.toLowerCase().split("\\s+");
+        for (String word : words) {
+            word = word.replaceAll("[^a-z0-9]", "");
+            if (word.isEmpty()) continue;
+            freq.put(word, freq.getOrDefault(word, 0) + 1);
+        }
+        return freq;
+    }
+}
+```
+
+## 21.5 Duplicate Detection Template
+
+```java
+import java.util.HashSet;
+import java.util.Set;
+
+public class DuplicateTemplate {
+    public static <T> boolean hasDuplicate(T[] arr) {
+        Set<T> seen = new HashSet<>();
+        for (T x : arr) {
+            if (!seen.add(x)) return true;
+        }
+        return false;
+    }
+}
+```
+
+## 21.6 Two Sum Template
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class TwoSumTemplate {
+    public static int[] twoSum(int[] nums, int target) {
+        Map<Integer, Integer> indexMap = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            int need = target - nums[i];
+            if (indexMap.containsKey(need)) {
+                return new int[] { indexMap.get(need), i };
+            }
+            indexMap.put(nums[i], i);
+        }
+        return new int[] { -1, -1 };
+    }
+}
+```
+
+## 21.7 Pair Sum Existence Template
+
+```java
+import java.util.HashSet;
+import java.util.Set;
+
+public class PairSumTemplate {
+    public static boolean hasPairSum(int[] arr, int target) {
+        Set<Integer> seen = new HashSet<>();
+        for (int x : arr) {
+            if (seen.contains(target - x)) return true;
+            seen.add(x);
+        }
+        return false;
+    }
+}
+```
+
+## 21.8 Prefix Sum Count Template
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class PrefixCountTemplate {
+    public static int countSubarraysWithSumK(int[] arr, int k) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        freq.put(0, 1);
+
+        int prefix = 0;
+        int count = 0;
+        for (int x : arr) {
+            prefix += x;
+            count += freq.getOrDefault(prefix - k, 0);
+            freq.put(prefix, freq.getOrDefault(prefix, 0) + 1);
+        }
+        return count;
+    }
+}
+```
+
+## 21.9 Prefix Sum Longest Template
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class PrefixLongestTemplate {
+    public static int longestSubarrayWithSumK(int[] arr, int k) {
+        Map<Integer, Integer> firstSeen = new HashMap<>();
+        firstSeen.put(0, -1);
+
+        int prefix = 0;
+        int best = 0;
+        for (int i = 0; i < arr.length; i++) {
+            prefix += arr[i];
+            if (!firstSeen.containsKey(prefix)) {
+                firstSeen.put(prefix, i);
+            }
+            if (firstSeen.containsKey(prefix - k)) {
+                best = Math.max(best, i - firstSeen.get(prefix - k));
+            }
+        }
+        return best;
+    }
+}
+```
+
+## 21.10 Longest Consecutive Sequence Template
+
+```java
+import java.util.HashSet;
+import java.util.Set;
+
+public class ConsecutiveTemplate {
+    public static int longestConsecutive(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for (int x : nums) set.add(x);
+
+        int best = 0;
+        for (int x : set) {
+            if (!set.contains(x - 1)) {
+                int len = 1;
+                while (set.contains(x + len)) len++;
+                best = Math.max(best, len);
+            }
+        }
+        return best;
+    }
+}
+```
+
+## 21.11 Group Anagrams Template
+
+```java
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class AnagramTemplate {
+    public static List<List<String>> groupAnagrams(String[] words) {
+        Map<String, List<String>> groups = new HashMap<>();
+        for (String word : words) {
+            char[] ch = word.toCharArray();
+            Arrays.sort(ch);
+            String key = new String(ch);
+            groups.computeIfAbsent(key, k -> new ArrayList<>()).add(word);
+        }
+        return new ArrayList<>(groups.values());
+    }
+}
+```
+
+## 21.12 First Unique Character Template
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class UniqueCharTemplate {
+    public static int firstUniqueIndex(String s) {
+        Map<Character, Integer> freq = new HashMap<>();
+        for (char ch : s.toCharArray()) {
+            freq.put(ch, freq.getOrDefault(ch, 0) + 1);
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (freq.get(s.charAt(i)) == 1) return i;
+        }
+        return -1;
+    }
+}
+```
+
+## 21.13 Sliding Window + HashMap Template
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class SlidingWindowTemplate {
+    public static int longestWindow(String s) {
+        Map<Character, Integer> freq = new HashMap<>();
+        int left = 0, best = 0;
+
+        for (int right = 0; right < s.length(); right++) {
+            char ch = s.charAt(right);
+            freq.put(ch, freq.getOrDefault(ch, 0) + 1);
+
+            while (freq.get(ch) > 1) {
+                char leftChar = s.charAt(left++);
+                freq.put(leftChar, freq.get(leftChar) - 1);
+                if (freq.get(leftChar) == 0) freq.remove(leftChar);
+            }
+
+            best = Math.max(best, right - left + 1);
+        }
+        return best;
+    }
+}
+```
+
+## 21.14 Custom Key Template
+
+```java
+import java.util.Objects;
+
+class Key {
+    int id;
+    String name;
+
+    Key(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Key key = (Key) o;
+        return id == key.id && Objects.equals(name, key.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+}
+```
+
+## 21.15 Grouping Template With `computeIfAbsent`
+
+```java
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class GroupTemplate {
+    public static <K, V> Map<K, List<V>> groupPairs(List<V> values, java.util.function.Function<V, K> keyFn) {
+        Map<K, List<V>> groups = new HashMap<>();
+        for (V value : values) {
+            K key = keyFn.apply(value);
+            groups.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+        }
+        return groups;
+    }
+}
+```
+
+## Final Note
+
+If the problem looks like counting, remembering, or grouping, hashing is almost
+always one of the first tools to try.

@@ -1,0 +1,3604 @@
+Java DSA Interview Bible
+Volume 5
+Stack: Complete Placement Handbook
+
+Compiled Manuscript Draft
+
+===============================================================================
+# Chapter 1: Complete Introduction to Stack
+===============================================================================
+
+## Introduction
+
+A stack is a linear data structure that follows Last In First Out, commonly
+written as LIFO.
+
+Hinglish idea:
+Stack ko plate ki pile samjho. Sabse last wali plate sabse pehle uthti hai.
+
+Stacks are one of the most important interview topics because they naturally fit
+problems that involve:
+- order of processing
+- backtracking
+- nested structures
+- matching pairs
+- previous or next greater/smaller logic
+- expression handling
+
+In Java, stack questions are often solved using:
+- `Stack`
+- `Deque`
+- `ArrayDeque`
+- custom array stack
+- custom linked list stack
+
+## LIFO
+
+LIFO means Last In First Out.
+
+If you push 1, then 2, then 3:
+- 3 comes out first
+- then 2
+- then 1
+
+Visualization:
+
+```text
+Push 1
+Push 2
+Push 3
+
+Top
+3
+2
+1
+
+Pop -> 3
+```
+
+## Why Stack Exists
+
+Stacks exist because many problems naturally need reverse order processing.
+
+Stack helps when:
+- the latest item must be processed first
+- previous state must be remembered
+- nested opening and closing symbols must be matched
+- expressions must be evaluated in the correct precedence order
+
+Real-world examples:
+- browser back button
+- undo in editor
+- recursion call stack
+- function call tracking
+- parsing expressions
+- DFS backtracking
+
+## Memory Representation
+
+A stack as a data structure is usually represented as:
+- an array
+- a linked list
+- or an existing library structure like `ArrayDeque`
+
+Conceptually, the top of the stack is the only end where insertion and removal
+happen.
+
+If implemented using array:
+- elements are stored in contiguous memory
+- top is an index
+- push and pop move the top index
+
+If implemented using linked list:
+- each node points to the next node
+- top is the head reference
+- push and pop adjust the head
+
+For Java recursion:
+- function calls are stored in the JVM call stack
+- each call creates a frame holding local variables and return address
+
+## Internal Working
+
+Stack operations only touch one end:
+- push adds to top
+- pop removes from top
+- peek reads top
+
+That makes stack operations simple and fast.
+
+Key idea:
+We never need to shift all elements like an array insert or delete in the middle.
+
+## Pattern Recognition
+
+Use stack thinking when the problem mentions:
+- next / previous element
+- balancing symbols
+- nested expressions
+- backtracking
+- undo / redo
+- reverse order processing
+- nearest greater / smaller
+- monotonic order
+- top / current state
+
+## Trigger Words
+
+- `push`
+- `pop`
+- `peek`
+- `top`
+- `undo`
+- `redo`
+- `balanced`
+- `parentheses`
+- `expression`
+- `next greater`
+- `next smaller`
+- `previous greater`
+- `previous smaller`
+- `histogram`
+- `daily temperature`
+- `stock span`
+- `duplicate removal`
+- `current minimum`
+
+## Advantages
+
+- simple LIFO behavior
+- fast push and pop at one end
+- useful for recursion and nested parsing
+- good for matching and order-dependent problems
+
+## Disadvantages
+
+- no random access like arrays
+- only top element is directly available
+- not ideal for searching arbitrary values
+- recursion-based stack can overflow if too deep
+
+## Array vs Stack
+
+Array:
+- direct access by index
+- fixed or resizable contiguous storage
+- good for random access
+
+Stack:
+- restricted access
+- only top is accessible
+- good for reverse processing and nesting
+
+Short rule:
+- if you need any index, use array
+- if you need top-only behavior, use stack
+
+## Complexity
+
+Typical stack operation complexities:
+- push: O(1)
+- pop: O(1)
+- peek: O(1)
+- isEmpty: O(1)
+- size: O(1)
+
+If using a dynamically resizing array, push is amortized O(1).
+
+## Interview Questions
+
+- What is a stack?
+- Why is it called LIFO?
+- Where is stack used in real life?
+- Why are stack operations O(1)?
+- What is the difference between stack and queue?
+
+## Follow-up Questions
+
+- How is recursion related to stack?
+- Why is stack useful in parsing?
+- What is the difference between stack memory and heap memory?
+
+===============================================================================
+# Chapter 2: Stack Implementations and Java Stack APIs
+===============================================================================
+
+## Introduction
+
+Stack can be implemented in multiple ways.
+
+In interviews, you should know:
+- stack using array
+- stack using linked list
+- Java `Stack` class
+- `Deque` as a stack
+- `ArrayDeque` as the preferred modern stack
+
+## 2.1 Stack Using Array
+
+### Pattern Recognition
+
+Use an array stack when:
+- capacity is known or bounded
+- memory should be contiguous
+- implementation simplicity matters
+
+### Trigger Words
+
+- `implement stack`
+- `array based`
+- `top index`
+- `capacity`
+
+### Observation
+
+The top element is tracked using an index.
+
+### Brute Force
+
+Shift the entire array on every push or pop.
+
+### Optimal Solution
+
+Keep a `top` variable and update only that index.
+
+### Visualization
+
+```text
+arr: [10, 20, 30, _, _]
+top = 2
+```
+
+### Dry Run
+
+- push 10 -> top = 0
+- push 20 -> top = 1
+- push 30 -> top = 2
+- pop -> return 30, top = 1
+
+### Java Code
+
+```java
+class ArrayStack {
+    private int[] arr;
+    private int top;
+
+    public ArrayStack(int capacity) {
+        arr = new int[capacity];
+        top = -1;
+    }
+
+    public boolean isEmpty() {
+        return top == -1;
+    }
+
+    public int size() {
+        return top + 1;
+    }
+
+    public void push(int x) {
+        if (top == arr.length - 1) {
+            throw new RuntimeException("Stack overflow");
+        }
+        arr[++top] = x;
+    }
+
+    public int pop() {
+        if (isEmpty()) {
+            throw new RuntimeException("Stack underflow");
+        }
+        return arr[top--];
+    }
+
+    public int peek() {
+        if (isEmpty()) {
+            throw new RuntimeException("Stack is empty");
+        }
+        return arr[top];
+    }
+}
+```
+
+### Template
+
+```java
+int top = -1;
+int[] arr = new int[capacity];
+
+push: arr[++top] = x;
+pop:  return arr[top--];
+peek: return arr[top];
+```
+
+### Complexity
+
+- push: O(1)
+- pop: O(1)
+- peek: O(1)
+- space: O(n)
+
+### Edge Cases
+
+- overflow when stack is full
+- underflow when stack is empty
+- capacity zero
+
+### Mistakes
+
+- using `top = 0` with wrong push logic
+- forgetting to check overflow
+- returning wrong top after decrement
+
+### Interview Questions
+
+- implement stack using array
+- what happens when array stack becomes full?
+
+### Company Questions
+
+- implement stack from scratch
+- design bounded stack
+
+## 2.2 Stack Using Linked List
+
+### Pattern Recognition
+
+Use linked list stack when:
+- capacity should be dynamic
+- push/pop should always be O(1)
+- you want to avoid fixed-size array limits
+
+### Trigger Words
+
+- `linked list stack`
+- `node`
+- `head`
+- `dynamic size`
+
+### Observation
+
+The top of the stack is the head of the linked list.
+
+### Brute Force
+
+Traverse to the end of the list on every push or pop.
+
+### Optimal Solution
+
+Insert and remove only at the head.
+
+### Visualization
+
+```text
+top -> [30] -> [20] -> [10] -> null
+```
+
+### Dry Run
+
+- push 10 -> head = 10
+- push 20 -> new head = 20 -> 10
+- pop -> remove 20, head becomes 10
+
+### Java Code
+
+```java
+class LinkedStack {
+    private static class Node {
+        int data;
+        Node next;
+
+        Node(int data) {
+            this.data = data;
+        }
+    }
+
+    private Node head;
+    private int size;
+
+    public boolean isEmpty() {
+        return head == null;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public void push(int x) {
+        Node node = new Node(x);
+        node.next = head;
+        head = node;
+        size++;
+    }
+
+    public int pop() {
+        if (isEmpty()) {
+            throw new RuntimeException("Stack underflow");
+        }
+        int val = head.data;
+        head = head.next;
+        size--;
+        return val;
+    }
+
+    public int peek() {
+        if (isEmpty()) {
+            throw new RuntimeException("Stack is empty");
+        }
+        return head.data;
+    }
+}
+```
+
+### Template
+
+```java
+Node node = new Node(x);
+node.next = head;
+head = node;
+```
+
+### Complexity
+
+- push: O(1)
+- pop: O(1)
+- peek: O(1)
+- space: O(n)
+
+### Edge Cases
+
+- empty stack
+- one node stack
+
+### Mistakes
+
+- forgetting to update size
+- losing the old head
+
+### Interview Questions
+
+- implement stack using linked list
+- why linked list stack is dynamic?
+
+### Company Questions
+
+- custom stack implementation
+- stack class from scratch
+
+## 2.3 Java Stack Class
+
+### Pattern Recognition
+
+Use when the question explicitly asks about `java.util.Stack`.
+
+### Trigger Words
+
+- `Stack class`
+- `java.util.Stack`
+- `legacy`
+- `push`
+- `pop`
+
+### Observation
+
+Java `Stack` is a legacy class that extends `Vector`.
+
+It is synchronized, but usually not the best modern choice for stack behavior.
+
+### Brute Force
+
+Use no library and write your own stack.
+
+### Optimal Solution
+
+Use `Stack` when the codebase or interviewer specifically asks for it, but prefer
+`ArrayDeque` in modern Java.
+
+### Visualization
+
+```text
+Stack<Integer> st = new Stack<>();
+st.push(10);
+st.push(20);
+top = 20
+```
+
+### Java Code
+
+```java
+import java.util.Stack;
+
+public class JavaStackDemo {
+    public static void main(String[] args) {
+        Stack<Integer> st = new Stack<>();
+        st.push(10);
+        st.push(20);
+        st.push(30);
+
+        System.out.println(st.peek());
+        System.out.println(st.pop());
+        System.out.println(st.isEmpty());
+        System.out.println(st.size());
+    }
+}
+```
+
+### Template
+
+```java
+Stack<Integer> st = new Stack<>();
+st.push(x);
+int top = st.peek();
+int removed = st.pop();
+boolean empty = st.isEmpty();
+int sz = st.size();
+```
+
+### Complexity
+
+- push: O(1)
+- pop: O(1)
+- peek: O(1)
+
+### Edge Cases
+
+- empty stack operations throw exceptions
+
+### Mistakes
+
+- using `Stack` in modern code when `ArrayDeque` is better
+- forgetting that `pop()` removes the top
+
+### Interview Questions
+
+- what is the Java Stack class?
+- why is Stack considered legacy?
+
+### Company Questions
+
+- compare Stack and ArrayDeque
+- compare Stack and Deque
+
+## 2.4 Deque as Stack
+
+### Pattern Recognition
+
+Use deque when you want stack behavior with a modern Java API.
+
+### Trigger Words
+
+- `Deque`
+- `stack behavior`
+- `ArrayDeque`
+- `push/pop/peek`
+
+### Observation
+
+`Deque` supports operations at both ends, so it can behave like a stack.
+
+### Optimal Solution
+
+Use `ArrayDeque` and perform stack operations at the front.
+
+### Visualization
+
+```text
+top -> front of deque
+push -> addFirst
+pop -> removeFirst
+peek -> peekFirst
+```
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class DequeAsStackDemo {
+    public static void main(String[] args) {
+        Deque<Integer> st = new ArrayDeque<>();
+        st.push(10);
+        st.push(20);
+        st.push(30);
+
+        System.out.println(st.peek());
+        System.out.println(st.pop());
+    }
+}
+```
+
+### Template
+
+```java
+Deque<Integer> st = new ArrayDeque<>();
+st.push(x);        // addFirst
+int top = st.peek(); // peekFirst
+int removed = st.pop(); // removeFirst
+```
+
+### Complexity
+
+- push: O(1) amortized
+- pop: O(1)
+- peek: O(1)
+
+### Edge Cases
+
+- empty deque
+
+### Mistakes
+
+- using `ArrayDeque` with null values
+- confusing front and back operations
+
+### Interview Questions
+
+- why use Deque for stack?
+- why is ArrayDeque preferred over Stack?
+
+### Company Questions
+
+- implement stack using deque
+- stack vs deque in Java
+
+## 2.5 ArrayDeque
+
+### Pattern Recognition
+
+Use `ArrayDeque` when you need fast stack or queue operations in Java.
+
+### Trigger Words
+
+- `ArrayDeque`
+- `preferred`
+- `modern stack`
+- `resizable array`
+
+### Observation
+
+`ArrayDeque` is generally preferred over `Stack` for stack-like behavior because
+it is faster and cleaner in most cases.
+
+### Optimal Solution
+
+Use `ArrayDeque<Integer>` with `push`, `pop`, and `peek`.
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class ArrayDequeStack {
+    public static void main(String[] args) {
+        Deque<Integer> st = new ArrayDeque<>();
+        st.push(1);
+        st.push(2);
+        st.push(3);
+        System.out.println(st.peek());
+        System.out.println(st.pop());
+    }
+}
+```
+
+### Complexity
+
+- push: amortized O(1)
+- pop: O(1)
+- peek: O(1)
+
+### Edge Cases
+
+- no null elements allowed
+
+### Mistakes
+
+- assuming it behaves exactly like Stack class
+
+### Interview Questions
+
+- why ArrayDeque is preferred over Stack?
+- can ArrayDeque be used as stack?
+
+## 2.6 Stack Operations Summary
+
+### Push
+
+- add element at top
+- array: increment top and store
+- linked list: insert at head
+- Java Stack: `push(x)`
+- Deque: `push(x)`
+
+### Pop
+
+- remove top element
+- array: return `arr[top--]`
+- linked list: remove head
+- Java Stack: `pop()`
+- Deque: `pop()`
+
+### Peek
+
+- read top element without removing
+- array: `arr[top]`
+- linked list: `head.data`
+- Java Stack: `peek()`
+- Deque: `peek()`
+
+### isEmpty
+
+- checks whether stack has no elements
+
+### Size
+
+- returns number of stored elements
+
+### Template
+
+```java
+if (!st.isEmpty()) {
+    int top = st.peek();
+}
+```
+
+### Complexity
+
+- all core operations: O(1)
+
+## 2.7 Stack Recognition Sheet
+
+### Pattern Clues
+
+- brackets and parentheses -> matching pair stack
+- next greater / next smaller -> monotonic stack
+- histogram -> previous smaller and next smaller
+- span and distance -> index stack
+- current minimum -> min stack
+- reversing or backtracking -> stack simulation
+- expression parsing -> operator stack
+
+## Interview Questions
+
+- Which stack implementation is best in Java?
+- What is the difference between Stack and ArrayDeque?
+- What is the difference between ArrayDeque and LinkedList as a deque?
+- Why is Stack legacy?
+
+## Company Questions
+
+- design a stack class
+- implement stack using array
+- implement stack using linked list
+- explain Java stack API choices
+
+===============================================================================
+# Chapter 3: Balanced Parentheses and Valid Parentheses
+===============================================================================
+
+## Introduction
+
+Bracket matching is one of the clearest stack use cases.
+
+When the input contains nested opening and closing symbols, a stack remembers
+the most recent unmatched opening symbol.
+
+## Pattern Recognition
+
+Use stack when the problem asks about:
+- parentheses
+- brackets
+- braces
+- balanced string
+- valid sequence
+- matching pair
+
+## Trigger Words
+
+- `balanced`
+- `valid`
+- `parentheses`
+- `brackets`
+- `braces`
+- `matching`
+- `nested`
+
+## Observation
+
+An opening symbol must be matched by the most recent unmatched opening symbol.
+
+That is exactly LIFO behavior.
+
+## Brute Force
+
+Repeatedly scan the string and remove matching pairs.
+
+This is slow and messy.
+
+## Optimal Solution
+
+Push opening symbols.
+On a closing symbol:
+- check whether the stack top matches
+- pop the top if it matches
+- otherwise fail immediately
+
+## Visualization
+
+```text
+Input:  ({[]})
+Stack:  (
+        ( {
+        ( { [
+        ( {
+        (
+        empty -> valid
+```
+
+## Dry Run
+
+String: `({[]})`
+
+- `(` push
+- `{` push
+- `[` push
+- `]` matches `[` pop
+- `}` matches `{` pop
+- `)` matches `(` pop
+- stack empty -> valid
+
+## Balanced Parentheses
+
+Balanced parentheses usually means the counts and nesting must both be correct.
+
+Example:
+- `((()))` is balanced
+- `(()` is not balanced
+- `())(` is not balanced
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class BalancedParentheses {
+    public static boolean isBalanced(String s) {
+        Deque<Character> st = new ArrayDeque<>();
+
+        for (char ch : s.toCharArray()) {
+            if (ch == '(') {
+                st.push(ch);
+            } else if (ch == ')') {
+                if (st.isEmpty() || st.peek() != '(') return false;
+                st.pop();
+            }
+        }
+        return st.isEmpty();
+    }
+}
+```
+
+### Template
+
+```java
+Deque<Character> st = new ArrayDeque<>();
+for (char ch : s.toCharArray()) {
+    if (ch == '(') st.push(ch);
+    else {
+        if (st.isEmpty()) return false;
+        st.pop();
+    }
+}
+return st.isEmpty();
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- empty string
+- only opening brackets
+- only closing brackets
+- very deep nesting
+
+### Mistakes
+
+- using count only for nested parentheses
+- ignoring order
+
+### Interview Questions
+
+- is a string of parentheses balanced?
+- check balanced brackets
+
+### Company Questions
+
+- validate brackets in compiler-style parsing
+- check if expression parentheses are valid
+
+## Valid Parentheses
+
+Valid parentheses usually includes all bracket types:
+- `()`
+- `[]`
+- `{}`
+
+The order must be correct and the types must match.
+
+### Pattern Recognition
+
+Use this when the string contains mixed bracket types and must be validated.
+
+### Trigger Words
+
+- `valid parentheses`
+- `valid brackets`
+- `expression validity`
+
+### Observation
+
+Closing bracket must match the most recent opening bracket of the same type.
+
+### Brute Force
+
+Try to pair brackets by repeatedly scanning and removing matching pairs.
+
+### Optimal Solution
+
+Use a stack of opening brackets.
+
+### Visualization
+
+```text
+Input:  ()[]{}   -> valid
+Input:  (]       -> invalid
+Input:  ([)]     -> invalid
+```
+
+### Dry Run
+
+String: `([{}])`
+
+- `(` push
+- `[` push
+- `{` push
+- `}` matches `{` pop
+- `]` matches `[` pop
+- `)` matches `(` pop
+- stack empty -> valid
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class ValidParentheses {
+    public static boolean isValid(String s) {
+        Deque<Character> st = new ArrayDeque<>();
+
+        for (char ch : s.toCharArray()) {
+            if (ch == '(' || ch == '[' || ch == '{') {
+                st.push(ch);
+            } else {
+                if (st.isEmpty()) return false;
+                char top = st.peek();
+                if ((ch == ')' && top != '(') ||
+                    (ch == ']' && top != '[') ||
+                    (ch == '}' && top != '{')) {
+                    return false;
+                }
+                st.pop();
+            }
+        }
+        return st.isEmpty();
+    }
+}
+```
+
+### Template
+
+```java
+Deque<Character> st = new ArrayDeque<>();
+for (char ch : s.toCharArray()) {
+    if (isOpen(ch)) {
+        st.push(ch);
+    } else {
+        if (st.isEmpty() || !matches(st.peek(), ch)) return false;
+        st.pop();
+    }
+}
+return st.isEmpty();
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- empty string should be valid
+- starts with closing bracket
+- odd length strings
+
+### Mistakes
+
+- forgetting to check stack empty before peek
+- not validating bracket type
+- treating other characters as brackets accidentally
+
+### Interview Questions
+
+- valid parentheses
+- balanced brackets
+- is expression valid?
+
+### Company Questions
+
+- parser-style bracket validation
+- syntax checking problems
+
+## Related Problems
+
+- minimum remove to make valid parentheses
+- longest valid parentheses
+- score of parentheses
+- simplify path
+
+===============================================================================
+# Chapter 4: Expression Evaluation and Conversion
+===============================================================================
+
+## Introduction
+
+Stacks are essential for expression handling because expressions have nesting,
+precedence, and order constraints.
+
+The three main notations are:
+- infix
+- prefix
+- postfix
+
+## Expression Forms
+
+### Infix
+
+Operator is between operands.
+
+Example:
+
+```text
+A + B
+2 * (3 + 4)
+```
+
+### Prefix
+
+Operator comes before operands.
+
+Example:
+
+```text
++ A B
+* 2 + 3 4
+```
+
+### Postfix
+
+Operator comes after operands.
+
+Example:
+
+```text
+A B +
+2 3 4 + *
+```
+
+## Pattern Recognition
+
+Use stack when the question mentions:
+- expression
+- prefix
+- infix
+- postfix
+- evaluate
+- convert
+- precedence
+- associativity
+
+## Trigger Words
+
+- `evaluate`
+- `convert`
+- `prefix`
+- `infix`
+- `postfix`
+- `operator precedence`
+- `parentheses`
+- `expression`
+
+## Observation
+
+Operators need ordering rules.
+
+Stacks help store operands or operators until the correct time to apply them.
+
+## Brute Force
+
+Try to manually calculate the expression from left to right without a stack.
+
+That fails when precedence or nested parentheses appear.
+
+## Optimal Solution
+
+Use stack(s) to delay evaluation until:
+- the operator order is valid
+- the subexpression is complete
+
+## Visualization
+
+```text
+Infix:   2 + 3 * 4
+Postfix:  2 3 4 * +
+Prefix:  + 2 * 3 4
+```
+
+## Dry Run
+
+Expression: `2 + 3 * 4`
+
+- `*` has higher precedence than `+`
+- 3 and 4 combine first
+- then add 2
+
+## Precedence Table
+
+```text
+^  highest
+* / %
++ -
+```
+
+`^` is usually right associative.
+
+## 4.1 Postfix Evaluation
+
+### Pattern Recognition
+
+Use when expression is already in postfix and must be evaluated.
+
+### Trigger Words
+
+- `postfix evaluate`
+- `reverse polish notation`
+- `RPN`
+
+### Observation
+
+Postfix is easy to evaluate because every operator appears after its operands.
+
+### Brute Force
+
+Convert postfix to infix and then evaluate.
+
+### Optimal Solution
+
+Scan left to right:
+- push operands
+- when operator appears, pop two operands
+- apply operator and push result
+
+### Visualization
+
+```text
+Expression: 2 3 4 * +
+Stack: [2]
+       [2, 3]
+       [2, 3, 4]
+       operator * -> push 12
+       operator + -> push 14
+```
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class PostfixEvaluation {
+    public static int evaluate(String[] tokens) {
+        Deque<Integer> st = new ArrayDeque<>();
+
+        for (String token : tokens) {
+            if (isOperator(token)) {
+                int b = st.pop();
+                int a = st.pop();
+                st.push(apply(a, b, token.charAt(0)));
+            } else {
+                st.push(Integer.parseInt(token));
+            }
+        }
+        return st.pop();
+    }
+
+    private static boolean isOperator(String token) {
+        return token.length() == 1 && "+-*/%^".indexOf(token.charAt(0)) != -1;
+    }
+
+    private static int apply(int a, int b, char op) {
+        if (op == '+') return a + b;
+        if (op == '-') return a - b;
+        if (op == '*') return a * b;
+        if (op == '/') return a / b;
+        if (op == '%') return a % b;
+        return (int) Math.pow(a, b);
+    }
+}
+```
+
+### Template
+
+```java
+for (token : postfix) {
+    if (operand) push(token);
+    else {
+        b = pop();
+        a = pop();
+        push(apply(a, b, op));
+    }
+}
+return top;
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- division by zero
+- malformed expression
+- single operand only
+
+### Mistakes
+
+- popping operands in wrong order
+- using one operand instead of two
+
+### Interview Questions
+
+- evaluate postfix expression
+- evaluate RPN
+
+### Company Questions
+
+- calculator-style parsing
+- expression engine
+
+## 4.2 Prefix Evaluation
+
+### Pattern Recognition
+
+Use when expression is in prefix form and must be evaluated.
+
+### Trigger Words
+
+- `prefix evaluate`
+- `polish notation`
+
+### Observation
+
+Prefix is evaluated from right to left.
+
+### Brute Force
+
+Convert prefix to infix and then compute.
+
+### Optimal Solution
+
+Scan right to left:
+- push operands
+- on operator, pop two operands
+- apply operator and push result
+
+### Visualization
+
+```text
+Expression: + 2 * 3 4
+Scan from right
+Stack eventually produces 14
+```
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class PrefixEvaluation {
+    public static int evaluate(String[] tokens) {
+        Deque<Integer> st = new ArrayDeque<>();
+
+        for (int i = tokens.length - 1; i >= 0; i--) {
+            String token = tokens[i];
+            if (isOperator(token)) {
+                int a = st.pop();
+                int b = st.pop();
+                st.push(apply(a, b, token.charAt(0)));
+            } else {
+                st.push(Integer.parseInt(token));
+            }
+        }
+        return st.pop();
+    }
+
+    private static boolean isOperator(String token) {
+        return token.length() == 1 && "+-*/%^".indexOf(token.charAt(0)) != -1;
+    }
+
+    private static int apply(int a, int b, char op) {
+        if (op == '+') return a + b;
+        if (op == '-') return a - b;
+        if (op == '*') return a * b;
+        if (op == '/') return a / b;
+        if (op == '%') return a % b;
+        return (int) Math.pow(a, b);
+    }
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- one number
+- malformed tokens
+
+### Mistakes
+
+- scanning prefix from left to right
+- reversing operand order incorrectly
+
+### Interview Questions
+
+- evaluate prefix expression
+
+### Company Questions
+
+- expression parsing round
+
+## 4.3 Infix Evaluation
+
+### Pattern Recognition
+
+Use this when the expression is written in standard form with parentheses and
+operators.
+
+### Trigger Words
+
+- `infix`
+- `calculate`
+- `evaluate expression`
+- `operator precedence`
+
+### Observation
+
+You need to delay operations until higher-precedence operators or parentheses are
+resolved.
+
+### Brute Force
+
+Convert infix to postfix and evaluate postfix.
+
+### Optimal Solution
+
+Use two stacks:
+- one for operands
+- one for operators
+
+### Visualization
+
+```text
+operands: [2, 3, 4]
+operators: [+, *]
+* evaluated before +
+```
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class InfixEvaluation {
+    public static int evaluate(String[] tokens) {
+        Deque<Integer> values = new ArrayDeque<>();
+        Deque<Character> ops = new ArrayDeque<>();
+
+        for (String token : tokens) {
+            if (token.equals("(")) {
+                ops.push('(');
+            } else if (token.equals(")")) {
+                while (ops.peek() != '(') {
+                    compute(values, ops.pop());
+                }
+                ops.pop();
+            } else if (isOperator(token.charAt(0)) && token.length() == 1) {
+                char op = token.charAt(0);
+                while (!ops.isEmpty() && shouldPop(ops.peek(), op)) {
+                    compute(values, ops.pop());
+                }
+                ops.push(op);
+            } else {
+                values.push(Integer.parseInt(token));
+            }
+        }
+
+        while (!ops.isEmpty()) {
+            compute(values, ops.pop());
+        }
+        return values.pop();
+    }
+
+    private static boolean isOperator(char ch) {
+        return ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '%' || ch == '^';
+    }
+
+    private static int precedence(char op) {
+        if (op == '^') return 3;
+        if (op == '*' || op == '/' || op == '%') return 2;
+        if (op == '+' || op == '-') return 1;
+        return 0;
+    }
+
+    private static boolean shouldPop(char top, char current) {
+        if (top == '(') return false;
+        int pTop = precedence(top);
+        int pCur = precedence(current);
+        if (pTop > pCur) return true;
+        if (pTop < pCur) return false;
+        return current != '^';
+    }
+
+    private static void compute(Deque<Integer> values, char op) {
+        int b = values.pop();
+        int a = values.pop();
+        values.push(apply(a, b, op));
+    }
+
+    private static int apply(int a, int b, char op) {
+        if (op == '+') return a + b;
+        if (op == '-') return a - b;
+        if (op == '*') return a * b;
+        if (op == '/') return a / b;
+        if (op == '%') return a % b;
+        return (int) Math.pow(a, b);
+    }
+}
+```
+
+### Template
+
+```java
+while (...) {
+    while (top operator has higher/equal precedence) apply it;
+    push current operator;
+}
+apply remaining operators;
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- parentheses nesting
+- right associative exponent
+- unary minus if present
+
+### Mistakes
+
+- ignoring precedence
+- not handling parentheses correctly
+- using left associativity for `^`
+
+### Interview Questions
+
+- evaluate infix expression
+
+### Company Questions
+
+- calculator design
+- expression parser
+
+## 4.4 Prefix to Infix
+
+### Pattern Recognition
+
+Use this when prefix expression must be converted into human-readable infix.
+
+### Trigger Words
+
+- `prefix to infix`
+- `convert prefix`
+
+### Observation
+
+Scan from right to left and combine operands as strings.
+
+### Brute Force
+
+Build tree first, then traverse.
+
+### Optimal Solution
+
+Use a stack of strings.
+
+### Visualization
+
+```text
++ A B  ->  (A+B)
+* + A B C -> ((A+B)*C)
+```
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class PrefixToInfix {
+    public static String convert(String[] tokens) {
+        Deque<String> st = new ArrayDeque<>();
+
+        for (int i = tokens.length - 1; i >= 0; i--) {
+            String token = tokens[i];
+            if (isOperator(token)) {
+                String a = st.pop();
+                String b = st.pop();
+                st.push("(" + a + token + b + ")");
+            } else {
+                st.push(token);
+            }
+        }
+        return st.pop();
+    }
+
+    private static boolean isOperator(String token) {
+        return token.length() == 1 && "+-*/%^".indexOf(token.charAt(0)) != -1;
+    }
+}
+```
+
+### Template
+
+```java
+scan from right to left;
+if operand -> push;
+if operator -> pop two strings and wrap with parentheses;
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- single operand
+- multi-character tokens
+
+### Mistakes
+
+- not preserving operand order
+- missing parentheses
+
+### Interview Questions
+
+- convert prefix to infix
+
+### Company Questions
+
+- expression conversion
+
+## 4.5 Infix to Postfix
+
+### Pattern Recognition
+
+Use this when standard infix must be transformed to postfix notation.
+
+### Trigger Words
+
+- `infix to postfix`
+- `postfix conversion`
+- `shunting`
+
+### Observation
+
+Operators are delayed on the stack until their precedence allows them to be
+output.
+
+### Brute Force
+
+Build expression tree and do postorder traversal.
+
+### Optimal Solution
+
+Use an operator stack.
+
+### Visualization
+
+```text
+Infix:  A + B * C
+Postfix: A B C * +
+```
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class InfixToPostfix {
+    public static String convert(String[] tokens) {
+        StringBuilder out = new StringBuilder();
+        Deque<Character> ops = new ArrayDeque<>();
+
+        for (String token : tokens) {
+            char ch = token.charAt(0);
+
+            if (token.length() > 1 || Character.isLetterOrDigit(ch)) {
+                out.append(token).append(' ');
+            } else if (ch == '(') {
+                ops.push(ch);
+            } else if (ch == ')') {
+                while (!ops.isEmpty() && ops.peek() != '(') {
+                    out.append(ops.pop()).append(' ');
+                }
+                ops.pop();
+            } else {
+                while (!ops.isEmpty() && shouldPop(ops.peek(), ch)) {
+                    out.append(ops.pop()).append(' ');
+                }
+                ops.push(ch);
+            }
+        }
+
+        while (!ops.isEmpty()) {
+            out.append(ops.pop()).append(' ');
+        }
+        return out.toString().trim();
+    }
+
+    private static int precedence(char op) {
+        if (op == '^') return 3;
+        if (op == '*' || op == '/' || op == '%') return 2;
+        if (op == '+' || op == '-') return 1;
+        return 0;
+    }
+
+    private static boolean shouldPop(char top, char current) {
+        if (top == '(') return false;
+        int pTop = precedence(top);
+        int pCur = precedence(current);
+        if (pTop > pCur) return true;
+        if (pTop < pCur) return false;
+        return current != '^';
+    }
+}
+```
+
+### Template
+
+```java
+for each token in infix:
+    if operand -> append to output
+    else if '(' -> push
+    else if ')' -> pop until '('
+    else operator -> pop higher/equal precedence operators
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- parentheses
+- exponent associativity
+- spaces vs no spaces
+
+### Mistakes
+
+- wrong precedence comparison
+- forgetting to flush operators at end
+
+### Interview Questions
+
+- convert infix to postfix
+
+### Company Questions
+
+- parser / compiler style conversion
+
+## Related Problems
+
+- prefix to postfix
+- postfix to infix
+- calculate expression value
+- basic calculator
+
+===============================================================================
+# Chapter 5: Monotonic Stack Fundamentals
+===============================================================================
+
+## Introduction
+
+A monotonic stack keeps elements in sorted-like order as you process the array.
+
+There are two main forms:
+- monotonic increasing stack
+- monotonic decreasing stack
+
+This is one of the most important stack interview patterns because it solves
+next/previous greater or smaller problems in linear time.
+
+## Pattern Recognition
+
+Use monotonic stack when the question mentions:
+- next greater
+- previous greater
+- next smaller
+- previous smaller
+- nearest larger
+- nearest smaller
+- span
+- temperature
+- histogram
+- rectangle
+
+## Trigger Words
+
+- `next greater`
+- `previous greater`
+- `next smaller`
+- `previous smaller`
+- `nearest`
+- `span`
+- `distance`
+- `temperature`
+- `histogram`
+
+## Observation
+
+Each element is pushed and popped at most once.
+
+That is why monotonic stack solutions are O(n).
+
+## Brute Force
+
+For every index, scan right or left until a valid greater/smaller element is
+found.
+
+That gives O(n^2).
+
+## Optimal Solution
+
+Maintain a stack that is always increasing or decreasing.
+
+When the current element breaks the order:
+- keep popping until the order is restored
+- use the remaining top as the answer if needed
+- push the current element
+
+## Visualization
+
+```text
+Increasing stack example:
+Bottom -> 1 -> 3 -> 6 -> Top
+
+Decreasing stack example:
+Bottom -> 9 -> 7 -> 4 -> Top
+```
+
+## Dry Run
+
+Array: `3, 1, 2`
+
+For increasing stack:
+- push 3
+- 1 breaks order -> pop 3, push 1
+- 2 keeps increasing order -> push 2
+
+## Generic Increasing Stack Template
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class IncreasingStackTemplate {
+    public static void process(int[] arr) {
+        Deque<Integer> st = new ArrayDeque<>();
+
+        for (int x : arr) {
+            while (!st.isEmpty() && st.peek() > x) {
+                st.pop();
+            }
+            st.push(x);
+        }
+    }
+}
+```
+
+## Generic Decreasing Stack Template
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class DecreasingStackTemplate {
+    public static void process(int[] arr) {
+        Deque<Integer> st = new ArrayDeque<>();
+
+        for (int x : arr) {
+            while (!st.isEmpty() && st.peek() < x) {
+                st.pop();
+            }
+            st.push(x);
+        }
+    }
+}
+```
+
+## Increasing vs Decreasing
+
+Use increasing stack for:
+- next smaller
+- previous smaller
+- histogram boundaries
+
+Use decreasing stack for:
+- next greater
+- previous greater
+- stock span
+- daily temperatures
+
+## Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+## Edge Cases
+
+- empty array
+- all increasing
+- all decreasing
+- duplicate values
+
+## Mistakes
+
+- using the wrong comparison direction
+- storing values when indices are required
+- forgetting to pop equal values when needed
+
+## Interview Questions
+
+- What is a monotonic stack?
+- Why is it O(n)?
+- When do you use increasing vs decreasing stack?
+
+## Company Questions
+
+- next greater element family
+- daily temperatures
+- histogram and rectangle problems
+
+===============================================================================
+# Chapter 6: Next Greater, Previous Greater, Next Smaller, Previous Smaller
+===============================================================================
+
+## Introduction
+
+These four patterns are the classic monotonic stack problems.
+
+They all ask for a nearest element with a greater or smaller property on the left
+or right side.
+
+## 6.1 Next Greater Element
+
+### Pattern Recognition
+
+Use when the question asks for the first greater element on the right.
+
+### Trigger Words
+
+- `next greater`
+- `nearest greater`
+- `first bigger`
+- `right side greater`
+
+### Observation
+
+For each element, we need the first bigger value that appears after it.
+
+### Brute Force
+
+Scan right from each index until a greater value is found.
+
+### Optimal Solution
+
+Traverse from right to left using a decreasing stack.
+
+### Visualization
+
+```text
+arr: 4 5 2 10
+ans: 5 10 10 -1
+```
+
+### Dry Run
+
+For `4, 5, 2, 10`:
+- 10 -> no greater on right -> -1
+- 2 -> next greater is 10
+- 5 -> next greater is 10
+- 4 -> next greater is 5
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class NextGreaterElement {
+    public static int[] nextGreater(int[] arr) {
+        int n = arr.length;
+        int[] ans = new int[n];
+        Deque<Integer> st = new ArrayDeque<>();
+
+        for (int i = n - 1; i >= 0; i--) {
+            while (!st.isEmpty() && st.peek() <= arr[i]) {
+                st.pop();
+            }
+            ans[i] = st.isEmpty() ? -1 : st.peek();
+            st.push(arr[i]);
+        }
+        return ans;
+    }
+}
+```
+
+### Template
+
+```java
+for (int i = n - 1; i >= 0; i--) {
+    while (!st.isEmpty() && st.peek() <= arr[i]) st.pop();
+    ans[i] = st.isEmpty() ? -1 : st.peek();
+    st.push(arr[i]);
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- no greater element exists
+- duplicate values
+
+### Mistakes
+
+- using `>=` when strict greater is needed
+- scanning left to right for next greater
+
+### Interview Questions
+
+- next greater element
+- nearest greater on right
+
+### Company Questions
+
+- next greater element I / II
+
+## 6.2 Previous Greater Element
+
+### Pattern Recognition
+
+Use when the first greater element on the left is required.
+
+### Trigger Words
+
+- `previous greater`
+- `nearest left greater`
+
+### Observation
+
+We need to know the closest greater value that appeared before the current one.
+
+### Brute Force
+
+Scan left from each index until a greater element is found.
+
+### Optimal Solution
+
+Traverse left to right using a decreasing stack.
+
+### Visualization
+
+```text
+arr: 2 1 5 3 4
+ans: -1 2 -1 5 5
+```
+
+### Dry Run
+
+For `2, 1, 5, 3, 4`:
+- 2 -> none
+- 1 -> previous greater is 2
+- 5 -> none
+- 3 -> previous greater is 5
+- 4 -> previous greater is 5
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class PreviousGreaterElement {
+    public static int[] previousGreater(int[] arr) {
+        int n = arr.length;
+        int[] ans = new int[n];
+        Deque<Integer> st = new ArrayDeque<>();
+
+        for (int i = 0; i < n; i++) {
+            while (!st.isEmpty() && st.peek() <= arr[i]) {
+                st.pop();
+            }
+            ans[i] = st.isEmpty() ? -1 : st.peek();
+            st.push(arr[i]);
+        }
+        return ans;
+    }
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Mistakes
+
+- using next greater logic instead of previous greater
+- forgetting to process left to right
+
+### Interview Questions
+
+- nearest greater element on left
+
+### Company Questions
+
+- previous greater variation
+
+## 6.3 Next Smaller Element
+
+### Pattern Recognition
+
+Use when the first smaller element on the right is required.
+
+### Trigger Words
+
+- `next smaller`
+- `nearest smaller`
+- `right side smaller`
+
+### Observation
+
+We need the first smaller value after the current index.
+
+### Brute Force
+
+Scan right from each index until a smaller element is found.
+
+### Optimal Solution
+
+Traverse right to left using an increasing stack.
+
+### Visualization
+
+```text
+arr: 4 8 5 2 25
+ans: 2 5 2 -1 -1
+```
+
+### Dry Run
+
+For `4, 8, 5, 2, 25`:
+- 25 -> none
+- 2 -> none smaller on right
+- 5 -> next smaller is 2
+- 8 -> next smaller is 5
+- 4 -> next smaller is 2
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class NextSmallerElement {
+    public static int[] nextSmaller(int[] arr) {
+        int n = arr.length;
+        int[] ans = new int[n];
+        Deque<Integer> st = new ArrayDeque<>();
+
+        for (int i = n - 1; i >= 0; i--) {
+            while (!st.isEmpty() && st.peek() >= arr[i]) {
+                st.pop();
+            }
+            ans[i] = st.isEmpty() ? -1 : st.peek();
+            st.push(arr[i]);
+        }
+        return ans;
+    }
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Mistakes
+
+- using greater comparison by mistake
+
+### Interview Questions
+
+- nearest smaller element on right
+
+### Company Questions
+
+- next smaller / next warmer variation
+
+## 6.4 Previous Smaller Element
+
+### Pattern Recognition
+
+Use when the first smaller element on the left is required.
+
+### Trigger Words
+
+- `previous smaller`
+- `nearest left smaller`
+
+### Observation
+
+We need the closest smaller element before the current index.
+
+### Brute Force
+
+Scan left from each index until smaller value is found.
+
+### Optimal Solution
+
+Traverse left to right using an increasing stack.
+
+### Visualization
+
+```text
+arr: 4 5 2 10 8
+ans: -1 4 -1 2 2
+```
+
+### Dry Run
+
+For `4, 5, 2, 10, 8`:
+- 4 -> none
+- 5 -> previous smaller is 4
+- 2 -> none
+- 10 -> previous smaller is 2
+- 8 -> previous smaller is 2
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class PreviousSmallerElement {
+    public static int[] previousSmaller(int[] arr) {
+        int n = arr.length;
+        int[] ans = new int[n];
+        Deque<Integer> st = new ArrayDeque<>();
+
+        for (int i = 0; i < n; i++) {
+            while (!st.isEmpty() && st.peek() >= arr[i]) {
+                st.pop();
+            }
+            ans[i] = st.isEmpty() ? -1 : st.peek();
+            st.push(arr[i]);
+        }
+        return ans;
+    }
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Mistakes
+
+- scanning right to left by mistake
+
+### Interview Questions
+
+- nearest smaller element on left
+
+### Company Questions
+
+- previous smaller variation
+
+## 6.5 Stock Span
+
+### Pattern Recognition
+
+Use when the question asks for consecutive days where the stock price was less
+than or equal to today's price.
+
+### Trigger Words
+
+- `span`
+- `streak`
+- `stock`
+- `consecutive days`
+
+### Observation
+
+We need distance to the previous greater element.
+
+### Brute Force
+
+For each day, scan backward until a greater price is found.
+
+### Optimal Solution
+
+Use a decreasing stack of indices.
+
+### Visualization
+
+```text
+price: 100 80 60 70 60 75 85
+span : 1   1  1  2  1  4  6
+```
+
+### Dry Run
+
+- 100 -> span 1
+- 80 -> previous greater is 100 -> span 1
+- 60 -> previous greater is 80 -> span 1
+- 70 -> previous greater is 80 -> span 2
+- 75 -> previous greater is 100 -> span 4
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class StockSpan {
+    public static int[] calculateSpan(int[] price) {
+        int n = price.length;
+        int[] span = new int[n];
+        Deque<Integer> st = new ArrayDeque<>();
+
+        for (int i = 0; i < n; i++) {
+            while (!st.isEmpty() && price[st.peek()] <= price[i]) {
+                st.pop();
+            }
+            span[i] = st.isEmpty() ? i + 1 : i - st.peek();
+            st.push(i);
+        }
+        return span;
+    }
+}
+```
+
+### Template
+
+```java
+for (int i = 0; i < n; i++) {
+    while (!st.isEmpty() && price[st.peek()] <= price[i]) st.pop();
+    span[i] = st.isEmpty() ? i + 1 : i - st.peek();
+    st.push(i);
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- strictly increasing prices
+- strictly decreasing prices
+
+### Mistakes
+
+- storing values instead of indices
+- wrong subtraction for span
+
+### Interview Questions
+
+- stock span problem
+
+### Company Questions
+
+- consecutive smaller elements / stock range style problems
+
+## 6.6 Daily Temperatures
+
+### Pattern Recognition
+
+Use when the question asks for how many days you have to wait for a warmer day.
+
+### Trigger Words
+
+- `daily temperatures`
+- `days until warmer`
+- `next greater index`
+
+### Observation
+
+This is next greater element, but the answer is the distance, not the value.
+
+### Brute Force
+
+For each day, scan right until a warmer temperature is found.
+
+### Optimal Solution
+
+Use a decreasing stack of indices and compute the distance.
+
+### Visualization
+
+```text
+temp: 73 74 75 71 69 72 76 73
+ans : 1  1  4  2  1  1  0  0
+```
+
+### Dry Run
+
+- day 7 -> no warmer day -> 0
+- day 6 -> no warmer day -> 0
+- day 5 -> warmer at day 6 -> 1
+- day 4 -> warmer at day 5 -> 1
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class DailyTemperatures {
+    public static int[] dailyTemperatures(int[] temp) {
+        int n = temp.length;
+        int[] ans = new int[n];
+        Deque<Integer> st = new ArrayDeque<>();
+
+        for (int i = n - 1; i >= 0; i--) {
+            while (!st.isEmpty() && temp[st.peek()] <= temp[i]) {
+                st.pop();
+            }
+            ans[i] = st.isEmpty() ? 0 : st.peek() - i;
+            st.push(i);
+        }
+        return ans;
+    }
+}
+```
+
+### Template
+
+```java
+for (int i = n - 1; i >= 0; i--) {
+    while (!st.isEmpty() && temp[st.peek()] <= temp[i]) st.pop();
+    ans[i] = st.isEmpty() ? 0 : st.peek() - i;
+    st.push(i);
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- no warmer day
+- repeated equal temperatures
+
+### Mistakes
+
+- storing temperatures instead of indices
+- returning value difference instead of day difference
+
+### Interview Questions
+
+- daily temperatures
+- next warmer day
+
+### Company Questions
+
+- next greater index problems
+
+## Related Problems
+
+- next greater element II
+- circular next greater
+- nearest smaller distance
+
+===============================================================================
+# Chapter 7: Histogram and Largest Rectangle
+===============================================================================
+
+## Introduction
+
+Histogram problems are one of the clearest uses of monotonic increasing stack.
+
+The classic question is to find the largest rectangle area under a histogram.
+
+## Pattern Recognition
+
+Use this when the problem mentions:
+- histogram
+- bars
+- largest rectangle
+- area
+- width
+- matrix rectangle
+
+## Trigger Words
+
+- `largest rectangle`
+- `histogram`
+- `area`
+- `bars`
+- `width`
+- `previous smaller`
+- `next smaller`
+
+## Observation
+
+For each bar, the maximal rectangle using that bar as the limiting height extends
+until the first smaller bar on the left and right.
+
+So the core idea is:
+- find previous smaller
+- find next smaller
+- compute width
+
+## Brute Force
+
+For every bar, expand left and right until a smaller bar is found.
+
+That is O(n^2).
+
+## Optimal Solution
+
+Use a monotonic increasing stack of indices.
+
+When a smaller bar appears:
+- pop taller bars
+- compute area using the popped bar as height
+- the current index becomes the right boundary
+
+## Visualization
+
+```text
+heights: 2 1 5 6 2 3
+max area = 10
+```
+
+## Dry Run
+
+For `2, 1, 5, 6, 2, 3`:
+- height 5 with width 2 gives area 10
+- that is the maximum
+
+## Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class LargestRectangleHistogram {
+    public static int largestRectangleArea(int[] heights) {
+        Deque<Integer> st = new ArrayDeque<>();
+        int max = 0;
+        int n = heights.length;
+
+        for (int i = 0; i <= n; i++) {
+            int h = (i == n) ? 0 : heights[i];
+
+            while (!st.isEmpty() && h < heights[st.peek()]) {
+                int height = heights[st.pop()];
+                int right = i;
+                int left = st.isEmpty() ? -1 : st.peek();
+                int width = right - left - 1;
+                max = Math.max(max, height * width);
+            }
+            st.push(i);
+        }
+
+        return max;
+    }
+}
+```
+
+## Template
+
+```java
+Deque<Integer> st = new ArrayDeque<>();
+for (int i = 0; i <= n; i++) {
+    int h = (i == n) ? 0 : heights[i];
+    while (!st.isEmpty() && h < heights[st.peek()]) {
+        int height = heights[st.pop()];
+        int left = st.isEmpty() ? -1 : st.peek();
+        int width = i - left - 1;
+        max = Math.max(max, height * width);
+    }
+    st.push(i);
+}
+```
+
+## Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+## Edge Cases
+
+- empty histogram
+- all bars same height
+- strictly increasing bars
+- strictly decreasing bars
+- one bar only
+
+## Mistakes
+
+- storing values instead of indices
+- forgetting the sentinel zero pass
+- incorrect width formula
+
+## Interview Questions
+
+- largest rectangle in histogram
+- maximum area under bars
+
+## Company Questions
+
+- histogram area
+- maximal rectangle follow-up
+
+## Related Problems
+
+- maximal rectangle in binary matrix
+- trapping water variants
+
+===============================================================================
+# Chapter 8: Stack Simulation and Remove Adjacent Duplicates
+===============================================================================
+
+## Introduction
+
+Stack simulation problems use a stack to mimic a process that evolves over time.
+
+The stack is not only for brackets or next greater elements. It can also model:
+- browser history
+- undo / redo
+- path simplification
+- decoding nested strings
+- collision-like processes
+
+## 8.1 Stack Simulation
+
+### Pattern Recognition
+
+Use this when the question says:
+- simulate
+- process commands
+- undo
+- redo
+- history
+- nested processing
+- push and pop behavior
+
+### Trigger Words
+
+- `simulate`
+- `history`
+- `undo`
+- `redo`
+- `path`
+- `decode`
+- `nested`
+- `commands`
+
+### Observation
+
+The current state can be restored or modified by remembering the previous state.
+
+### Brute Force
+
+Keep rebuilding the whole state from scratch for every operation.
+
+### Optimal Solution
+
+Use stack to store previous states or partial results.
+
+### Visualization
+
+```text
+state -> push new step -> pop on backtrack -> restore previous state
+```
+
+### Dry Run
+
+For path simplification:
+- `/a/./b/../c/` -> `/a/c`
+- stack stores valid directory names
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class SimplifyPath {
+    public static String simplify(String path) {
+        Deque<String> st = new ArrayDeque<>();
+        String[] parts = path.split("/");
+
+        for (String part : parts) {
+            if (part.isEmpty() || part.equals(".")) {
+                continue;
+            }
+            if (part.equals("..")) {
+                if (!st.isEmpty()) st.pop();
+            } else {
+                st.push(part);
+            }
+        }
+
+        if (st.isEmpty()) return "/";
+
+        StringBuilder sb = new StringBuilder();
+        while (!st.isEmpty()) {
+            sb.append("/").append(st.removeLast());
+        }
+        return sb.toString();
+    }
+}
+```
+
+### Template
+
+```java
+Deque<T> st = new ArrayDeque<>();
+for (item : stream) {
+    if (needToUndo(item)) {
+        if (!st.isEmpty()) st.pop();
+    } else {
+        st.push(item);
+    }
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- empty path
+- multiple slashes
+- leading dot or double dot
+
+### Mistakes
+
+- not handling repeated separators
+- forgetting to ignore `.` segments
+
+### Interview Questions
+
+- simplify path
+- decode nested commands
+
+### Company Questions
+
+- browser history
+- undo stack
+- shell path normalization
+
+### Related Problems
+
+- decode string
+- asteroid collision
+- backspace string compare
+- remove k digits
+
+## 8.2 Remove Adjacent Duplicates
+
+### Pattern Recognition
+
+Use this when adjacent equal characters or elements must be removed repeatedly.
+
+### Trigger Words
+
+- `adjacent duplicates`
+- `remove duplicate`
+- `cancel pairs`
+- `string cleanup`
+
+### Observation
+
+When the current character matches the stack top, both should disappear.
+
+### Brute Force
+
+Repeatedly scan and remove adjacent duplicates until no change occurs.
+
+### Optimal Solution
+
+Use a stack-like structure to build the answer in one pass.
+
+### Visualization
+
+```text
+s = abbaca
+remove bb -> aaca
+remove aa -> ca
+answer = ca
+```
+
+### Dry Run
+
+String: `abbaca`
+
+- a -> push
+- b -> push
+- b -> matches top -> pop
+- a -> push
+- c -> push
+- a -> push
+- result -> `ca`
+
+### Java Code
+
+```java
+public class RemoveAdjacentDuplicates {
+    public static String removeDuplicates(String s) {
+        StringBuilder st = new StringBuilder();
+
+        for (char ch : s.toCharArray()) {
+            int n = st.length();
+            if (n > 0 && st.charAt(n - 1) == ch) {
+                st.deleteCharAt(n - 1);
+            } else {
+                st.append(ch);
+            }
+        }
+        return st.toString();
+    }
+}
+```
+
+### Template
+
+```java
+StringBuilder st = new StringBuilder();
+for (char ch : s.toCharArray()) {
+    if (st.length() > 0 && st.charAt(st.length() - 1) == ch) {
+        st.deleteCharAt(st.length() - 1);
+    } else {
+        st.append(ch);
+    }
+}
+return st.toString();
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(n)
+
+### Edge Cases
+
+- empty string
+- all characters same
+- no duplicates
+
+### Mistakes
+
+- using `Stack<Character>` unnecessarily
+- forgetting repeated cancellation behavior
+
+### Interview Questions
+
+- remove adjacent duplicates
+- clean string by pair cancellation
+
+### Company Questions
+
+- string normalization
+- compression-style cleanup
+
+### Related Problems
+
+- remove all adjacent duplicates in string II
+- backspace string compare
+
+===============================================================================
+# Chapter 9: Min Stack and Max Stack
+===============================================================================
+
+## Introduction
+
+Min stack and max stack are special stacks that can return the minimum or
+maximum element in O(1) time.
+
+They are classic design questions because they combine a normal stack with extra
+state.
+
+## Pattern Recognition
+
+Use this when the problem asks for:
+- current minimum
+- current maximum
+- get min in O(1)
+- get max in O(1)
+- stack with extra query
+
+## Trigger Words
+
+- `minimum`
+- `maximum`
+- `min stack`
+- `max stack`
+- `O(1) query`
+- `special stack`
+
+## Observation
+
+A plain stack does not know the minimum or maximum of everything below the top.
+
+So we must track extra information.
+
+## Brute Force
+
+Scan the whole stack every time min or max is requested.
+
+That is O(n) per query.
+
+## Optimal Solution
+
+Maintain an extra stack:
+- min stack stores the minimum seen so far
+- max stack stores the maximum seen so far
+
+## Visualization
+
+```text
+values:  [5, 3, 7, 2]
+minSt :  [5, 3, 3, 2]
+maxSt :  [5, 5, 7, 7]
+```
+
+## Dry Run
+
+- push 5 -> min = 5, max = 5
+- push 3 -> min = 3, max = 5
+- push 7 -> min = 3, max = 7
+- push 2 -> min = 2, max = 7
+
+## 9.1 Min Stack
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class MinStack {
+    private Deque<Integer> st = new ArrayDeque<>();
+    private Deque<Integer> minSt = new ArrayDeque<>();
+
+    public void push(int x) {
+        st.push(x);
+        if (minSt.isEmpty() || x <= minSt.peek()) {
+            minSt.push(x);
+        }
+    }
+
+    public int pop() {
+        int x = st.pop();
+        if (x == minSt.peek()) {
+            minSt.pop();
+        }
+        return x;
+    }
+
+    public int top() {
+        return st.peek();
+    }
+
+    public int getMin() {
+        return minSt.peek();
+    }
+
+    public boolean isEmpty() {
+        return st.isEmpty();
+    }
+}
+```
+
+### Template
+
+```java
+if (minSt.isEmpty() || x <= minSt.peek()) minSt.push(x);
+if (popped == minSt.peek()) minSt.pop();
+```
+
+### Complexity
+
+- push: O(1)
+- pop: O(1)
+- top: O(1)
+- getMin: O(1)
+
+### Edge Cases
+
+- duplicate minimum values
+- empty stack
+
+### Mistakes
+
+- forgetting to update min stack on pop
+- using `==` incorrectly for objects instead of integers
+
+### Interview Questions
+
+- implement min stack
+- get minimum from stack in O(1)
+
+### Company Questions
+
+- special stack design
+- constant time min query
+
+## 9.2 Max Stack Concept
+
+### Pattern Recognition
+
+Use this when the problem asks for the current maximum in O(1).
+
+### Trigger Words
+
+- `max stack`
+- `maximum in stack`
+- `current largest`
+
+### Observation
+
+Max stack is the same idea as min stack, but it tracks the highest value instead
+of the lowest.
+
+### Optimal Solution
+
+Maintain a second stack of running maximums.
+
+### Visualization
+
+```text
+values:  [5, 3, 7, 2]
+maxSt :  [5, 5, 7, 7]
+```
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class MaxStackConcept {
+    private Deque<Integer> st = new ArrayDeque<>();
+    private Deque<Integer> maxSt = new ArrayDeque<>();
+
+    public void push(int x) {
+        st.push(x);
+        if (maxSt.isEmpty() || x >= maxSt.peek()) {
+            maxSt.push(x);
+        }
+    }
+
+    public int pop() {
+        int x = st.pop();
+        if (x == maxSt.peek()) {
+            maxSt.pop();
+        }
+        return x;
+    }
+
+    public int top() {
+        return st.peek();
+    }
+
+    public int getMax() {
+        return maxSt.peek();
+    }
+}
+```
+
+### Template
+
+```java
+if (maxSt.isEmpty() || x >= maxSt.peek()) maxSt.push(x);
+if (popped == maxSt.peek()) maxSt.pop();
+```
+
+### Complexity
+
+- push: O(1)
+- pop: O(1)
+- top: O(1)
+- getMax: O(1)
+
+### Edge Cases
+
+- repeated maxima
+- empty stack
+
+### Mistakes
+
+- not handling duplicate max values
+- assuming max stack and min stack need different logic
+
+### Interview Questions
+
+- concept of max stack
+- how to design a special stack
+
+### Company Questions
+
+- min/max query stack design
+- data structure with extra aggregate query
+
+### Related Problems
+
+- special stack
+- sliding window max uses a deque, not stack, but the idea is related
+
+===============================================================================
+# Chapter 10: Interview Recognition Sheet and Common Problem Bank
+===============================================================================
+
+## Recognition Sheet
+
+Brackets / Parentheses
+=
+Matching Pair Stack
+
+Expression Evaluation
+=
+Operator Stack / Two Stacks
+
+Prefix / Postfix Conversion
+=
+Stack of Strings
+
+Next Greater
+=
+Monotonic Decreasing Stack
+
+Next Smaller
+=
+Monotonic Increasing Stack
+
+Previous Greater
+=
+Monotonic Decreasing Stack
+
+Previous Smaller
+=
+Monotonic Increasing Stack
+
+Histogram
+=
+Previous Smaller + Next Smaller / Monotonic Increasing Stack
+
+Daily Temperatures
+=
+Next Greater Index Stack
+
+Stock Span
+=
+Previous Greater Index Stack
+
+Remove Adjacent Duplicates
+=
+Stack Simulation
+
+Current Minimum / Maximum
+=
+Min Stack / Max Stack
+
+## Common Problem Bank
+
+### Beginner
+
+- push pop peek
+- reverse a stack
+- balanced parentheses
+- valid parentheses
+- remove adjacent duplicates
+
+### Intermediate
+
+- next greater element
+- previous smaller element
+- daily temperatures
+- stock span
+- simplify path
+- postfix evaluation
+- infix to postfix
+
+### Advanced
+
+- largest rectangle in histogram
+- maximal rectangle
+- min stack
+- decode string
+- asteroid collision
+- remove k digits
+
+### Additional High-Frequency Problems
+
+- reverse a stack
+- sort a stack
+- insert at bottom of stack
+- delete middle element of stack
+- validate stack sequences
+- basic calculator
+- backspace string compare
+- remove outer parentheses
+- score of parentheses
+- next greater element II
+- circular next greater
+- sum of subarray minimums
+- remove duplicate letters
+
+## Most Important LeetCode
+
+LC 20  -> Valid Parentheses
+
+LC 71  -> Simplify Path
+
+LC 150 -> Evaluate Reverse Polish Notation
+
+LC 155 -> Min Stack
+
+LC 225 -> Implement Stack using Queues
+
+LC 232 -> Implement Queue using Stacks
+
+LC 394 -> Decode String
+
+LC 496 -> Next Greater Element I
+
+LC 503 -> Next Greater Element II
+
+LC 739 -> Daily Temperatures
+
+LC 844 -> Backspace String Compare
+
+LC 856 -> Score of Parentheses
+
+LC 901 -> Online Stock Span
+
+LC 946 -> Validate Stack Sequences
+
+LC 1047 -> Remove All Adjacent Duplicates In String
+
+LC 1209 -> Remove All Adjacent Duplicates In String II
+
+LC 1509 -> Minimum Difference Between Largest and Smallest Value in Three Moves
+
+LC 84  -> Largest Rectangle in Histogram
+
+LC 85  -> Maximal Rectangle
+
+## Company Style Focus
+
+Google-style:
+- next greater / next smaller
+- histogram
+- expression parsing
+- min stack
+
+Meta-style:
+- valid parentheses
+- stack simulation
+- remove duplicates
+- daily temperatures
+
+Amazon-style:
+- stock span
+- simplify path
+- postfix evaluation
+- min stack
+
+Microsoft-style:
+- custom stack implementation
+- balanced parentheses
+- expression conversion
+- special stack
+
+Adobe-style:
+- decode string
+- remove adjacent duplicates
+- histogram
+
+Service-company style:
+- implement stack using array
+- stack using linked list
+- push pop peek
+- balanced parentheses
+
+## Interview Questions
+
+- What is a monotonic stack?
+- Why do we use indices in stock span and daily temperatures?
+- Why is ArrayDeque preferred over Stack?
+- How do you evaluate postfix expressions?
+- How does Min Stack work?
+- Why is histogram solved with next/previous smaller?
+
+## Company Questions
+
+- design a special stack
+- implement min stack
+- evaluate expression with precedence
+- next greater / smaller family
+- stack simulation questions
+
+===============================================================================
+# Chapter 11: Revision Sheet and Cheat Sheet
+===============================================================================
+
+## Revision Sheet
+
+- Stack follows LIFO
+- push/pop/peek are O(1)
+- array stack uses top index
+- linked list stack uses head node
+- Java `Stack` is legacy and synchronized
+- `ArrayDeque` is the preferred modern stack
+- use stack for nesting, matching, reverse order, and backtracking
+- monotonic stack solves next/previous greater/smaller in O(n)
+- histogram uses monotonic increasing stack
+- min stack tracks extra minimum state
+
+## Cheat Sheet
+
+- brackets -> matching pair stack
+- `()` / `[]` / `{}` -> validate with stack
+- expression -> operand/operator stack
+- prefix -> scan right to left
+- postfix -> scan left to right
+- infix -> use operator precedence
+- next greater -> decreasing stack
+- next smaller -> increasing stack
+- previous greater -> decreasing stack
+- previous smaller -> increasing stack
+- histogram -> previous smaller + next smaller
+- stock span -> previous greater index
+- daily temperatures -> next greater index
+- adjacent duplicates -> stack simulation
+- minimum query -> min stack
+- maximum query -> max stack
+
+## Common Mistakes
+
+- using the wrong monotonic direction
+- storing values when indices are required
+- forgetting to pop equal values when strict comparison is needed
+- not handling empty stack in bracket problems
+- wrong operand order in expression evaluation
+- forgetting sentinel values in histogram
+- returning from `pop()` on an empty stack without checking
+
+===============================================================================
+# Chapter 12: Template Library
+===============================================================================
+
+## 12.1 Array Stack Template
+
+```java
+class ArrayStack {
+    private int[] arr;
+    private int top = -1;
+
+    ArrayStack(int capacity) {
+        arr = new int[capacity];
+    }
+
+    void push(int x) {
+        arr[++top] = x;
+    }
+
+    int pop() {
+        return arr[top--];
+    }
+
+    int peek() {
+        return arr[top];
+    }
+
+    boolean isEmpty() {
+        return top == -1;
+    }
+}
+```
+
+## 12.2 Linked List Stack Template
+
+```java
+class LinkedStack {
+    static class Node {
+        int data;
+        Node next;
+        Node(int data) { this.data = data; }
+    }
+
+    private Node head;
+
+    void push(int x) {
+        Node node = new Node(x);
+        node.next = head;
+        head = node;
+    }
+
+    int pop() {
+        int val = head.data;
+        head = head.next;
+        return val;
+    }
+
+    int peek() {
+        return head.data;
+    }
+}
+```
+
+## 12.3 Balanced Parentheses Template
+
+```java
+Deque<Character> st = new ArrayDeque<>();
+for (char ch : s.toCharArray()) {
+    if (ch == '(') st.push(ch);
+    else {
+        if (st.isEmpty()) return false;
+        st.pop();
+    }
+}
+return st.isEmpty();
+```
+
+## 12.4 Valid Parentheses Template
+
+```java
+Deque<Character> st = new ArrayDeque<>();
+for (char ch : s.toCharArray()) {
+    if (ch == '(' || ch == '[' || ch == '{') st.push(ch);
+    else {
+        if (st.isEmpty()) return false;
+        char top = st.peek();
+        if ((ch == ')' && top != '(') ||
+            (ch == ']' && top != '[') ||
+            (ch == '}' && top != '{')) return false;
+        st.pop();
+    }
+}
+return st.isEmpty();
+```
+
+## 12.5 Postfix Evaluation Template
+
+```java
+Deque<Integer> st = new ArrayDeque<>();
+for (String token : tokens) {
+    if (isOperator(token)) {
+        int b = st.pop();
+        int a = st.pop();
+        st.push(apply(a, b, token.charAt(0)));
+    } else {
+        st.push(Integer.parseInt(token));
+    }
+}
+return st.pop();
+```
+
+## 12.6 Prefix Evaluation Template
+
+```java
+Deque<Integer> st = new ArrayDeque<>();
+for (int i = tokens.length - 1; i >= 0; i--) {
+    String token = tokens[i];
+    if (isOperator(token)) {
+        int a = st.pop();
+        int b = st.pop();
+        st.push(apply(a, b, token.charAt(0)));
+    } else {
+        st.push(Integer.parseInt(token));
+    }
+}
+return st.pop();
+```
+
+## 12.7 Infix to Postfix Template
+
+```java
+Deque<Character> ops = new ArrayDeque<>();
+StringBuilder out = new StringBuilder();
+for (String token : tokens) {
+    if (operand) out.append(token).append(' ');
+    else if (token.equals("(")) ops.push('(');
+    else if (token.equals(")")) {
+        while (ops.peek() != '(') out.append(ops.pop()).append(' ');
+        ops.pop();
+    } else {
+        while (!ops.isEmpty() && precedence(ops.peek()) >= precedence(token.charAt(0))) {
+            if (ops.peek() == '(') break;
+            out.append(ops.pop()).append(' ');
+        }
+        ops.push(token.charAt(0));
+    }
+}
+while (!ops.isEmpty()) out.append(ops.pop()).append(' ');
+```
+
+## 12.8 Prefix to Infix Template
+
+```java
+Deque<String> st = new ArrayDeque<>();
+for (int i = tokens.length - 1; i >= 0; i--) {
+    String token = tokens[i];
+    if (isOperator(token)) {
+        String a = st.pop();
+        String b = st.pop();
+        st.push("(" + a + token + b + ")");
+    } else {
+        st.push(token);
+    }
+}
+return st.pop();
+```
+
+## 12.9 Next Greater Template
+
+```java
+Deque<Integer> st = new ArrayDeque<>();
+for (int i = n - 1; i >= 0; i--) {
+    while (!st.isEmpty() && st.peek() <= arr[i]) st.pop();
+    ans[i] = st.isEmpty() ? -1 : st.peek();
+    st.push(arr[i]);
+}
+```
+
+## 12.10 Previous Smaller Template
+
+```java
+Deque<Integer> st = new ArrayDeque<>();
+for (int i = 0; i < n; i++) {
+    while (!st.isEmpty() && st.peek() >= arr[i]) st.pop();
+    ans[i] = st.isEmpty() ? -1 : st.peek();
+    st.push(arr[i]);
+}
+```
+
+## 12.11 Stock Span Template
+
+```java
+Deque<Integer> st = new ArrayDeque<>();
+for (int i = 0; i < n; i++) {
+    while (!st.isEmpty() && price[st.peek()] <= price[i]) st.pop();
+    span[i] = st.isEmpty() ? i + 1 : i - st.peek();
+    st.push(i);
+}
+```
+
+## 12.12 Daily Temperatures Template
+
+```java
+Deque<Integer> st = new ArrayDeque<>();
+for (int i = n - 1; i >= 0; i--) {
+    while (!st.isEmpty() && temp[st.peek()] <= temp[i]) st.pop();
+    ans[i] = st.isEmpty() ? 0 : st.peek() - i;
+    st.push(i);
+}
+```
+
+## 12.13 Histogram Template
+
+```java
+Deque<Integer> st = new ArrayDeque<>();
+int max = 0;
+for (int i = 0; i <= n; i++) {
+    int h = (i == n) ? 0 : heights[i];
+    while (!st.isEmpty() && h < heights[st.peek()]) {
+        int height = heights[st.pop()];
+        int left = st.isEmpty() ? -1 : st.peek();
+        max = Math.max(max, height * (i - left - 1));
+    }
+    st.push(i);
+}
+```
+
+## 12.14 Remove Adjacent Duplicates Template
+
+```java
+StringBuilder st = new StringBuilder();
+for (char ch : s.toCharArray()) {
+    int n = st.length();
+    if (n > 0 && st.charAt(n - 1) == ch) st.deleteCharAt(n - 1);
+    else st.append(ch);
+}
+return st.toString();
+```
+
+## 12.15 Min Stack Template
+
+```java
+Deque<Integer> st = new ArrayDeque<>();
+Deque<Integer> minSt = new ArrayDeque<>();
+
+void push(int x) {
+    st.push(x);
+    if (minSt.isEmpty() || x <= minSt.peek()) minSt.push(x);
+}
+
+int pop() {
+    int x = st.pop();
+    if (x == minSt.peek()) minSt.pop();
+    return x;
+}
+
+int getMin() {
+    return minSt.peek();
+}
+```
+
+## Final Note
+
+If the problem involves nested structure, reverse order, nearest greater/smaller
+search, or a stateful process, stack is usually one of the first tools to try.

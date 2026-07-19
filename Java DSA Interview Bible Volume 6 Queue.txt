@@ -1,0 +1,2561 @@
+Java DSA Interview Bible
+Volume 6
+Queue: Complete Placement Handbook
+
+Compiled Manuscript Draft
+
+===============================================================================
+# Chapter 1: Complete Introduction to Queue
+===============================================================================
+
+## Introduction
+
+A queue is a linear data structure that follows First In First Out, commonly
+written as FIFO.
+
+Hinglish idea:
+Queue ko line me khade logon ki line samjho. Jo pehle aaya, woh pehle serve
+hoga.
+
+Queues are important because many real systems process items in arrival order:
+- tasks
+- requests
+- messages
+- events
+- jobs
+- BFS traversal
+- scheduling
+
+In Java interviews, queues are used both as a data structure topic and as a
+pattern for BFS, level order traversal, monotonic queue, and scheduling.
+
+## FIFO
+
+FIFO means First In First Out.
+
+If you insert 10, then 20, then 30:
+- 10 leaves first
+- then 20
+- then 30
+
+Visualization:
+
+```text
+Enqueue 10
+Enqueue 20
+Enqueue 30
+
+Front -> 10 20 30 <- Rear
+
+Dequeue -> 10
+```
+
+## Why Queue Exists
+
+Queue exists to process data in arrival order.
+
+It is useful when:
+- fairness matters
+- events must be processed in sequence
+- breadth-first exploration is needed
+- many producers and consumers are involved
+- the next item to be processed is always the oldest remaining item
+
+## Real World Applications
+
+- printer queue
+- ticket booking system
+- task scheduling
+- CPU scheduling
+- keyboard buffer
+- message queues
+- network packet processing
+- BFS traversal
+- topological sorting
+- async work queues
+
+## Memory Representation
+
+Conceptually, a queue has two ends:
+- front
+- rear
+
+Insertions happen at rear.
+Deletions happen at front.
+
+Depending on implementation, queue may use:
+- array
+- circular array
+- linked list
+- deque
+- heap for priority queue
+- blocking queue for concurrency
+
+## Internal Working
+
+Queue operations do not need to move all elements if implemented efficiently.
+
+Basic idea:
+- `enqueue` adds at rear
+- `dequeue` removes from front
+- `peek` reads front
+
+If array is used naively, removing from front can become expensive because many
+elements shift.
+
+That is why circular queue or linked list implementation is preferred.
+
+## Pattern Recognition
+
+Use queue thinking when the problem mentions:
+- order of arrival
+- first come first serve
+- level by level
+- shortest steps
+- spreading process
+- scheduling
+- window maximum with deque
+- topological ordering
+
+## Trigger Words
+
+- `queue`
+- `FIFO`
+- `front`
+- `rear`
+- `level order`
+- `BFS`
+- `minimum steps`
+- `shortest path`
+- `spread`
+- `schedule`
+- `task`
+- `window maximum`
+- `topological`
+
+## Advantages
+
+- fair processing order
+- good for BFS and level order
+- simple front/rear model
+- good for streaming and scheduling
+
+## Disadvantages
+
+- no random access like arrays
+- naive array queue can be costly on dequeue
+- priority-based handling needs different structure
+- not ideal for searching arbitrary elements
+
+## Array vs Queue
+
+Array:
+- direct index access
+- useful for random access
+- insert/remove in middle can be costly
+
+Queue:
+- one-way ordered processing
+- front/rear semantics
+- ideal for sequence processing
+
+Short rule:
+- if you need indexed access -> array
+- if you need arrival order -> queue
+
+## Queue Operations
+
+### Enqueue
+
+Add element at rear.
+
+### Dequeue
+
+Remove element from front.
+
+### Front
+
+The element at the front end.
+
+### Rear
+
+The last inserted element.
+
+### Peek
+
+Return front without removing it.
+
+### isEmpty
+
+Check whether queue has no elements.
+
+### Size
+
+Return number of stored elements.
+
+## Complexity
+
+Typical queue operation complexities:
+- enqueue: O(1)
+- dequeue: O(1)
+- peek: O(1)
+- isEmpty: O(1)
+- size: O(1)
+
+If the implementation is a naive array queue with shifting, dequeue becomes O(n).
+
+## Interview Questions
+
+- What is a queue?
+- Why is it called FIFO?
+- What are front and rear?
+- Why do we need queue?
+- Where is queue used in real life?
+
+## Follow-up Questions
+
+- Difference between queue and stack?
+- Difference between queue and deque?
+- Why is queue useful in BFS?
+- Why is a circular queue better than a linear array queue?
+
+===============================================================================
+# Chapter 2: Queue Implementations and Java APIs
+===============================================================================
+
+## Introduction
+
+Queues can be implemented in several ways.
+
+In Java interviews, you should know:
+- queue using array
+- queue using linked list
+- circular queue
+- deque
+- priority queue
+- ArrayDeque
+- blocking queue
+- Java `Queue` interface basics
+
+## 2.1 Queue Using Array
+
+### Pattern Recognition
+
+Use an array queue when:
+- size is bounded
+- implementation simplicity matters
+- you want fixed memory
+
+### Trigger Words
+
+- `array based queue`
+- `fixed size`
+- `enqueue`
+- `dequeue`
+
+### Observation
+
+Rear moves forward on insert.
+Front moves forward on remove.
+
+### Brute Force
+
+After every dequeue, shift all remaining elements left.
+
+That works but is inefficient.
+
+### Optimal Solution
+
+Use front and rear indices, or use circular indexing.
+
+### Visualization
+
+```text
+arr: [10, 20, 30, _, _]
+front = 0
+rear = 2
+```
+
+### Dry Run
+
+- enqueue 10 -> rear = 0
+- enqueue 20 -> rear = 1
+- enqueue 30 -> rear = 2
+- dequeue -> front moves forward
+
+### Java Code
+
+```java
+class ArrayQueue {
+    private int[] arr;
+    private int front;
+    private int rear;
+    private int size;
+
+    public ArrayQueue(int capacity) {
+        arr = new int[capacity];
+        front = 0;
+        rear = -1;
+        size = 0;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    public boolean isFull() {
+        return size == arr.length;
+    }
+
+    public void enqueue(int x) {
+        if (isFull()) {
+            throw new RuntimeException("Queue is full");
+        }
+        rear = (rear + 1) % arr.length;
+        arr[rear] = x;
+        size++;
+    }
+
+    public int dequeue() {
+        if (isEmpty()) {
+            throw new RuntimeException("Queue is empty");
+        }
+        int val = arr[front];
+        front = (front + 1) % arr.length;
+        size--;
+        return val;
+    }
+
+    public int peek() {
+        if (isEmpty()) {
+            throw new RuntimeException("Queue is empty");
+        }
+        return arr[front];
+    }
+}
+```
+
+### Template
+
+```java
+rear = (rear + 1) % capacity;
+arr[rear] = x;
+
+val = arr[front];
+front = (front + 1) % capacity;
+```
+
+### Complexity
+
+- enqueue: O(1)
+- dequeue: O(1) if circular, O(n) if shifting
+- peek: O(1)
+- space: O(n)
+
+### Edge Cases
+
+- empty queue
+- full queue
+- one element
+
+### Mistakes
+
+- using shifting every time
+- forgetting modulo wrap-around
+- confusing front and rear
+
+### Interview Questions
+
+- implement queue using array
+- why is circular array better than linear array queue?
+
+### Company Questions
+
+- bounded queue design
+- circular buffer
+
+## 2.2 Queue Using Linked List
+
+### Pattern Recognition
+
+Use linked list queue when:
+- size should be dynamic
+- enqueue and dequeue both need O(1)
+- you want no shifting cost
+
+### Trigger Words
+
+- `linked list queue`
+- `front`
+- `rear`
+- `dynamic size`
+
+### Observation
+
+Front points to the node to be removed next.
+Rear points to the last node.
+
+### Brute Force
+
+Traverse the list to the end on every enqueue.
+
+### Optimal Solution
+
+Keep both front and rear references.
+
+### Visualization
+
+```text
+front -> [10] -> [20] -> [30] <- rear
+```
+
+### Dry Run
+
+- enqueue 10 -> front = rear = 10
+- enqueue 20 -> rear.next = 20
+- dequeue -> remove 10, front moves to 20
+
+### Java Code
+
+```java
+class LinkedQueue {
+    private static class Node {
+        int data;
+        Node next;
+        Node(int data) { this.data = data; }
+    }
+
+    private Node front;
+    private Node rear;
+    private int size;
+
+    public boolean isEmpty() {
+        return front == null;
+    }
+
+    public void enqueue(int x) {
+        Node node = new Node(x);
+        if (rear == null) {
+            front = rear = node;
+        } else {
+            rear.next = node;
+            rear = node;
+        }
+        size++;
+    }
+
+    public int dequeue() {
+        if (isEmpty()) {
+            throw new RuntimeException("Queue is empty");
+        }
+        int val = front.data;
+        front = front.next;
+        if (front == null) {
+            rear = null;
+        }
+        size--;
+        return val;
+    }
+
+    public int peek() {
+        if (isEmpty()) {
+            throw new RuntimeException("Queue is empty");
+        }
+        return front.data;
+    }
+}
+```
+
+### Template
+
+```java
+Node node = new Node(x);
+if (rear == null) {
+    front = rear = node;
+} else {
+    rear.next = node;
+    rear = node;
+}
+```
+
+### Complexity
+
+- enqueue: O(1)
+- dequeue: O(1)
+- peek: O(1)
+- space: O(n)
+
+### Edge Cases
+
+- empty queue
+- removing last element
+
+### Mistakes
+
+- forgetting to reset rear when queue becomes empty
+- traversing to tail every time
+
+### Interview Questions
+
+- implement queue using linked list
+- why linked list queue is dynamic?
+
+### Company Questions
+
+- custom queue implementation
+- queue design from scratch
+
+## 2.3 Circular Queue
+
+### Pattern Recognition
+
+Use circular queue when the array should wrap around and reuse freed space.
+
+### Trigger Words
+
+- `circular queue`
+- `wrap around`
+- `circular buffer`
+- `round robin`
+
+### Observation
+
+Circular queue uses modulo arithmetic to reuse positions in the array.
+
+### Brute Force
+
+Shift elements after dequeue.
+
+### Optimal Solution
+
+Move front and rear using modulo and track size.
+
+### Visualization
+
+```text
+index: 0 1 2 3 4
+front -> 1 2 3 _ _
+rear  -> 2
+```
+
+After wrap-around:
+
+```text
+front at 3, rear at 1
+```
+
+### Dry Run
+
+- insert 1, 2, 3
+- remove 1
+- insert 4 into freed position using wrap-around
+
+### Java Code
+
+```java
+class CircularArrayQueue {
+    private int[] arr;
+    private int front;
+    private int rear;
+    private int size;
+    private int count;
+
+    public CircularArrayQueue(int size) {
+        this.arr = new int[size];
+        this.size = size;
+        this.front = 0;
+        this.rear = -1;
+        this.count = 0;
+    }
+
+    public boolean isEmpty() {
+        return count == 0;
+    }
+
+    public boolean isFull() {
+        return count == size;
+    }
+
+    public void enqueue(int x) {
+        if (isFull()) throw new RuntimeException("Queue is full");
+        rear = (rear + 1) % size;
+        arr[rear] = x;
+        count++;
+    }
+
+    public int dequeue() {
+        if (isEmpty()) throw new RuntimeException("Queue is empty");
+        int val = arr[front];
+        front = (front + 1) % size;
+        count--;
+        return val;
+    }
+
+    public int peek() {
+        if (isEmpty()) throw new RuntimeException("Queue is empty");
+        return arr[front];
+    }
+}
+```
+
+### Template
+
+```java
+rear = (rear + 1) % size;
+front = (front + 1) % size;
+```
+
+### Complexity
+
+- enqueue: O(1)
+- dequeue: O(1)
+- peek: O(1)
+
+### Edge Cases
+
+- size one
+- full queue
+- empty queue
+
+### Mistakes
+
+- forgetting to track count
+- confusing full and empty when front == rear
+
+### Interview Questions
+
+- what is a circular queue?
+- why is circular queue important?
+
+### Company Questions
+
+- round robin queue
+- buffer implementation
+
+## 2.4 Deque
+
+### Pattern Recognition
+
+Use deque when insertion and deletion may happen at both ends.
+
+### Trigger Words
+
+- `deque`
+- `double ended queue`
+- `front and back`
+- `both ends`
+
+### Observation
+
+Deque is a more general structure than queue or stack.
+
+### Brute Force
+
+Use two different structures for front and rear operations.
+
+### Optimal Solution
+
+Use one deque structure with operations at both ends.
+
+### Visualization
+
+```text
+front <-> 10 <-> 20 <-> 30 <-> rear
+```
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class DequeDemo {
+    public static void main(String[] args) {
+        Deque<Integer> dq = new ArrayDeque<>();
+        dq.offerFirst(10);
+        dq.offerLast(20);
+        dq.offerLast(30);
+        System.out.println(dq.peekFirst());
+        System.out.println(dq.peekLast());
+        dq.pollFirst();
+        dq.pollLast();
+    }
+}
+```
+
+### Template
+
+```java
+Deque<Integer> dq = new ArrayDeque<>();
+dq.offerFirst(x);
+dq.offerLast(y);
+dq.pollFirst();
+dq.pollLast();
+```
+
+### Complexity
+
+- front insert/delete: O(1)
+- back insert/delete: O(1)
+- space: O(n)
+
+### Edge Cases
+
+- empty deque
+
+### Mistakes
+
+- confusing queue methods and deque methods
+
+### Interview Questions
+
+- why use deque?
+- difference between queue and deque?
+
+### Company Questions
+
+- sliding window maximum
+- deque based design
+
+## 2.5 Priority Queue
+
+### Pattern Recognition
+
+Use priority queue when the next element to process is based on priority, not
+arrival order.
+
+### Trigger Words
+
+- `priority`
+- `smallest first`
+- `largest first`
+- `top K`
+- `schedule`
+
+### Observation
+
+Priority queue is not FIFO.
+
+It orders elements by priority, typically using a heap.
+
+### Brute Force
+
+Sort the whole collection every time you need the next item.
+
+### Optimal Solution
+
+Use a heap-backed priority queue.
+
+### Visualization
+
+```text
+min-heap top -> smallest element
+max-heap top -> largest element
+```
+
+### Java Code
+
+```java
+import java.util.PriorityQueue;
+
+public class PriorityQueueDemo {
+    public static void main(String[] args) {
+        PriorityQueue<Integer> minPQ = new PriorityQueue<>();
+        minPQ.offer(5);
+        minPQ.offer(1);
+        minPQ.offer(3);
+
+        System.out.println(minPQ.peek()); // 1
+        System.out.println(minPQ.poll()); // 1
+    }
+}
+```
+
+### Template
+
+```java
+PriorityQueue<Integer> pq = new PriorityQueue<>();
+pq.offer(x);
+int top = pq.peek();
+int removed = pq.poll();
+```
+
+### Complexity
+
+- insert: O(log n)
+- remove top: O(log n)
+- peek: O(1)
+
+### Edge Cases
+
+- empty queue
+- duplicate values
+- custom comparator issues
+
+### Mistakes
+
+- thinking PriorityQueue is FIFO
+- using wrong comparator direction
+
+### Interview Questions
+
+- what is PriorityQueue?
+- difference between queue and priority queue?
+
+### Company Questions
+
+- top K elements
+- task scheduling
+
+## 2.6 ArrayDeque
+
+### Pattern Recognition
+
+Use `ArrayDeque` when you need a fast modern queue/deque implementation in Java.
+
+### Trigger Words
+
+- `ArrayDeque`
+- `preferred`
+- `Java queue`
+- `modern implementation`
+
+### Observation
+
+ArrayDeque is usually preferred over `LinkedList` for queue/deque operations in
+practice because it is efficient and cache-friendly.
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Queue;
+
+public class ArrayDequeQueueDemo {
+    public static void main(String[] args) {
+        Queue<Integer> q = new ArrayDeque<>();
+        q.offer(10);
+        q.offer(20);
+        q.offer(30);
+        System.out.println(q.peek());
+        System.out.println(q.poll());
+    }
+}
+```
+
+### Template
+
+```java
+Queue<Integer> q = new ArrayDeque<>();
+q.offer(x);
+int front = q.peek();
+int removed = q.poll();
+```
+
+### Complexity
+
+- offer: amortized O(1)
+- poll: O(1)
+- peek: O(1)
+
+### Mistakes
+
+- inserting null values
+- assuming it can be used as a priority queue
+
+### Interview Questions
+
+- why prefer ArrayDeque for queue?
+- difference between ArrayDeque and LinkedList?
+
+## 2.7 Blocking Queue
+
+### Pattern Recognition
+
+Use blocking queue when multiple threads produce and consume items concurrently.
+
+### Trigger Words
+
+- `blocking`
+- `producer consumer`
+- `thread-safe`
+- `wait`
+- `take`
+- `put`
+
+### Observation
+
+Blocking queue can pause a producer when full or pause a consumer when empty.
+
+### Brute Force
+
+Implement your own wait/notify logic incorrectly.
+
+### Optimal Solution
+
+Use Java concurrency utilities such as `BlockingQueue`.
+
+### Java Code
+
+```java
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+public class BlockingQueueDemo {
+    public static void main(String[] args) throws InterruptedException {
+        BlockingQueue<Integer> q = new ArrayBlockingQueue<>(3);
+        q.put(10);
+        q.put(20);
+        System.out.println(q.take());
+    }
+}
+```
+
+### Template
+
+```java
+BlockingQueue<T> q = new ArrayBlockingQueue<>(capacity);
+q.put(item);   // blocks if full
+T item = q.take(); // blocks if empty
+```
+
+### Complexity
+
+- put/take: O(1) amortized
+- blocking behavior depends on thread state
+
+### Mistakes
+
+- forgetting InterruptedException
+- using non-thread-safe queue in concurrent code
+
+### Interview Questions
+
+- what is BlockingQueue?
+- why is it useful in producer consumer?
+
+### Company Questions
+
+- thread-safe queue design
+- producer consumer system
+
+## 2.8 Queue Interface Methods
+
+### Important Methods
+
+- `offer(x)` -> add element safely, returns false if fails
+- `add(x)` -> add element, may throw exception on failure
+- `poll()` -> remove and return front, returns null if empty
+- `remove()` -> remove and return front, may throw exception
+- `peek()` -> read front, returns null if empty
+- `element()` -> read front, may throw exception
+- `isEmpty()` -> check empty
+- `size()` -> return count
+
+### Interview Tip
+
+Prefer `offer`, `poll`, and `peek` for queue code because they are safer.
+
+## Complexity Summary
+
+- queue via linked list: O(1) ops
+- queue via circular array: O(1) ops
+- deque operations at both ends: O(1)
+- priority queue insert/remove: O(log n)
+- blocking queue operations: thread-safe coordination
+
+## Interview Questions
+
+- Implement queue using array
+- Implement queue using linked list
+- Why circular queue?
+- What is PriorityQueue?
+- What is BlockingQueue?
+
+## Company Questions
+
+- design bounded queue
+- implement thread-safe queue
+- compare queue implementations in Java
+
+===============================================================================
+# Chapter 3: BFS Queue Pattern
+===============================================================================
+
+## Introduction
+
+Queue is the backbone of BFS.
+
+Whenever we need to explore items in the order they were discovered, BFS and
+queue go together.
+
+This chapter covers:
+- BFS queue pattern
+- level order traversal
+- shortest path BFS
+- multi source BFS
+- topological sorting queue concept
+
+## Pattern Recognition
+
+Use queue/BFS when the question mentions:
+- shortest path in unweighted graph
+- minimum steps
+- level by level traversal
+- can reach
+- spread / infection / rot
+- topological order
+- dependency resolution
+
+## Trigger Words
+
+- `BFS`
+- `level`
+- `shortest`
+- `minimum steps`
+- `unweighted`
+- `spread`
+- `source`
+- `indegree`
+- `topological`
+
+## Observation
+
+BFS explores the nearest nodes first.
+
+That means the queue naturally holds the frontier of the current search layer.
+
+## Brute Force
+
+Try all paths recursively or repeatedly scan the graph/tree.
+
+That becomes slow and can revisit states many times.
+
+## Optimal Solution
+
+Use a queue to visit nodes in FIFO order and a visited structure to prevent
+revisits.
+
+## Visualization
+
+```text
+Level 0:        0
+              /   \
+Level 1:     1     2
+            /  \     \
+Level 2:   3    4     5
+```
+
+## Dry Run
+
+Start from node 0:
+- enqueue 0
+- dequeue 0, enqueue its neighbors
+- dequeue 1, enqueue its unvisited neighbors
+- dequeue 2, enqueue its unvisited neighbors
+
+## 3.1 BFS Queue Pattern
+
+### Pattern Recognition
+
+Use BFS queue when the question is about traversing graph nodes in discovery
+order.
+
+### Trigger Words
+
+- `graph traversal`
+- `can reach`
+- `connected`
+- `reachable`
+- `minimum edges`
+
+### Observation
+
+The first time we visit a node in BFS is usually the shortest path in terms of
+number of edges.
+
+### Brute Force
+
+Use recursion or DFS and try to track distance manually.
+
+### Optimal Solution
+
+Queue + visited array/set.
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+
+public class BFSQueuePattern {
+    public static void bfs(List<List<Integer>> graph, int source) {
+        boolean[] visited = new boolean[graph.size()];
+        Queue<Integer> q = new ArrayDeque<>();
+
+        q.offer(source);
+        visited[source] = true;
+
+        while (!q.isEmpty()) {
+            int node = q.poll();
+            System.out.print(node + " ");
+
+            for (int nbr : graph.get(node)) {
+                if (!visited[nbr]) {
+                    visited[nbr] = true;
+                    q.offer(nbr);
+                }
+            }
+        }
+    }
+}
+```
+
+### Reusable Template
+
+```java
+Queue<Integer> q = new ArrayDeque<>();
+boolean[] visited = new boolean[n];
+q.offer(source);
+visited[source] = true;
+
+while (!q.isEmpty()) {
+    int node = q.poll();
+    for (int nbr : graph.get(node)) {
+        if (!visited[nbr]) {
+            visited[nbr] = true;
+            q.offer(nbr);
+        }
+    }
+}
+```
+
+### Complexity
+
+- Time: O(V + E)
+- Space: O(V)
+
+### Common Mistakes
+
+- forgetting to mark visited before enqueue
+- using DFS when shortest path in edges is needed
+- not handling disconnected graphs
+
+### Interview Questions
+
+- BFS traversal of a graph
+- can a path exist between two nodes?
+
+### Related Problems
+
+- connected components
+- shortest path in unweighted graph
+
+## 3.2 Level Order Traversal
+
+### Pattern Recognition
+
+Use this when nodes must be processed level by level in a tree.
+
+### Trigger Words
+
+- `level order`
+- `level by level`
+- `same depth`
+- `binary tree`
+
+### Observation
+
+The queue size at the start of each loop tells us how many nodes belong to the
+current level.
+
+### Brute Force
+
+Use recursion and track depth separately.
+
+### Optimal Solution
+
+Use a queue plus size loop.
+
+### Visualization
+
+```text
+Level 0: 1
+Level 1: 2 3
+Level 2: 4 5 6 7
+```
+
+### Dry Run
+
+- enqueue root
+- `size = q.size()` gives current level count
+- process exactly `size` nodes
+- enqueue next level nodes
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+    TreeNode(int val) { this.val = val; }
+}
+
+public class LevelOrderTraversal {
+    public static List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> ans = new ArrayList<>();
+        if (root == null) return ans;
+
+        Queue<TreeNode> q = new ArrayDeque<>();
+        q.offer(root);
+
+        while (!q.isEmpty()) {
+            int size = q.size();
+            List<Integer> level = new ArrayList<>();
+
+            for (int i = 0; i < size; i++) {
+                TreeNode node = q.poll();
+                level.add(node.val);
+
+                if (node.left != null) q.offer(node.left);
+                if (node.right != null) q.offer(node.right);
+            }
+
+            ans.add(level);
+        }
+        return ans;
+    }
+}
+```
+
+### Reusable Template
+
+```java
+Queue<TreeNode> q = new ArrayDeque<>();
+q.offer(root);
+
+while (!q.isEmpty()) {
+    int size = q.size();
+    for (int i = 0; i < size; i++) {
+        TreeNode node = q.poll();
+        // process node
+        if (node.left != null) q.offer(node.left);
+        if (node.right != null) q.offer(node.right);
+    }
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(w), where w is maximum width of tree
+
+### Common Mistakes
+
+- using `q.size()` inside the for loop condition
+- forgetting to store level size before processing
+
+### Interview Questions
+
+- binary tree level order traversal
+- zigzag traversal
+- right side view
+- average of levels
+
+### Related Problems
+
+- bottom view
+- left view
+- zigzag level order
+
+## 3.3 Shortest Path BFS
+
+### Pattern Recognition
+
+Use this when the question asks for minimum number of edges or moves in an
+unweighted graph/grid.
+
+### Trigger Words
+
+- `shortest path`
+- `minimum moves`
+- `minimum steps`
+- `nearest`
+- `distance`
+
+### Observation
+
+Each BFS level corresponds to one distance unit.
+
+### Brute Force
+
+Try all paths with DFS or recursion.
+
+### Optimal Solution
+
+Use BFS with a level counter or distance array.
+
+### Visualization
+
+```text
+source -> level 0
+neighbors -> level 1
+their neighbors -> level 2
+```
+
+### Dry Run
+
+- level 0: source
+- level 1: all nodes 1 edge away
+- level 2: all nodes 2 edges away
+- when target is found, current level is answer
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.List;
+
+public class ShortestPathBFS {
+    public static int shortestPath(List<List<Integer>> graph, int source, int dest) {
+        int n = graph.size();
+        boolean[] visited = new boolean[n];
+        Queue<Integer> q = new ArrayDeque<>();
+
+        q.offer(source);
+        visited[source] = true;
+        int level = 0;
+
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int node = q.poll();
+                if (node == dest) return level;
+
+                for (int nbr : graph.get(node)) {
+                    if (!visited[nbr]) {
+                        visited[nbr] = true;
+                        q.offer(nbr);
+                    }
+                }
+            }
+            level++;
+        }
+        return -1;
+    }
+}
+```
+
+### Reusable Template
+
+```java
+int level = 0;
+while (!q.isEmpty()) {
+    int size = q.size();
+    for (int i = 0; i < size; i++) {
+        int node = q.poll();
+        if (node == target) return level;
+        // push neighbors
+    }
+    level++;
+}
+```
+
+### Complexity
+
+- Time: O(V + E)
+- Space: O(V)
+
+### Common Mistakes
+
+- using DFS for shortest path in unweighted graph
+- incrementing level too early or too late
+
+### Interview Questions
+
+- shortest path in unweighted graph
+- minimum steps to reach target
+
+### Related Problems
+
+- open the lock
+- minimum moves in grid
+
+## 3.4 Multi Source BFS
+
+### Pattern Recognition
+
+Use this when there are multiple starting points that spread simultaneously.
+
+### Trigger Words
+
+- `many sources`
+- `spread`
+- `infection`
+- `rot`
+- `fire`
+- `all sources start together`
+
+### Observation
+
+All starting cells/nodes are enqueued at the beginning.
+
+Then BFS expands from all of them together.
+
+### Brute Force
+
+Run BFS from each source separately.
+
+### Optimal Solution
+
+Put all sources into the queue first, then do one BFS.
+
+### Visualization
+
+```text
+source A   source B   source C
+   \          |          /
+            one BFS wave
+```
+
+### Dry Run
+
+- enqueue all rotten oranges
+- process them level by level
+- new rotten oranges are added to the same queue
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Queue;
+
+public class MultiSourceBFS {
+    public static int multiSourceExample(int[][] grid) {
+        Queue<int[]> q = new ArrayDeque<>();
+        int rows = grid.length, cols = grid[0].length;
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (grid[r][c] == 2) {
+                    q.offer(new int[] { r, c });
+                }
+            }
+        }
+
+        int[][] dirs = { {1,0}, {-1,0}, {0,1}, {0,-1} };
+        int minutes = 0;
+
+        while (!q.isEmpty()) {
+            int size = q.size();
+            boolean spread = false;
+
+            for (int i = 0; i < size; i++) {
+                int[] cell = q.poll();
+                for (int[] d : dirs) {
+                    int nr = cell[0] + d[0];
+                    int nc = cell[1] + d[1];
+                    if (nr >= 0 && nc >= 0 && nr < rows && nc < cols && grid[nr][nc] == 1) {
+                        grid[nr][nc] = 2;
+                        q.offer(new int[] { nr, nc });
+                        spread = true;
+                    }
+                }
+            }
+
+            if (spread) minutes++;
+        }
+
+        return minutes;
+    }
+}
+```
+
+### Reusable Template
+
+```java
+Queue<State> q = new ArrayDeque<>();
+for (all sources) q.offer(source);
+
+while (!q.isEmpty()) {
+    int size = q.size();
+    for (int i = 0; i < size; i++) {
+        State cur = q.poll();
+        // spread to neighbors
+    }
+}
+```
+
+### Complexity
+
+- Time: O(V + E) or O(rows * cols)
+- Space: O(V)
+
+### Common Mistakes
+
+- enqueuing sources one by one with separate BFS runs
+- forgetting to mark visited/infected immediately
+
+### Interview Questions
+
+- rotting oranges
+- walls and gates
+- 01 matrix
+
+### Related Problems
+
+- fire spread
+- infection spread
+
+## 3.5 Topological Sorting Queue Concept
+
+### Pattern Recognition
+
+Use this when the graph has dependencies and you need a valid order.
+
+### Trigger Words
+
+- `dependency`
+- `prerequisite`
+- `topological`
+- `indegree`
+- `DAG`
+
+### Observation
+
+Nodes with indegree 0 can be processed first.
+
+After processing a node, reduce the indegree of its neighbors.
+
+### Brute Force
+
+Repeatedly scan all nodes to find ones with zero indegree.
+
+### Optimal Solution
+
+Use a queue for all indegree-0 nodes.
+
+### Visualization
+
+```text
+0 -> 1 -> 3
+0 -> 2 -> 3
+
+indegree zero nodes start in queue
+```
+
+### Dry Run
+
+- enqueue all nodes with indegree 0
+- dequeue one node
+- reduce indegree of its neighbors
+- enqueue any neighbor whose indegree becomes 0
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+
+public class TopologicalQueue {
+    public static int[] topoSort(int n, List<List<Integer>> graph) {
+        int[] indegree = new int[n];
+        for (int u = 0; u < n; u++) {
+            for (int v : graph.get(u)) {
+                indegree[v]++;
+            }
+        }
+
+        Queue<Integer> q = new ArrayDeque<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) q.offer(i);
+        }
+
+        int[] order = new int[n];
+        int idx = 0;
+
+        while (!q.isEmpty()) {
+            int node = q.poll();
+            order[idx++] = node;
+
+            for (int nbr : graph.get(node)) {
+                indegree[nbr]--;
+                if (indegree[nbr] == 0) {
+                    q.offer(nbr);
+                }
+            }
+        }
+
+        return idx == n ? order : new int[0];
+    }
+}
+```
+
+### Reusable Template
+
+```java
+Queue<Integer> q = new ArrayDeque<>();
+for (int i = 0; i < n; i++) if (indegree[i] == 0) q.offer(i);
+
+while (!q.isEmpty()) {
+    int node = q.poll();
+    for (int nbr : graph.get(node)) {
+        indegree[nbr]--;
+        if (indegree[nbr] == 0) q.offer(nbr);
+    }
+}
+```
+
+### Complexity
+
+- Time: O(V + E)
+- Space: O(V)
+
+### Common Mistakes
+
+- forgetting to build indegree
+- not detecting cycle if result size < n
+
+### Interview Questions
+
+- topological sort using queue
+- kahn's algorithm
+
+### Related Problems
+
+- course schedule
+- alien dictionary
+- dependency resolution
+
+## Related Problems
+
+- BFS graph traversal
+- binary tree level order
+- shortest path in unweighted graph
+- rotting oranges
+- topological sort
+
+===============================================================================
+# Chapter 4: Monotonic Queue and Sliding Window Maximum
+===============================================================================
+
+## Introduction
+
+A monotonic queue is usually implemented using a deque.
+
+It maintains elements in increasing or decreasing order so that the front always
+gives the best candidate for the current window.
+
+This is one of the most important queue interview patterns.
+
+## Pattern Recognition
+
+Use monotonic queue when the question mentions:
+- maximum in every window
+- minimum in every window
+- sliding window best value
+- range over contiguous elements
+
+## Trigger Words
+
+- `sliding window maximum`
+- `maximum in every window`
+- `minimum in every window`
+- `window best`
+- `deque`
+
+## Observation
+
+We need to know the best element in a moving window while inserting new items
+and removing old items.
+
+Deque lets us do both ends efficiently.
+
+## Brute Force
+
+For every window, scan all elements and compute maximum or minimum again.
+
+That is O(nk).
+
+## Optimal Solution
+
+Store indices in a deque:
+- remove indices outside the current window from front
+- remove worse candidates from back
+- front always stores the best candidate
+
+## Visualization
+
+```text
+Window: [2, 1, 5, 3]
+Deque (max): indices of elements in decreasing order
+front -> best candidate
+```
+
+## Dry Run
+
+For `nums = [1,3,-1,-3,5,3,6,7]` and `k = 3`:
+- window [1,3,-1] -> 3
+- window [3,-1,-3] -> 3
+- window [-1,-3,5] -> 5
+- window [5,3,6] -> 6
+- window [3,6,7] -> 7
+
+## 4.1 Sliding Window Maximum
+
+### Pattern Recognition
+
+Use this when you need the maximum element for every window of size `k`.
+
+### Trigger Words
+
+- `maximum in every window`
+- `sliding window max`
+- `window size k`
+
+### Observation
+
+The deque should remain decreasing by values.
+
+### Brute Force
+
+Check every window independently.
+
+### Optimal Solution
+
+Use a deque of indices in decreasing order.
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+
+public class SlidingWindowMaximum {
+    public static List<Integer> maxSlidingWindow(int[] nums, int k) {
+        List<Integer> ans = new ArrayList<>();
+        Deque<Integer> dq = new ArrayDeque<>();
+
+        for (int i = 0; i < nums.length; i++) {
+            while (!dq.isEmpty() && dq.peekFirst() <= i - k) {
+                dq.pollFirst();
+            }
+
+            while (!dq.isEmpty() && nums[dq.peekLast()] < nums[i]) {
+                dq.pollLast();
+            }
+
+            dq.offerLast(i);
+
+            if (i >= k - 1) {
+                ans.add(nums[dq.peekFirst()]);
+            }
+        }
+        return ans;
+    }
+}
+```
+
+### Reusable Template
+
+```java
+Deque<Integer> dq = new ArrayDeque<>();
+for (int i = 0; i < n; i++) {
+    while (!dq.isEmpty() && dq.peekFirst() <= i - k) dq.pollFirst();
+    while (!dq.isEmpty() && nums[dq.peekLast()] < nums[i]) dq.pollLast();
+    dq.offerLast(i);
+    if (i >= k - 1) ans.add(nums[dq.peekFirst()]);
+}
+```
+
+### Complexity
+
+- Time: O(n)
+- Space: O(k)
+
+### Common Mistakes
+
+- storing values instead of indices
+- forgetting to remove out-of-window indices
+- using wrong comparison for duplicates
+
+### Interview Questions
+
+- sliding window maximum
+- maximum of each window
+
+### Related Problems
+
+- sliding window minimum
+- maximum of subarray windows
+
+## 4.2 Sliding Window Minimum
+
+### Pattern Recognition
+
+Use the same idea as maximum, but keep the deque increasing.
+
+### Trigger Words
+
+- `minimum in every window`
+- `sliding window minimum`
+
+### Observation
+
+The front of an increasing deque gives the minimum.
+
+### Optimal Solution
+
+Remove larger values from the back and out-of-window indices from the front.
+
+### Complexity
+
+- Time: O(n)
+- Space: O(k)
+
+### Interview Questions
+
+- sliding window minimum
+- best minimum over windows
+
+===============================================================================
+# Chapter 5: Producer Consumer Concept
+===============================================================================
+
+## Introduction
+
+Producer consumer is a classic concurrency pattern.
+
+Producers create items and put them into a shared queue.
+Consumers remove items from the queue and process them.
+
+## Pattern Recognition
+
+Use this when the question mentions:
+- producer
+- consumer
+- buffer
+- blocking
+- wait
+- take
+- put
+- thread-safe queue
+
+## Trigger Words
+
+- `producer`
+- `consumer`
+- `buffer`
+- `blocked`
+- `waiting`
+- `thread`
+- `synchronization`
+
+## Observation
+
+A queue is the natural buffer between producer and consumer because it preserves
+arrival order.
+
+## Brute Force
+
+Use busy waiting:
+- producer repeatedly checks whether buffer has space
+- consumer repeatedly checks whether buffer has items
+
+This wastes CPU.
+
+## Optimal Solution
+
+Use a BlockingQueue or proper wait/notify synchronization.
+
+## Visualization
+
+```text
+Producer -> [Queue Buffer] -> Consumer
+```
+
+## Dry Run
+
+- producer adds item A
+- producer adds item B
+- consumer takes item A
+- consumer takes item B
+
+## Java Code
+
+```java
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+public class ProducerConsumerDemo {
+    public static void main(String[] args) {
+        BlockingQueue<Integer> buffer = new ArrayBlockingQueue<>(3);
+
+        Thread producer = new Thread(() -> {
+            try {
+                buffer.put(1);
+                buffer.put(2);
+                buffer.put(3);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+
+        Thread consumer = new Thread(() -> {
+            try {
+                System.out.println(buffer.take());
+                System.out.println(buffer.take());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+
+        producer.start();
+        consumer.start();
+    }
+}
+```
+
+## Reusable Template
+
+```java
+BlockingQueue<T> buffer = new ArrayBlockingQueue<>(capacity);
+
+// producer
+buffer.put(item); // blocks if full
+
+// consumer
+T item = buffer.take(); // blocks if empty
+```
+
+## Complexity
+
+- queue operations: O(1) amortized
+- synchronization cost depends on thread scheduling
+
+## Common Mistakes
+
+- using non-thread-safe queue in concurrent code
+- busy waiting instead of blocking
+- forgetting InterruptedException
+
+## Interview Questions
+
+- what is producer consumer?
+- why use BlockingQueue?
+- how do producer and consumer coordinate?
+
+## Related Problems
+
+- bounded buffer
+- thread-safe queue
+- message processing system
+
+===============================================================================
+# Chapter 6: Priority Scheduling and Task Scheduling
+===============================================================================
+
+## Introduction
+
+When processing order depends on priority or timing, queue-based scheduling
+patterns become important.
+
+Some schedules use plain FIFO queues.
+Some use priority queues.
+Some use both together.
+
+## 6.1 Priority Scheduling
+
+### Pattern Recognition
+
+Use this when the next item to process should be the highest priority, not the
+oldest item.
+
+### Trigger Words
+
+- `priority`
+- `urgent`
+- `highest priority`
+- `schedule next`
+- `task ranking`
+
+### Observation
+
+Priority scheduling is not FIFO.
+
+The most important task should be processed first.
+
+### Brute Force
+
+Sort tasks every time you need the next one.
+
+### Optimal Solution
+
+Use a priority queue.
+
+### Visualization
+
+```text
+Tasks with priorities:
+T1(2), T2(5), T3(1)
+
+Process T2 first if higher number means higher priority.
+```
+
+### Java Code
+
+```java
+import java.util.PriorityQueue;
+
+public class PriorityScheduling {
+    static class Task {
+        int id;
+        int priority;
+        Task(int id, int priority) {
+            this.id = id;
+            this.priority = priority;
+        }
+    }
+
+    public static void main(String[] args) {
+        PriorityQueue<Task> pq = new PriorityQueue<>((a, b) -> b.priority - a.priority);
+        pq.offer(new Task(1, 2));
+        pq.offer(new Task(2, 5));
+        pq.offer(new Task(3, 1));
+
+        while (!pq.isEmpty()) {
+            Task task = pq.poll();
+            System.out.println(task.id);
+        }
+    }
+}
+```
+
+### Reusable Template
+
+```java
+PriorityQueue<T> pq = new PriorityQueue<>(comparator);
+pq.offer(task);
+T next = pq.poll();
+```
+
+### Complexity
+
+- insert: O(log n)
+- remove highest priority: O(log n)
+- peek: O(1)
+
+### Common Mistakes
+
+- thinking priority queue preserves insertion order
+- comparator direction errors
+
+### Interview Questions
+
+- priority scheduling
+- why use priority queue?
+
+### Related Problems
+
+- top K elements
+- CPU job priority
+
+## 6.2 Task Scheduling
+
+### Pattern Recognition
+
+Use this when tasks arrive over time and must be processed in a specific order,
+possibly with cooldowns or waiting periods.
+
+### Trigger Words
+
+- `task scheduling`
+- `cooldown`
+- `waiting queue`
+- `ready queue`
+- `job execution`
+
+### Observation
+
+A queue is often used for ready tasks.
+
+If tasks are temporarily blocked, another queue or priority queue may store them
+until they are ready again.
+
+### Brute Force
+
+Scan all tasks every time to find the next runnable one.
+
+### Optimal Solution
+
+Use a queue for FIFO task flow, or a priority queue for highest-priority task
+selection, sometimes combined with a waiting queue.
+
+### Visualization
+
+```text
+ready queue -> running task -> wait/cooldown queue -> ready queue
+```
+
+### Dry Run
+
+- task A ready
+- task B ready
+- task A runs
+- task A enters cooldown queue
+- task B runs
+- task A returns to ready queue later
+
+### Java Code
+
+```java
+import java.util.ArrayDeque;
+import java.util.Queue;
+
+public class TaskSchedulingConcept {
+    public static void main(String[] args) {
+        Queue<String> ready = new ArrayDeque<>();
+        ready.offer("taskA");
+        ready.offer("taskB");
+        ready.offer("taskC");
+
+        while (!ready.isEmpty()) {
+            String task = ready.poll();
+            System.out.println("Running " + task);
+        }
+    }
+}
+```
+
+### Reusable Template
+
+```java
+Queue<Task> ready = new ArrayDeque<>();
+Queue<Task> waiting = new ArrayDeque<>();
+
+while (!ready.isEmpty() || !waiting.isEmpty()) {
+    // move tasks from waiting to ready if allowed
+    // process ready task
+}
+```
+
+### Complexity
+
+- FIFO task queue: O(1) ops
+- priority scheduling: O(log n) per selection
+
+### Common Mistakes
+
+- mixing up FIFO flow and priority flow
+- forgetting cooldown handling
+
+### Interview Questions
+
+- task scheduling concept
+- CPU scheduling simulation
+
+### Related Problems
+
+- task scheduler
+- round robin scheduling
+- process queue
+
+===============================================================================
+# Chapter 7: Interview Recognition Sheet and Common Problem Bank
+===============================================================================
+
+## Recognition Sheet
+
+Graph traversal
+=
+BFS queue
+
+Tree level order
+=
+Queue + size loop
+
+Shortest path in unweighted graph
+=
+BFS + level
+
+Many sources / spread
+=
+Multi source BFS
+
+Topological ordering
+=
+Queue + indegree
+
+Window maximum
+=
+Monotonic queue
+
+Front and back operations
+=
+Deque
+
+Priority-based next item
+=
+Priority queue
+
+Round robin / buffer wrap
+=
+Circular queue
+
+Producer consumer
+=
+BlockingQueue / synchronized queue
+
+## Common Problem Bank
+
+### Beginner
+
+- implement queue using array
+- implement queue using linked list
+- enqueue dequeue peek
+- front rear size isEmpty
+- circular queue
+
+### Intermediate
+
+- level order traversal
+- BFS traversal
+- shortest path in unweighted graph
+- rotting oranges
+- 01 matrix
+- topological sorting
+
+### Advanced
+
+- sliding window maximum
+- monotonic queue
+- producer consumer
+- priority scheduling
+- task scheduling
+- blocking queue design
+
+## Most Important LeetCode
+
+LC 102 -> Binary Tree Level Order Traversal
+
+LC 103 -> Binary Tree Zigzag Level Order Traversal
+
+LC 107 -> Binary Tree Level Order Traversal II
+
+LC 1091 -> Shortest Path in Binary Matrix
+
+LC 1971 -> Find if Path Exists in Graph
+
+LC 207 -> Course Schedule
+
+LC 210 -> Course Schedule II
+
+LC 239 -> Sliding Window Maximum
+
+LC 286 -> Walls and Gates
+
+LC 542 -> 01 Matrix
+
+LC 622 -> Design Circular Queue
+
+LC 641 -> Design Circular Deque
+
+LC 752 -> Open the Lock
+
+LC 994 -> Rotting Oranges
+
+## Company Style Focus
+
+Google-style:
+- BFS
+- shortest path
+- topological sort
+- sliding window maximum
+
+Meta-style:
+- level order traversal
+- multi source BFS
+- deque problems
+
+Amazon-style:
+- queue implementation
+- circular queue
+- producer consumer
+
+Microsoft-style:
+- task scheduling
+- priority queue
+- queue interface details
+
+Adobe-style:
+- blocking queue
+- spread simulation
+- BFS and grid traversal
+
+Service-company style:
+- implement queue from scratch
+- queue operations
+- circular queue
+
+## Interview Questions
+
+- Why is queue used in BFS?
+- Why is level size important in tree traversal?
+- Why is sliding window maximum solved using deque?
+- Why is queue useful in topological sort?
+- Why use BlockingQueue in producer consumer?
+
+## Related Problems
+
+- shortest path
+- level order
+- scheduling
+- circular buffer
+- monotonic queue
+
+===============================================================================
+# Chapter 8: Revision Sheet, Cheat Sheet, and Template Library
+===============================================================================
+
+## Revision Sheet
+
+### Core Facts
+
+- queue follows FIFO
+- enqueue at rear
+- dequeue from front
+- peek reads front
+- size tracks element count
+- circular queue uses modulo wrap-around
+- deque supports both ends
+- priority queue is priority-based, not FIFO
+- blocking queue is useful for concurrency
+- BFS uses queue
+- level order uses queue + size loop
+- monotonic queue uses deque
+
+### Time Complexity Quick View
+
+- enqueue: O(1)
+- dequeue: O(1)
+- peek: O(1)
+- queue using linked list: O(1) operations
+- circular queue: O(1) operations
+- deque both ends: O(1)
+- priority queue insert/remove: O(log n)
+- BFS: O(V + E)
+- level order traversal: O(n)
+- sliding window maximum: O(n)
+- topological sort: O(V + E)
+
+### When To Use What
+
+- FIFO order -> queue
+- front/back operations -> deque
+- repeated max/min in window -> monotonic queue
+- priority-based selection -> priority queue
+- concurrent producer consumer -> blocking queue
+- shortest unweighted path -> BFS queue
+- dependency order -> topological queue
+
+## Cheat Sheet
+
+- queue = FIFO
+- front = next to remove
+- rear = last inserted
+- `offer` / `poll` / `peek` are safe queue methods
+- `ArrayDeque` is a strong default choice
+- `LinkedList` works as queue but is often slower in practice
+- circular queue reuses empty slots
+- BFS and level order are queue patterns
+- monotonic queue is deque with order maintained
+- priority queue uses heap ordering
+- blocking queue is for thread coordination
+
+## Common Mistakes
+
+- using queue like stack
+- forgetting to mark visited before enqueue in BFS
+- using shifting array queue instead of circular queue
+- confusing deque with priority queue
+- using PriorityQueue for FIFO behavior
+- storing values instead of indices in monotonic queue
+- forgetting `q.size()` snapshot in level order
+- forgetting indegree logic in topological sort
+
+## Template Library
+
+### 8.1 Basic Queue Template
+
+```java
+Queue<Integer> q = new ArrayDeque<>();
+q.offer(x);
+int front = q.peek();
+int removed = q.poll();
+boolean empty = q.isEmpty();
+int sz = q.size();
+```
+
+### 8.2 Linked List Queue Template
+
+```java
+class Node {
+    int data;
+    Node next;
+    Node(int data) { this.data = data; }
+}
+
+Node front = null, rear = null;
+
+void enqueue(int x) {
+    Node node = new Node(x);
+    if (rear == null) {
+        front = rear = node;
+    } else {
+        rear.next = node;
+        rear = node;
+    }
+}
+
+int dequeue() {
+    int val = front.data;
+    front = front.next;
+    if (front == null) rear = null;
+    return val;
+}
+```
+
+### 8.3 Circular Queue Template
+
+```java
+rear = (rear + 1) % size;
+front = (front + 1) % size;
+```
+
+### 8.4 BFS Template
+
+```java
+Queue<Integer> q = new ArrayDeque<>();
+boolean[] visited = new boolean[n];
+q.offer(source);
+visited[source] = true;
+
+while (!q.isEmpty()) {
+    int node = q.poll();
+    for (int nbr : graph.get(node)) {
+        if (!visited[nbr]) {
+            visited[nbr] = true;
+            q.offer(nbr);
+        }
+    }
+}
+```
+
+### 8.5 Level Order Template
+
+```java
+Queue<TreeNode> q = new ArrayDeque<>();
+q.offer(root);
+
+while (!q.isEmpty()) {
+    int size = q.size();
+    for (int i = 0; i < size; i++) {
+        TreeNode node = q.poll();
+        if (node.left != null) q.offer(node.left);
+        if (node.right != null) q.offer(node.right);
+    }
+}
+```
+
+### 8.6 Shortest Path BFS Template
+
+```java
+int level = 0;
+while (!q.isEmpty()) {
+    int size = q.size();
+    for (int i = 0; i < size; i++) {
+        int node = q.poll();
+        if (node == target) return level;
+        // push neighbors
+    }
+    level++;
+}
+```
+
+### 8.7 Multi Source BFS Template
+
+```java
+Queue<int[]> q = new ArrayDeque<>();
+for (all sources) q.offer(source);
+
+while (!q.isEmpty()) {
+    int size = q.size();
+    for (int i = 0; i < size; i++) {
+        int[] cell = q.poll();
+        // spread to neighbors
+    }
+}
+```
+
+### 8.8 Monotonic Queue Template
+
+```java
+Deque<Integer> dq = new ArrayDeque<>();
+for (int i = 0; i < n; i++) {
+    while (!dq.isEmpty() && dq.peekFirst() <= i - k) dq.pollFirst();
+    while (!dq.isEmpty() && nums[dq.peekLast()] < nums[i]) dq.pollLast();
+    dq.offerLast(i);
+    if (i >= k - 1) ans.add(nums[dq.peekFirst()]);
+}
+```
+
+### 8.9 Priority Queue Template
+
+```java
+PriorityQueue<Integer> pq = new PriorityQueue<>();
+pq.offer(x);
+int top = pq.peek();
+int removed = pq.poll();
+```
+
+### 8.10 Blocking Queue Template
+
+```java
+BlockingQueue<T> q = new ArrayBlockingQueue<>(capacity);
+q.put(item);
+T item = q.take();
+```
+
+### 8.11 Topological Sort Template
+
+```java
+Queue<Integer> q = new ArrayDeque<>();
+for (int i = 0; i < n; i++) if (indegree[i] == 0) q.offer(i);
+
+while (!q.isEmpty()) {
+    int node = q.poll();
+    for (int nbr : graph.get(node)) {
+        indegree[nbr]--;
+        if (indegree[nbr] == 0) q.offer(nbr);
+    }
+}
+```
+
+## Final Note
+
+If the problem involves arrival order, breadth-first expansion, spreading,
+prioritization, or a moving window, queue thinking is usually one of the first
+tools to try.
